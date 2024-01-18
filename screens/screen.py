@@ -3,7 +3,7 @@ from misc.ui import *
 
 class Screen():
     def __init__(self, screen_manager) -> None:
-        self.items = []
+        self.items = {}
         self.screen_manager = screen_manager
         self.screen = pygame.display.get_surface()
         self.back_color = (0,0,0)
@@ -11,12 +11,15 @@ class Screen():
     def draw(self):
         self.screen.fill(self.back_color)
         for item in self.items:
-            item.draw()
+            self.items[item].draw()
 
     def update(self):
         pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_ARROW)
         for item in self.items:
-            item.update()
+            self.items[item].update()
+            if isinstance(item, Slider):
+                print(item.value)
+            
     
-    def add_item(self, item):
-        self.items.append(item)
+    def add_item(self,name, item):
+        self.items.update({name:item})

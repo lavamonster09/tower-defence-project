@@ -1,14 +1,12 @@
-from screens.menu import Menu
-from screens.settings import Settings
-from screens.game_select import Game_select
+import screens
 
 class Screen_manager():
     def __init__(self) -> None:
         self.current_screen = "menu"
         self.screens = {
-            "menu": Menu(self),
-            "game_select": Game_select(self),
-            "settings": Settings(self)
+            "menu": screens.Menu(self),
+            "game_select": screens.Game_select(self),
+            "settings": screens.Settings(self)
         }
 
     def update(self):
