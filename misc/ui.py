@@ -1,41 +1,54 @@
 import pygame 
 import math
+from misc.theme import Theme
 from misc.constants import *
 
 class Button():
-    def __init__(self, rect = (0,0,0,0), text = "", color = (0,0,0), border_radius=0, border_width=0, border_color = (0,0,0), hover_color = (0,0,0), on_click = None, fore_color = (0,0,0), filled = True):
+    def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", on_click = None):
+        # passed in button variables    
         self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3])
-        self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
-        self.filled = filled
         self.text = text
-        self.color = color
-        self.fore_color = fore_color
-        self.hover_color = hover_color
-        self.border_radius = border_radius
-        self.border_width = border_width
-        self.border_color = border_color
-        self.screen = pygame.display.get_surface()
         self.on_click = on_click
+
+        # button specific needed variables
+        self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
         self.hovering = False
         self.lastpressed = False
+
+        # theme
+        self.filled = theme.get()["filled"]
+        self.color = theme.get()["color"]
+        self.fore_color = theme.get()["fore_color"]
+        self.hover_color = theme.get()["hover_color"]
+        self.border_radius = theme.get()["border_radius"]
+        self.border_width = theme.get()["border_width"]
+        self.border_color = theme.get()["border_color"]
+
+        # globaly needed variables
+        self.screen = pygame.display.get_surface()
     
     def draw(self):
-        if self.filled:
-            if self.hovering:
-                pygame.draw.rect(self.screen, self.hover_color, self.rect, border_radius= self.border_radius)
-            else:
-                pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
-        if self.border_width > 0:
-            pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
+        # check if button is filled and if it is hovering
+        if self.filled and self.hovering:
+            pygame.draw.rect(self.screen, self.hover_color, self.rect, border_radius= self.border_radius)
+        else:
+            pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
 
+        # check if button has a border
+        if self.border_width > 0: pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
+
+        # draw text
         text_surf = self.font.render(self.text, True, self.fore_color)
         position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
         self.screen.blit(text_surf, position)
     
     def update(self):
+        # check if mouse is hovering over button
         if self.rect.collidepoint(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
             self.hovering = True
             pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+            # check if mouse is clicking on button
             if pygame.mouse.get_pressed()[0]:
                 if self.on_click and not self.lastpressed: self.on_click()
                 self.lastpressed = True
@@ -45,25 +58,31 @@ class Button():
             self.hovering = False
 
 class Label():
-    def __init__(self, rect, text, color, border_radius=0, border_width=0, border_color = (0,0,0), fore_color = (0,0,0), filled = False):
+    def __init__(self, theme:Theme, rect = (0,0,0,0), text = ""):
+        # passed in label variables
         self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3])
-        self.filled = filled
         self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
         self.text = text
-        self.color = color
-        self.fore_color = fore_color
-        self.border_radius = border_radius
-        self.border_width = border_width
-        self.border_color = border_color
+
+        # theme
+        self.filled = theme.get()["filled"]
+        self.color  = theme.get()["color"]
+        self.fore_color = theme.get()["fore_color"]
+        self.border_radius = theme.get()["border_radius"]
+        self.border_width = theme.get()["border_width"]
+        self.border_color = theme.get()["border_color"]
+
+        # globaly needed variables
         self.screen = pygame.display.get_surface()
     
     def draw(self):
-        if self.filled:
-            pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
+        # check if label is filled
+        if self.filled: pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
             
-        if self.border_width > 0:
-            pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
-
+        # check if label has a border
+        if self.border_width > 0: pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
+            
+        # draw text
         text_surf = self.font.render(self.text, True, self.fore_color)
         position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
         self.screen.blit(text_surf, position)
@@ -72,28 +91,45 @@ class Label():
         pass
 
 class Slider():
-    def __init__(self, pos= (0,0), length = 0,min_val = 0, max_val = 0, dot_size = 2, thickness = 1, line_color = (0,0,0), dot_color = (0,0,0)) -> None:
+    def __init__(self,theme:Theme, pos= (0,0), length = 0,min_val = 0, max_val = 0) -> None:
+        # passed in slider variables
         self.pos = pygame.Vector2(pos[0], pos[1])
         self.min_val = min_val
         self.max_val = max_val
-        self.thickness = thickness
         self.length = length
-        self.dot_size = dot_size
-        self.line_color = line_color
-        self.dot_color = dot_color
         self.value = min_val
-        self.screen = pygame.display.get_surface()
+        
+        # button specific needed variables
         self.sliding = False
+
+        # theme
+        self.thickness = theme.get()["thickness"]
+        self.dot_size = theme.get()["dot_size"]
+        self.line_color = theme.get()["line_color"]
+        self.dot_color = theme.get()["dot_color"]
+
+        # globaly needed variables
+        self.screen = pygame.display.get_surface()
+        
     def draw(self):
         pygame.draw.line(self.screen, self.line_color, self.pos, self.pos + pygame.Vector2(self.length,0), self.thickness)
         pygame.draw.circle(self.screen, self.dot_color, self.pos + pygame.Vector2(self.length * (self.value - self.min_val)/(self.max_val - self.min_val), 0), self.dot_size)
+
     def update(self):
+        #check if mouse is hovering over slider
+        if self.pos.y - self.dot_size <= pygame.mouse.get_pos()[1] <= self.pos.y + self.dot_size and self.pos.x <= pygame.mouse.get_pos()[0] <= self.pos.x + self.length:
+            pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_HAND)
+            
+        #check if mouse is pressing on slider
         if pygame.mouse.get_pressed()[0]:
-            if self.pos.y - self.dot_size <= pygame.mouse.get_pos()[1] <= self.pos.y + self.dot_size:
+            if self.pos.y - self.dot_size <= pygame.mouse.get_pos()[1] <= self.pos.y + self.dot_size and self.pos.x <= pygame.mouse.get_pos()[0] <= self.pos.x + self.length:
                 self.sliding = True
         else:
             self.sliding = False
+        
+        # check if slider is sliding
         if self.sliding:
+            pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_HAND)
             if self.pos.x <= pygame.mouse.get_pos()[0] <= self.pos.x + self.length:
                 self.value = self.min_val + (self.max_val - self.min_val) * (pygame.mouse.get_pos()[0] - self.pos.x) / self.length
                 if self.value > self.max_val: self.value = self.max_val
@@ -104,24 +140,31 @@ class Slider():
                 self.value = self.max_val
 
 class Dropdown():
-    def __init__(self, rect = (0,0,0,0), text = "", color = (0,0,0), border_radius=0, border_width=0, border_color = (0,0,0), hover_color = (0,0,0), fore_color = (0,0,0), filled = True, options = []):
-        self.time = 1
-        self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3])
-        self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
+    def __init__(self,theme:Theme, rect = (0,0,0,0), options = []):
+        # passed in dropdown variables  
+        self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3]) 
         self.options = options
-        self.filled = filled
-        self.text = text
-        self.color = color
-        self.fore_color = fore_color
-        self.hover_color = hover_color
-        self.border_radius = border_radius
-        self.border_width = border_width
-        self.border_color = border_color
+
+        # dropdown specific needed variables
+        self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
+        self.time = 1
+        self.text = ""
         self.hovering = False
         self.lastpressed = False
         self.toggle = False
         self.hovered = None
         self.selected = None 
+
+        # theme
+        self.filled = theme.get()["filled"]
+        self.color = theme.get()["color"]
+        self.fore_color = theme.get()["fore_color"]
+        self.hover_color = theme.get()["hover_color"]
+        self.border_radius = theme.get()["border_radius"]
+        self.border_width = theme.get()["border_width"]
+        self.border_color = theme.get()["border_color"]
+        
+        # globaly needed variables
         self.screen = pygame.display.get_surface()
 
     def draw(self):

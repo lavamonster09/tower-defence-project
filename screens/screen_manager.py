@@ -8,7 +8,7 @@ class Screen_manager():
             "game_select": screens.Game_select(self),
             "settings": screens.Settings(self)
         }
-
+    
     def update(self):
         self.screens[self.current_screen].update()
     
