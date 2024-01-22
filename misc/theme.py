@@ -1,3 +1,5 @@
+MAIN_FONT = "comic-sans"
+
 class Theme:
     def __init__(self, theme_data:dict):
         self.theme_data = theme_data

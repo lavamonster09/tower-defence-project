@@ -1,7 +1,8 @@
 import screens
 
 class Screen_manager():
-    def __init__(self) -> None:
+    def __init__(self, app) -> None:
+        self.app = app
         self.current_screen = "menu"
         self.screens = {
             "menu": screens.Menu(self),

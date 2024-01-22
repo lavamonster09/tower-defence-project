@@ -1,6 +1,6 @@
 import pygame 
 import math
-from misc.theme import Theme
+from misc.theme import *
 from misc.constants import *
 
 class Button():
@@ -229,3 +229,22 @@ class Dropdown():
             text_surf = self.font.render(option, True, self.fore_color)
             position = (temp_rect.x + (temp_rect.width - text_surf.get_width()) / 2, temp_rect.y + (temp_rect.height - text_surf.get_height()) / 2)
             self.screen.blit(text_surf, position)
+    
+    def get_selected_option(self):
+        if self.selected != None:
+            return self.options[self.selected]
+        else:
+            return self.options[0]
+
+class Image():
+    def __init__(self, image, rect = (0,0,0,0)):
+        self.image = pygame.image.load(image).convert()
+        self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3])
+        self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
+        self.screen = pygame.display.get_surface()
+
+    def draw(self):
+        self.screen.blit(self.image, self.rect)
+
+    def update(self):
+        pass

@@ -9,7 +9,7 @@ class App:
     def __init__(self) -> None:
         self.display_width , self.display_height = SCREEN_WIDTH, SCREEN_HEIGHT
         self.display = pygame.display.set_mode((self.display_width, self.display_height))
-        self.screen_manager = Screen_manager()
+        self.screen_manager = Screen_manager(self)
         self.main()
         
     def main(self):
@@ -25,6 +25,10 @@ class App:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if event.type == pygame.USEREVENT:
+                if event.name == "update_resolution":
+                    self.display_width, self.display_height = event.resolution
+                    self.display = pygame.display.set_mode((self.display_width, self.display_height))
     
     def update(self):
         self.screen_manager.update()

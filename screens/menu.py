@@ -7,6 +7,8 @@ class Menu(Screen):
     def __init__(self, screen_manager) -> None:
         super().__init__(screen_manager)
         self.back_color = (20,20,20)
+        #image
+        self.add_item("image", Image("assets/images/Menu.png", rect = (0,0,SCREEN_WIDTH,SCREEN_HEIGHT)))
 
         # buttons    
         self.add_item("btn_start",Button(BUTTON_DARK , rect=(SCREEN_WIDTH/2 - 100,250,200,100), text="START", on_click= self.btn_start_on_click))
