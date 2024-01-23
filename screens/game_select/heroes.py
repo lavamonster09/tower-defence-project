@@ -12,12 +12,12 @@ class Heroes(Screen):
 
         self.heroes = json.load(open("screens\game_select\heroes.json"))
         for i, hero in enumerate(self.heroes):   
-            self.add_item(f"{hero}_img", Image(self.heroes[hero]["small_image"], rect = (75+i % 5*110 ,100+i//5 * 110,100,100)))
-            self.add_item(f"{hero}_btn", Button(BUTTON_DARK_NO_FILL, rect = (75+i % 5*110 ,100+i//5 * 110,100,100), on_click = self.btn_heroes_on_click))
+            self.add_item(f"{hero}_img", Image(self.heroes[hero]["small_image"], rect = (100+i % 5*110 ,100+i//5 * 110,100,100)))
+            self.add_item(f"{hero}_btn", Button(BUTTON_DARK_NO_FILL, rect = (100+i % 5*110 ,100+i//5 * 110,100,100), on_click = self.btn_heroes_on_click))
 
         # cursors 
-        self.add_item("hovering", Rect(RECT_DARK_NO_FILL, rect = (75,100,100,100)))
-        self.add_item("selected", Rect(RECT_DARK_NO_FILL, rect = (75,100,100,100)))
+        self.add_item("hovering", Rect(RECT_DARK_NO_FILL, rect = (100,100,100,100)))
+        self.add_item("selected", Rect(RECT_DARK_NO_FILL, rect = (100,100,100,100)))
         self.items["selected"].border_color = DARK_ACCENT_COLOR
 
         # large hero
