@@ -4,16 +4,23 @@ from misc.theme import *
 from misc.constants import *
 
 class Button():
-    def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", on_click = None):
-        # passed in button variables    
-        self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3])
+    def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", on_click = None, positioning = "absolute"):
+        # passed in button variable
+        self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
+        if positioning == "absolute":
+            self.rect.center = (rect[0], rect[1])
+        if positioning == "relative":
+            self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)      
         self.text = text
         self.on_click = on_click
 
         # button specific needed variables
-        self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
+        self.font = pygame.font.Font(MAIN_FONT, int(self.rect.height/2))
         self.hovering = False
-        self.lastpressed = False
+        if pygame.mouse.get_pressed()[0]:
+            self.lastpressed = True
+        else:
+            self.lastpressed = False
 
         # theme
         self.filled = theme.get()["filled"]
@@ -31,7 +38,7 @@ class Button():
         # check if button is filled and if it is hovering
         if self.filled and self.hovering:
             pygame.draw.rect(self.screen, self.hover_color, self.rect, border_radius= self.border_radius)
-        else:
+        elif self.filled:
             pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
 
         # check if button has a border
@@ -50,18 +57,27 @@ class Button():
 
             # check if mouse is clicking on button
             if pygame.mouse.get_pressed()[0]:
-                if self.on_click and not self.lastpressed: self.on_click()
-                self.lastpressed = True
+                if self.on_click and not self.lastpressed: 
+                    self.lastpressed = True
+                    self.on_click()
             else:
                 self.lastpressed = False
         else:
+            if pygame.mouse.get_pressed()[0]:
+                self.lastpressed = True
+            else:
+                self.lastpressed = False
             self.hovering = False
 
 class Label():
-    def __init__(self, theme:Theme, rect = (0,0,0,0), text = ""):
+    def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", positioning = "absolute", font_size = 0):
         # passed in label variables
-        self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3])
-        self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
+        self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
+        if positioning == "absolute":
+            self.rect.center = (rect[0], rect[1])
+        if positioning == "relative":
+            self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)      
+        self.font = pygame.font.Font(MAIN_FONT, font_size)
         self.text = text
 
         # theme
@@ -83,7 +99,7 @@ class Label():
         if self.border_width > 0: pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
             
         # draw text
-        text_surf = self.font.render(self.text, True, self.fore_color)
+        text_surf = self.font.render(self.text, True, self.fore_color, wraplength=self.rect.width-20)
         position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
         self.screen.blit(text_surf, position)
     
@@ -140,13 +156,17 @@ class Slider():
                 self.value = self.max_val
 
 class Dropdown():
-    def __init__(self,theme:Theme, rect = (0,0,0,0), options = []):
+    def __init__(self,theme:Theme, rect = (0,0,0,0), options = [], positioning = "absolute"):
         # passed in dropdown variables  
-        self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3]) 
+        self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
+        if positioning == "absolute":
+            self.rect.center = (rect[0], rect[1])
+        if positioning == "relative":
+            self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)      
         self.options = options
 
         # dropdown specific needed variables
-        self.font = pygame.font.SysFont(MAIN_FONT, int(self.rect.height/2))
+        self.font = pygame.font.Font(MAIN_FONT, int(self.rect.height/2))
         self.time = 1
         self.text = ""
         self.hovering = False
@@ -221,7 +241,8 @@ class Dropdown():
         if self.time > 100: self.time = 100
         temp_rect = pygame.Rect(self.rect.x, self.rect.y, self.rect.width, (self.rect.height * (len(self.options) + 1)) * self.time / 100)
         pygame.draw.rect(self.screen, self.color, temp_rect, border_radius= self.border_radius)
-        pygame.draw.rect(self.screen, self.border_color, temp_rect, border_radius= self.border_radius, width= self.border_width)
+        if self.border_width > 0:
+            pygame.draw.rect(self.screen, self.border_color, temp_rect, border_radius= self.border_radius, width= self.border_width)
         for i, option in enumerate(self.options):
             if ((self.rect.height * (len(self.options) + 1)) * self.time / 100) // self.rect.height - 1 < i:
                 continue
@@ -237,14 +258,57 @@ class Dropdown():
             return self.options[0]
 
 class Image():
-    def __init__(self, image, rect = (0,0,0,0)):
-        self.image = pygame.image.load(image).convert()
-        self.rect = pygame.Rect(rect[0], rect[1] , rect[2], rect[3])
-        self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
+    def __init__(self, image, rect = (0,0,0,0), positioning = "absolute"):
+        self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
+        if positioning == "absolute":
+            self.rect.center = (rect[0], rect[1])
+        if positioning == "relative":
+            self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)      
+        if image != "":
+            self.image = pygame.image.load(image).convert()
+            self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
+            self.image.set_colorkey((0,0,0))
+        else:
+            self.image = ""
         self.screen = pygame.display.get_surface()
 
     def draw(self):
-        self.screen.blit(self.image, self.rect)
+        if self.image != "":
+            self.screen.blit(self.image, self.rect)
 
+    def update(self):
+        pass
+
+    def set_image(self, image):
+        self.image = pygame.image.load(image).convert()
+        self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
+        self.image.set_colorkey((0,0,0))
+
+class Rect():
+    def __init__(self, theme, rect, positioning = "absolute") -> None:
+        #passed in variables
+        self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
+        if positioning == "absolute":
+            self.rect.center = (rect[0], rect[1])
+        if positioning == "relative":
+            self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)
+
+        #from theme
+        self.color = theme.get()["color"]
+        self.border_radius = theme.get()["border_radius"]
+        self.border_width = theme.get()["border_width"]
+        self.border_color = theme.get()["border_color"]
+        self.filled = theme.get()["filled"]
+
+        #needed variables
+        self.screen = pygame.display.get_surface()
+        
+    
+    def draw(self):
+        if self.filled:
+            pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
+        if self.border_width > 0:
+            pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)
+    
     def update(self):
         pass
