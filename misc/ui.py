@@ -99,7 +99,7 @@ class Label():
         if self.border_width > 0: pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
             
         # draw text
-        text_surf = self.font.render(self.text, True, self.fore_color, wraplength=self.rect.width-20)
+        text_surf = self.font.render(self.text, True, self.fore_color, wraplength=self.rect.width)
         position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
         self.screen.blit(text_surf, position)
     

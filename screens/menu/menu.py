@@ -15,6 +15,7 @@ class Menu(Screen):
         # label
         self.add_item("label", Label(LABEL_DARK, rect = (50,10,SCREEN_WIDTH,200), text = "GAME", positioning="relative", font_size=100))
 
+    
     def btn_start_on_click(self):
         self.screen_manager.current_screen = "game_select"
     

@@ -16,8 +16,8 @@ class App:
         while True:
             self.check_events()
             self.display.fill((0,0,0))
-            self.draw()
             self.update()
+            self.draw()
             pygame.display.flip()
             clock.tick(60)
 

@@ -30,7 +30,7 @@ class Heroes(Screen):
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = "X", on_click= self.btn_back_on_click))
 
     def btn_back_on_click(self):
-        self.screen_manager.current_screen = "game_select"
+        self.screen_manager.change_screen("game_select", 20)
 
     def btn_heroes_on_click(self):
         for hero in self.heroes:

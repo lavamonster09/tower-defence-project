@@ -6,6 +6,9 @@ class Screen_manager():
         self.current_screen = "menu"
         self.last_screen = "menu"
         self.before_last_screen = "menu"
+        self.change_in = 0
+        self.change_to = "menu"
+        self.counter = 0 
         self.screens = {
             "menu": screens.Menu(self),
             "game_select": screens.Game_select(self),
@@ -14,10 +17,26 @@ class Screen_manager():
         }
     
     def update(self):
+        if self.change_in > 0:
+            self.counter += 1
+            if self.counter > self.change_in:
+                self.counter = 0
+                self.change_in = 0
+                self.current_screen = self.change_to
         if self.last_screen != self.current_screen:
+            self.screens[self.current_screen].on_open()
             self.before_last_screen = self.last_screen
-            self.last_screen = self.current_screen
+        self.last_screen = self.current_screen
         self.screens[self.current_screen].update()
     
     def draw(self):
-        self.screens[self.current_screen].draw()
+        if self.last_screen == self.current_screen:
+            self.screens[self.current_screen].draw()
+        else:
+            self.update()
+            self.draw()
+
+    def change_screen(self, screen, change_in = 0):
+        self.screens[self.current_screen].on_close()
+        self.change_in = change_in
+        self.change_to = screen
