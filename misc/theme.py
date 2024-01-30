@@ -1,4 +1,4 @@
-MAIN_FONT = r"C:\Users\oliver\Documents\code\python\computing\project\Tower-Defence---Project\assets\fonts\RobotoSlab-VariableFont_wght.ttf"
+MAIN_FONT = "assets\fonts\RobotoSlab-VariableFont_wght.ttf"
 
 
 class Theme:
