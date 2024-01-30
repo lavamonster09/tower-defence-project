@@ -3,14 +3,51 @@ from misc.theme import *
 from misc.constants import *
 from screens.screen import Screen
 
-import json
+hero_data = {
+    "lime": {
+        "name": "Lime",
+        "small_image": "assets/images/lime_small.png",
+        "large_image": "assets/images/lime_large.png",
+        "description": "lime is a glorious color. limes are also delicious. lime is a hue of green."
+    },
+    "red": {
+        "name": "red",
+        "small_image": "assets/images/test1_small.png",
+        "large_image": "assets/images/test1_large.png",
+        "description": "red is angry the color suggest anger and rage. red is the hue of blood."
+    },
+    "purple": {
+        "name": "purple",
+        "small_image": "assets/images/test2_small.png",
+        "large_image": "assets/images/test2_large.png",
+        "description": "purple is a hue of blue and red. purple is a royal color. purple is a hue of violet."
+    },
+    "yellow": {
+        "name": "yellow",
+        "small_image": "assets/images/test3_small.png",
+        "large_image": "assets/images/test3_large.png",
+        "description": "yellow is the color of the sun. yellow is a hue of orange. yellow is a hue of green."
+    },
+    "pink": {
+        "name": "pink",
+        "small_image": "assets/images/test4_small.png",
+        "large_image": "assets/images/test4_large.png",
+        "description": "pink is a hue of red. pink is a hue of purple. pink is a hue of white."
+    },
+    "cyan": {
+        "name": "cyan",
+        "small_image": "assets/images/test5_small.png",
+        "large_image": "assets/images/test5_large.png",
+        "description": "cyan is the color of the sky. cyan is a hue of blue. cyan is a hue of green."
+    }
+}
 
 class Heroes(Screen):
     def __init__(self, screen_manager) -> None:
         super().__init__(screen_manager)
         self.back_color = (DARK_BACKGROUND_COLOR)
 
-        self.heroes = json.load(open("screens\game_select\heroes.json"))
+        self.heroes = hero_data
         for i, hero in enumerate(self.heroes):   
             self.add_item(f"{hero}_img", Image(self.heroes[hero]["small_image"], rect = (100+i % 5*110 ,100+i//5 * 110,100,100)))
             self.add_item(f"{hero}_btn", Button(BUTTON_DARK_NO_FILL, rect = (100+i % 5*110 ,100+i//5 * 110,100,100), on_click = self.btn_heroes_on_click))
