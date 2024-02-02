@@ -1,7 +1,19 @@
 import pygame 
+from pygame import gfxdraw
 import math
 from misc.theme import *
 from misc.constants import *
+
+pygame.font.init()
+
+d = {}
+with open("assets/fonts/MaterialIcons-Regular.codepoints", "r") as file:
+    for line in file:
+        (key, val) = line.split()
+        d[key] = val
+
+def get_icon_hex(icon):
+    return chr(int(f"0x{d[icon]}",0))
 
 class Button():
     def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", on_click = None, positioning = "absolute"):
@@ -16,6 +28,7 @@ class Button():
 
         # button specific needed variables
         self.font = pygame.font.Font(MAIN_FONT, int(self.rect.height/2))
+        self.icon_font = pygame.font.Font(ICON_FONT, int(self.rect.height/2))
         self.hovering = False
         if pygame.mouse.get_pressed()[0]:
             self.lastpressed = True
@@ -45,9 +58,14 @@ class Button():
         if self.border_width > 0: pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
 
         # draw text
-        text_surf = self.font.render(self.text, True, self.fore_color)
-        position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
-        self.screen.blit(text_surf, position)
+        if self.text.isalpha() or self.text.isnumeric():
+            text_surf = self.font.render(self.text, True, self.fore_color)
+            position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
+            self.screen.blit(text_surf, position)
+        else:
+            text_surf = self.icon_font.render(self.text, True, self.fore_color)
+            position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
+            self.screen.blit(text_surf, position)
     
     def update(self):
         # check if mouse is hovering over button
@@ -129,7 +147,8 @@ class Slider():
         
     def draw(self):
         pygame.draw.line(self.screen, self.line_color, self.pos, self.pos + pygame.Vector2(self.length,0), self.thickness)
-        pygame.draw.circle(self.screen, self.dot_color, self.pos + pygame.Vector2(self.length * (self.value - self.min_val)/(self.max_val - self.min_val), 0), self.dot_size)
+        gfxdraw.aacircle(self.screen,int(self.pos.x + self.length * (self.value - self.min_val)/(self.max_val - self.min_val)),int(self.pos.y), self.dot_size, self.dot_color)
+        gfxdraw.filled_circle(self.screen,int(self.pos.x + self.length * (self.value - self.min_val)/(self.max_val - self.min_val)),int(self.pos.y), self.dot_size, self.dot_color)
 
     def update(self):
         #check if mouse is hovering over slider

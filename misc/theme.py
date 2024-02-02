@@ -1,4 +1,5 @@
-MAIN_FONT = "assets\fonts\RobotoSlab-VariableFont_wght.ttf"
+MAIN_FONT = "assets/fonts/RobotoSlab-VariableFont_wght.ttf"
+ICON_FONT = "assets/fonts/MaterialIcons-Regular.ttf"
 
 
 class Theme:

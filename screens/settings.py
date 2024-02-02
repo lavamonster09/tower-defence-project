@@ -17,7 +17,7 @@ class Settings(Screen):
         self.add_item("slider_1_label_2", Label(LABEL_DARK, rect = (SCREEN_WIDTH/2 - 275, 200 - 25, 400, 50), text = "Volume:", font_size=30))
 
         # btn_back
-        self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = "X", on_click= self.btn_back_on_click)) 
+        self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click)) 
 
         # Title
         self.add_item("Title", Label(LABEL_DARK, rect = (50,10,SCREEN_WIDTH,200), text = "SETTINGS", positioning="relative", font_size=100)) 

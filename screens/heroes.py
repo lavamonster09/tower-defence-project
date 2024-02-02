@@ -64,7 +64,9 @@ class Heroes(Screen):
 
         # btns
         self.add_item("btn_select", Button(BUTTON_DARK, rect = (25, 80, 270, 100), text = "SELECT", positioning="relative", on_click= self.btn_select_on_click))
-        self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = "X", on_click= self.btn_back_on_click))
+        self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
+
+        self.btn_heroes_on_click()
 
     def btn_back_on_click(self):
         self.screen_manager.change_screen("game_select", 20)
