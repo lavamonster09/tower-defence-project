@@ -2,6 +2,7 @@ from misc.ui import *
 from misc.theme import *
 from misc.constants import *
 from screens.screen import Screen
+import game.level as level
 import pygame
 from pygame import gfxdraw
 
@@ -11,10 +12,14 @@ class Game(Screen):
         self.back_color = DARK_BACKGROUND_COLOR
         self.game_surface = pygame.surface.Surface((SCREEN_WIDTH / 1.6, SCREEN_HEIGHT / 1.6))
         self.game_surface.set_colorkey((0,0,0))
+        self.generator = level.Generator((0, SCREEN_WIDTH / 1.6), (0, SCREEN_HEIGHT / 1.6))
+        self.points = self.generator.generate_random_path(6)
         
     def draw(self):
         self.game_surface.fill((0,0,0))
         super().draw()
+        for i in range(len(self.points)):
+            pygame.draw.circle(self.game_surface,(255,255,255),self.points[i],2)
         for x in range(25):
             for y in range(14):
                 pygame.draw.rect(self.game_surface, (255,255,255), (x*32,y*32,32, 32), 1)
