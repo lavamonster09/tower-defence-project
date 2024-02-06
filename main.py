@@ -1,6 +1,7 @@
 from misc.constants import * 
 from screens.screen_manager import Screen_manager
 import pygame 
+import sys
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -24,6 +25,7 @@ class App:
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                sys.exit()
                 pygame.quit()
             if event.type == pygame.USEREVENT:
                 if event.name == "update_resolution":

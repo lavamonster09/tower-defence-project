@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\game",
+    "\\misc",
+    "\\screens"
   ],
+  "SelectedNode": "\\misc\\ui.py",
   "PreviewInSolutionExplorer": false
 }

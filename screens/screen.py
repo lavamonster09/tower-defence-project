@@ -1,6 +1,5 @@
 import pygame
 from misc.ui import *
-from misc.animator import Amimation
 
 class Screen():
     def __init__(self, screen_manager) -> None:

@@ -1,4 +1,5 @@
 import screens
+from game.game import Game
 
 class Screen_manager():
     def __init__(self, app) -> None:
@@ -12,8 +13,10 @@ class Screen_manager():
         self.screens = {
             "menu": screens.Menu(self),
             "game_select": screens.Game_select(self),
+            "game": Game(self),
             "settings": screens.Settings(self),
-            "heroes": screens.Heroes(self)
+            "heroes": screens.Heroes(self),
+            "upgrades": screens.Upgrades(self)
         }
     
     def update(self):
