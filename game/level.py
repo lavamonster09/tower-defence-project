@@ -8,7 +8,7 @@ class Generator():
     def __init__(self, screen_size):
         self.range_x = (0, screen_size[0])
         self.range_y = (0, screen_size[1])
-        self.direction = pygame.Vector2(1,0)
+        self.direction = pygame.Vector2(0,1)
 
         self.points = []
         self.obsticles = []
@@ -23,6 +23,11 @@ class Generator():
         for i in range(no_turns):
             current_point = self.get_point(current_point)
             points.append(current_point)
+
+        final_point = self.direction.rotate(90) * pygame.Vector2(self.range_y[0], self.range_y[1])
+        print(self.direction)
+        print(type(final_point))
+        points.append(final_point.x, final_point.y)
 
         return points
 
@@ -62,3 +67,5 @@ class Level():
         surface.fill((0,0,0))
         for point in self.points:
             pygame.draw.circle(surface, (255,255,255), point, 2)
+        for i in range(len(self.points) - 1):
+            pygame.draw.line(surface, (255,255,255), self.points[i], self.points[i+1], 3)

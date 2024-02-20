@@ -146,9 +146,12 @@ class Slider():
         self.screen = pygame.display.get_surface()
         
     def draw(self):
+        gfxdraw.filled_circle(self.screen,int(self.pos.x),int(self.pos.y), self.thickness // 2, self.line_color)
+        gfxdraw.filled_circle(self.screen,int(self.pos.x + self.length),int(self.pos.y), self.thickness // 2, self.line_color)
         pygame.draw.line(self.screen, self.line_color, self.pos, self.pos + pygame.Vector2(self.length,0), self.thickness)
         gfxdraw.aacircle(self.screen,int(self.pos.x + self.length * (self.value - self.min_val)/(self.max_val - self.min_val)),int(self.pos.y), self.dot_size, self.dot_color)
         gfxdraw.filled_circle(self.screen,int(self.pos.x + self.length * (self.value - self.min_val)/(self.max_val - self.min_val)),int(self.pos.y), self.dot_size, self.dot_color)
+        
 
     def update(self):
         #check if mouse is hovering over slider

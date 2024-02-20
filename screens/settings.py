@@ -27,7 +27,7 @@ class Settings(Screen):
         display_width, display_height = self.items["dropdown"].get_selected_option().split(" x ")
         display_width, display_height = int(display_width), int(display_height)
         if [display_width, display_height] != [pygame.display.Info().current_w, pygame.display.Info().current_h]:
-            pygame.event.post(pygame.event.Event(pygame.USEREVENT, {"name": "update_resolution", "resolution": [display_width, display_height]}))
+            pygame.event.post(pygame.event.Event(RESOLUTION_UPDATE, {"resolution": [display_width, display_height]}))
         self.items["slider_1_label"].text = str(f'{int(self.items["Slider_1"].value)} %')
         
     def btn_back_on_click(self):

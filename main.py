@@ -27,10 +27,9 @@ class App:
             if event.type == pygame.QUIT:
                 sys.exit()
                 pygame.quit()
-            if event.type == pygame.USEREVENT:
-                if event.name == "update_resolution":
-                    self.display_width, self.display_height = event.resolution
-                    self.display = pygame.display.set_mode((self.display_width, self.display_height))
+            if event.type == RESOLUTION_UPDATE:
+                self.display_width, self.display_height = event.resolution
+                self.display = pygame.display.set_mode((self.display_width, self.display_height))
     
     def update(self):
         self.screen_manager.update()
