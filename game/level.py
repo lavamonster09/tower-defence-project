@@ -24,10 +24,11 @@ class Generator():
             current_point = self.get_point(current_point)
             points.append(current_point)
 
-        final_point = self.direction.rotate(90) * pygame.Vector2(self.range_y[0], self.range_y[1])
-        print(self.direction)
-        print(type(final_point))
-        points.append(final_point.x, final_point.y)
+        final_point = self.direction.rotate(90)
+        final_point.x = points[-1].x + final_point.x * (self.range_x[1] - points[-1].x)
+        final_point.y = points[-1].y + final_point.y * (self.range_y[1] - points[-1].y)
+        print(final_point)
+        points.append(final_point)
 
         return points
 
