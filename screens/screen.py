@@ -10,7 +10,8 @@ class Screen():
         self.back_color = (0,0,0)
     
     def draw(self):
-        self.screen.fill(self.back_color)
+        if self.back_color != (0,0,0):
+            self.screen.fill(self.back_color)
         for item in self.items:
             self.items[item].draw()
 
