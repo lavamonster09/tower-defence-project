@@ -29,6 +29,7 @@ class Button():
         # button specific needed variables
         self.font = pygame.font.Font(MAIN_FONT, int(self.rect.height/2))
         self.icon_font = pygame.font.Font(ICON_FONT, int(self.rect.height/2))
+        self.icon_font.set_bold(True)
         self.hovering = False
         if pygame.mouse.get_pressed()[0]:
             self.lastpressed = True

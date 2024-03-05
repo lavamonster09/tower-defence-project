@@ -1,4 +1,4 @@
-MAIN_FONT = "assets/fonts/RobotoSlab-VariableFont_wght.ttf"
+MAIN_FONT = "assets/fonts/ConcertOne-Regular.ttf"
 ICON_FONT = "assets/fonts/MaterialIcons-Regular.ttf"
 
 
