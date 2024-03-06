@@ -19,8 +19,11 @@ class Generator():
         return Level(self.points, self.obsticles)
 
     def generate_path(self, no_turns):
-        self.direction = pygame.Vector2(0,1) 
-        points = [pygame.Vector2(self.range_x[0] - PATH_SIZE, random.uniform(self.range_y[0], self.range_y[1]))]
+        self.direction = random.choice([pygame.Vector2(0,1), pygame.Vector2(1,0)])
+        if self.direction.x == 0:
+            points = [pygame.Vector2(self.range_x[0] - PATH_SIZE, random.uniform(self.range_y[0], self.range_y[1]))]
+        else:
+            points = [pygame.Vector2(random.uniform(self.range_x[0], self.range_x[1]), self.range_y[0] - PATH_SIZE)]
         current_point = points[-1]
         for _ in range(no_turns):
             current_point = self.get_point(current_point, points)
@@ -121,8 +124,9 @@ class Level():
     def draw(self, surface):
         surface.fill(self.back_color)
         for point in self.points:
-            pygame.draw.circle(surface, (255,255,255), point, PATH_SIZE / 2 - 1)
+            pygame.draw.circle(surface, (255,255,255), point, PATH_SIZE // 2)
         for i in range(len(self.points) - 1):
-            pygame.draw.line(surface, (255,255,255), self.points[i], self.points[i+1], PATH_SIZE - 1)
+            pygame.draw.line(surface, (255,255,255), self.points[i], self.points[i+1], PATH_SIZE + 1)
         for obsticle in self.obsticles:
-            pygame.draw.rect(surface, (255,255,255), obsticle, border_radius=5)
+            pygame.draw.rect(surface, (200,200,200), obsticle, border_radius= PATH_SIZE // 2)
+        pygame.draw.circle(surface, (200,200,200), self.points[0], PATH_SIZE / 2 - 1)
