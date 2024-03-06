@@ -19,6 +19,7 @@ class Generator():
         return Level(self.points, self.obsticles)
 
     def generate_path(self, no_turns):
+        self.direction = pygame.Vector2(0,1) 
         points = [pygame.Vector2(self.range_x[0] - PATH_SIZE, random.uniform(self.range_y[0], self.range_y[1]))]
         current_point = points[-1]
         for _ in range(no_turns):
@@ -50,16 +51,15 @@ class Generator():
         final_point.y = current_point.y + direction.y * self.range_y[1] // 2 * random.uniform(0.5,1.5)
 
         if not in_range(final_point.x, self.range_x) or not in_range(final_point.y, self.range_y):
-            final_point = self.get_point(current_point, points)
+            return self.get_point(current_point, points)
            
         for point in points:
-        
             if direction.x == 0:
                 if in_range(final_point.y, [point.y - 20, point.y + 20]):
-                    final_point = self.get_point(current_point, points)
+                    return self.get_point(current_point, points)
             else:
                 if in_range(final_point.x, [point.x - 20, point.x + 20]):
-                    final_point = self.get_point(current_point, points)
+                    return self.get_point(current_point, points)
 
         self.direction = direction
 
@@ -104,7 +104,7 @@ class Level_manager():
     def __init__(self, scale):
         self.generator = Generator([SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale])
         self.game_surf = pygame.surface.Surface((SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale))
-        self.current_level = self.generator.generate_level(6,10)
+        self.current_level = self.generator.generate_level(5,10)
 
     def change_level(self, no_turns, no_obsticles):
         self.current_level = self.generator.generate_level(no_turns, no_obsticles)
