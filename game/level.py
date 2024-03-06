@@ -34,13 +34,21 @@ class Generator():
 
         final_point = direction.rotate(90)
 
-        if final_point.x > 0 or final_point.y > 0:
-            final_point.x = int(points[-1].x + final_point.x * (self.range_x[1] + PATH_SIZE - points[-1].x))
-            final_point.y = int(points[-1].y + final_point.y * (self.range_y[1] + PATH_SIZE - points[-1].y))
+        if final_point.x == 0:
+            if final_point.y > 0:
+                final_point.x = points[-1].x
+                final_point.y = self.range_y[1] + PATH_SIZE
+            if final_point.y < 0:
+                final_point.x = points[-1].x
+                final_point.y = self.range_y[0] - PATH_SIZE
         else:
-            final_point.y = int(points[-1].x + final_point.x * points[-1].x)
-            final_point.y = int(points[-1].y + final_point.y * points[-1].y
-)
+            if final_point.x > 0:
+                final_point.x = self.range_x[1] + PATH_SIZE
+                final_point.y = points[-1].y
+            if final_point.x < 0:
+                final_point.x = self.range_x[0] - PATH_SIZE
+                final_point.y = points[-1].y
+
         points.append(final_point)
 
         return points
