@@ -177,6 +177,7 @@ class Slider():
                 self.value = self.min_val
             elif pygame.mouse.get_pos()[0] > self.pos.x + self.length:
                 self.value = self.max_val
+    
 
 class Dropdown():
     def __init__(self,theme:Theme, rect = (0,0,0,0), options = [], positioning = "absolute"):

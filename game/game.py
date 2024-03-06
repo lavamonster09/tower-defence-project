@@ -23,7 +23,7 @@ class Game(Screen):
         self.add_item("sld_maxlinelen", Slider(SLIDER_DARK, pos = (25, 175), length = 100, min_val = 300, max_val = 1200))
         self.add_item("lbl_maxlinelen", Label(LABEL_DARK, rect = (75, 200, 125, 50), text = "Max line len: 100", font_size=20))
         self.max_line_len = 300
-
+        
         self.level_manager = level.Level_manager(1.6)
     
     def draw(self):
