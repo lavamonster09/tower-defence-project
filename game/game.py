@@ -2,11 +2,15 @@ from misc.ui import *
 from misc.theme import *
 from misc.constants import *
 from screens.screen import Screen
+from game.ecs.ecs import *
 import game.level as level
 import pygame
 
 class Game(Screen):
     def __init__(self, screen_manager):
+        self.ecs = Ecs()
+
+        print(self.test_entity.components)
         super().__init__(screen_manager)
 
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
@@ -29,10 +33,12 @@ class Game(Screen):
     def draw(self):
         self.level_manager.draw()
         self.screen.blit(pygame.transform.scale(self.level_manager.game_surf,( SCREEN_WIDTH, SCREEN_HEIGHT)), (0,0))
+        self.test_entity.draw()
         super().draw()
     
     def update(self):
         super().update()
+        self.test_entity.update()
         if int(self.items["sld_noturns"].value) != self.no_turns:
             self.items["lbl_noturns"].text = f"No. turns: {int(self.items['sld_noturns'].value)}"
             self.no_turns = int(self.items["sld_noturns"].value)
