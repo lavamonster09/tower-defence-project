@@ -3,7 +3,7 @@ import random
 from misc.constants import *
 from misc.util import *
 
-class Generator():
+class Generator:
     def __init__(self, screen_size):
         self.range_x = (0 + PATH_SIZE, screen_size[0] - PATH_SIZE)
         self.range_y = (0 + PATH_SIZE, screen_size[1] - PATH_SIZE)
@@ -109,7 +109,7 @@ class Generator():
 
     
 
-class Level_manager():
+class LevelManager:
     def __init__(self, scale):
         self.generator = Generator([SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale])
         self.game_surf = pygame.surface.Surface((SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale))
@@ -120,6 +120,9 @@ class Level_manager():
     
     def draw(self):
         self.current_level.draw(self.game_surf)
+    
+    def update(self):
+        pass
 
 class Level():
     def __init__(self, points, obsticles) -> None:

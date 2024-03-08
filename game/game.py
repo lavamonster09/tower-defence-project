@@ -2,19 +2,18 @@ from misc.ui import *
 from misc.theme import *
 from misc.constants import *
 from screens.screen import Screen
-from game.ecs.ecs import *
+from game.entities.enemy import Enemy
+import game.entities.entity as entity
 import game.level as level
 import pygame
 
 class Game(Screen):
     def __init__(self, screen_manager):
-        self.ecs = Ecs()
-
-        print(self.test_entity.components)
         super().__init__(screen_manager)
 
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
         self.add_item("btn_generate", Button(BUTTON_DARK_NO_FILL , rect = (75,25,50,50), text = get_icon_hex("replay"), on_click= self.btn_generate_on_click))
+        self.add_item("btn_spawn_enemy", Button(BUTTON_DARK_NO_FILL , rect = (125,25,50,50), text = "+", on_click= self.btn_spawn_enemy_on_click))
 
         self.add_item("sld_noturns", Slider(SLIDER_DARK, pos = (25, 75), length = 100, min_val = 1, max_val = 15))
         self.add_item("lbl_noturns", Label(LABEL_DARK, rect = (75, 100, 125, 50), text = "No. turns: 1", font_size=20))
@@ -28,32 +27,55 @@ class Game(Screen):
         self.add_item("lbl_maxlinelen", Label(LABEL_DARK, rect = (75, 200, 125, 50), text = "Max line len: 100", font_size=20))
         self.max_line_len = 300
         
-        self.level_manager = level.Level_manager(1.6)
+        self.game_manager = GameStateManager()
     
     def draw(self):
-        self.level_manager.draw()
-        self.screen.blit(pygame.transform.scale(self.level_manager.game_surf,( SCREEN_WIDTH, SCREEN_HEIGHT)), (0,0))
-        self.test_entity.draw()
+        self.game_manager.draw(self.screen)
         super().draw()
     
     def update(self):
+        self.game_manager.update()
         super().update()
-        self.test_entity.update()
         if int(self.items["sld_noturns"].value) != self.no_turns:
             self.items["lbl_noturns"].text = f"No. turns: {int(self.items['sld_noturns'].value)}"
             self.no_turns = int(self.items["sld_noturns"].value)
-            self.level_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+            self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
         if int(self.items["sld_noboxes"].value) != self.no_boxes:
             self.items["lbl_noboxes"].text = f"No. boxes: {int(self.items['sld_noboxes'].value)}"
             self.no_boxes = int(self.items["sld_noboxes"].value)
-            self.level_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+            self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
         if int(self.items["sld_maxlinelen"].value) != self.max_line_len:
             self.items["lbl_maxlinelen"].text = f"Max line len: {int(self.items['sld_maxlinelen'].value)}"
             self.max_line_len = int(self.items["sld_maxlinelen"].value)
-            self.level_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+            self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
     
     def btn_back_on_click(self):
         self.screen_manager.change_screen(self.screen_manager.before_last_screen, 20)
         
     def btn_generate_on_click(self):
-        self.level_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+        self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+        self.game_manager.entity_manager.remove_group("enemy")
+    
+    def btn_spawn_enemy_on_click(self):
+        self.game_manager.spawn_enemy()
+
+class GameStateManager:
+    def __init__(self):
+        self.level_manager = level.LevelManager(1.6)
+        self.entity_manager = entity.EntityManager()
+    
+    def update(self):
+        self.level_manager.update()
+        self.entity_manager.update()
+    
+    def draw(self, screen):
+        self.level_manager.draw()
+        self.entity_manager.draw(self.level_manager.game_surf)
+        screen.blit(pygame.transform.scale(self.level_manager.game_surf,( SCREEN_WIDTH, SCREEN_HEIGHT)), (0,0))
+    
+    def change_level(self, no_turns, no_boxes, max_line_len):
+        self.level_manager.change_level(no_turns, no_boxes, max_line_len)
+
+    def spawn_enemy(self):
+        self.entity_manager.add_entity(Enemy(self.level_manager.current_level.points, pygame.image.load(r"assets\images\test1_small.png").convert(), speed= 10), "enemy")
+    
