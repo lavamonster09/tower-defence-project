@@ -1,15 +1,25 @@
 from game.entities.entity import *
+from misc.constants import *
 import pygame
 import math
 
 class Player(Entity):
-    def __init__(self, sprite = pygame.surface.Surface((0,0)), speed = 0.75) -> None:
+    def __init__(self,entity_manager, sprite = pygame.surface.Surface((0,0)), speed = 0.75) -> None:
         super().__init__(position = pygame.Vector2(0,0), sprite = sprite)
         self.speed = speed
         self.velocity = pygame.Vector2(0,0)
+        self.entity_manager = entity_manager
     
     def update(self):
         super().update()
+        self.move()
+        for tower in self.entity_manager.entities["tower"]:
+            if (tower.pos - self.pos).magnitude() <= 75:
+                tower.player_inrange = True
+            else:
+                tower.player_inrange = False
+
+    def move(self):
         keys = pygame.key.get_pressed()
         direction = pygame.Vector2(0,0)
         if keys[pygame.K_w]:
@@ -34,7 +44,7 @@ class Player(Entity):
         target_surface.blit(self.rotate_to_mouse_location(), self.rect)
     
     def rotate_to_mouse_location(self):
-        mouse_pos = pygame.Vector2(pygame.mouse.get_pos()) / 1.6
+        mouse_pos = pygame.Vector2(pygame.mouse.get_pos()) / SCREEN_SCALE
         o = mouse_pos.y - self.pos.y 
         a = mouse_pos.x - self.pos.x
         deg = math.degrees(math.atan((o)/(a))) - 90

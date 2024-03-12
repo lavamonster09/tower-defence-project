@@ -16,7 +16,9 @@ class Entity:
 
 class EntityManager:
     def __init__(self) -> None:
-        self.entities = {}
+        self.entities = {
+            "tower": []
+            }
 
     def add_entity(self, entity, group):
         if group in self.entities:
