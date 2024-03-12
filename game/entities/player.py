@@ -31,5 +31,18 @@ class Player(Entity):
         self.pos += self.velocity
         
     def draw(self, target_surface):
-        print(self.pos, pygame.Vector2(pygame.mouse.get_pos()) / 1.6)
-        target_surface.blit(self.sprite, self.rect)
+        target_surface.blit(self.rotate_to_mouse_location(), self.rect)
+    
+    def rotate_to_mouse_location(self):
+        mouse_pos = pygame.Vector2(pygame.mouse.get_pos()) / 1.6
+        o = mouse_pos.y - self.pos.y 
+        a = mouse_pos.x - self.pos.x
+        deg = math.degrees(math.atan((o)/(a))) - 90
+        if mouse_pos.x < self.pos.x:
+            temp_sprite = pygame.transform.rotate(self.sprite, -deg)
+        else:
+            temp_sprite = pygame.transform.rotate(self.sprite, 180 - deg)
+        self.rect = temp_sprite.get_rect()
+        temp_sprite.set_colorkey((0,0,0))
+        self.rect.center = self.pos
+        return temp_sprite
