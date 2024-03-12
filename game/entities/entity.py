@@ -6,6 +6,7 @@ class Entity:
         self.rect.center = position
         self.pos = position
         self.sprite = sprite
+        self.alive = True
     
     def draw(self, target_surface):
         target_surface.blit(self.sprite, self.rect)
@@ -35,6 +36,8 @@ class EntityManager:
         for group in self.entities:
             for entity in self.entities[group]:
                 entity.update()
+                if not entity.alive:
+                    self.remove_entity(entity, group)
 
     def draw(self, target_surface):
         for group in self.entities:

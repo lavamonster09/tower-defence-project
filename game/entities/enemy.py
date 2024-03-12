@@ -14,7 +14,7 @@ class Enemy(Entity):
             else:
                 self.pos = self.pos.move_towards(self.path[self.current_point], self.speed)
         else:
-            self.current_point = 0
+            self.alive = False
         
         super().update()
     

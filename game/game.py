@@ -3,6 +3,7 @@ from misc.theme import *
 from misc.constants import *
 from screens.screen import Screen
 from game.entities.enemy import Enemy
+from game.entities.player import Player
 import game.entities.entity as entity
 import game.level as level
 import pygame
@@ -28,6 +29,8 @@ class Game(Screen):
         self.max_line_len = 300
         
         self.game_manager = GameStateManager()
+        
+        self.game_manager.entity_manager.add_entity(Player(pygame.image.load(r"assets\images\enemy.png").convert()), "player")
     
     def draw(self):
         self.game_manager.draw(self.screen)
@@ -77,5 +80,7 @@ class GameStateManager:
         self.level_manager.change_level(no_turns, no_boxes, max_line_len)
 
     def spawn_enemy(self):
-        self.entity_manager.add_entity(Enemy(self.level_manager.current_level.points, pygame.image.load(r"assets\images\test1_small.png").convert(), speed= 10), "enemy")
+        img = pygame.image.load(r"assets\images\enemy.png").convert()
+        img.set_colorkey((0,0,0))
+        self.entity_manager.add_entity(Enemy(self.level_manager.current_level.points, img, speed= 1), "enemy")
     
