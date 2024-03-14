@@ -31,7 +31,7 @@ class Game(Screen):
         
         self.game_manager = GameStateManager()
         
-        self.game_manager.entity_manager.add_entity(Player(self.game_manager.entity_manager, pygame.image.load(r"assets\images\enemy.png").convert()), "player")
+        self.game_manager.entity_manager.add_entity(Player(self.game_manager.entity_manager, pygame.image.load(r"assets\images\player.png").convert()), "player")
     
     def draw(self):
         self.game_manager.draw(self.screen)
@@ -62,7 +62,7 @@ class Game(Screen):
     
     def btn_spawn_enemy_on_click(self):
         self.game_manager.spawn_enemy()
-        img = pygame.image.load(r"assets\images\enemy.png").convert()
+        img = pygame.image.load(r"assets\images\tower.png").convert()
         img.set_colorkey((0,0,0))
         self.game_manager.entity_manager.add_entity(Tower(pygame.Vector2(100,100), img), "tower")
 

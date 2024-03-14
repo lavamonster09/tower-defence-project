@@ -1,5 +1,6 @@
 from game.entities.entity import *
 from misc.constants import *
+from misc.util import *
 import pygame
 import math
 
@@ -9,15 +10,48 @@ class Player(Entity):
         self.speed = speed
         self.velocity = pygame.Vector2(0,0)
         self.entity_manager = entity_manager
+        self.m_last_pressed = pygame.mouse.get_pressed()
+        self.k_last_pressed = pygame.key.get_pressed()
+        self.holding = None
+        self.target_angle = 0
+        self.angle = 0
     
     def update(self):
         super().update()
+        self.target_angle = self.get_rotation()
+        self.angle += (self.target_angle - self.angle) / 10
+        m_pressed = pygame.mouse.get_pressed()
+        k_pressed = pygame.key.get_pressed()
         self.move()
         for tower in self.entity_manager.entities["tower"]:
-            if (tower.pos - self.pos).magnitude() <= 75:
-                tower.player_inrange = True
+            x_inrange = in_range(pygame.mouse.get_pos()[0] / SCREEN_SCALE, [tower.rect.x, tower.rect.x + tower.rect.width])
+            y_inrange = in_range(pygame.mouse.get_pos()[1] / SCREEN_SCALE, [tower.rect.y, tower.rect.y + tower.rect.height])
+            if tower != self.holding:
+                if (tower.pos - self.pos).magnitude() <= 75:
+                    tower.player_inrange = True
+                    if x_inrange and y_inrange:
+                        tower.hovered = True
+                        if m_pressed[0] == True and self.m_last_pressed[0] == False:
+                            self.m_last_pressed = m_pressed
+                            self.holding = tower
+                else:
+                    tower.player_inrange = False
+                if x_inrange and y_inrange:
+                    tower.hovered = True
+                else:
+                    tower.hovered = False
             else:
                 tower.player_inrange = False
+                tower.hovered = False
+                if m_pressed[0] == True and self.m_last_pressed[0] == False:
+                    self.holding = None
+                if m_pressed[2] == True and self.m_last_pressed[2] == False:
+                    self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle)) + self.velocity * 1.5
+                    self.holding = None
+        self.m_last_pressed = m_pressed
+        self.k_last_pressed = k_pressed
+        if self.holding != None:
+            self.holding.pos = self.pos + pygame.Vector2(0,-32).rotate(-self.angle)
 
     def move(self):
         keys = pygame.key.get_pressed()
@@ -41,18 +75,20 @@ class Player(Entity):
         self.pos += self.velocity
         
     def draw(self, target_surface):
-        target_surface.blit(self.rotate_to_mouse_location(), self.rect)
+        temp_sprite = pygame.transform.rotate(self.sprite, self.target_angle)
+        self.rect = temp_sprite.get_rect()
+        temp_sprite.set_colorkey((0,0,0))
+        self.rect.center = self.pos
+        temp_sprite
+        target_surface.blit(temp_sprite, self.rect)
     
-    def rotate_to_mouse_location(self):
+    def get_rotation(self):
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos()) / SCREEN_SCALE
         o = mouse_pos.y - self.pos.y 
         a = mouse_pos.x - self.pos.x
         deg = math.degrees(math.atan((o)/(a))) - 90
         if mouse_pos.x < self.pos.x:
-            temp_sprite = pygame.transform.rotate(self.sprite, -deg)
+            angle = -deg
         else:
-            temp_sprite = pygame.transform.rotate(self.sprite, 180 - deg)
-        self.rect = temp_sprite.get_rect()
-        temp_sprite.set_colorkey((0,0,0))
-        self.rect.center = self.pos
-        return temp_sprite
+            angle = 180 - deg
+        return angle

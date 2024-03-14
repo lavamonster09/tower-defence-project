@@ -12,16 +12,14 @@ class Tower(Entity):
         self.rotation = 0
         self.target = None
         self.hovered = False
+        self.velocity = pygame.Vector2(0,0)
         self.player_inrange = False
 
     def update(self):
+        self.pos += self.velocity
+        self.velocity /= 1.05
         super().update()
-        x_inrange = in_range(pygame.mouse.get_pos()[0] / SCREEN_SCALE, [self.rect.x, self.rect.x + self.rect.width])
-        y_inrange = in_range(pygame.mouse.get_pos()[1] / SCREEN_SCALE, [self.rect.y, self.rect.y + self.rect.height])
-        if x_inrange and y_inrange:
-            self.hovered = True
-        else:
-            self.hovered = False
+        
 
 
     def draw(self, target_surface):
