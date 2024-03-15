@@ -19,7 +19,18 @@ class Player(Entity):
     def update(self):
         super().update()
         self.target_angle = self.get_rotation()
-        self.angle += (self.target_angle - self.angle) / 10
+        
+        if self.angle > 360 or self.angle < 0:
+            self.angle %= 360
+
+        if (self.target_angle + 360 - self.angle) / 10 < (self.angle - self.target_angle) / 10:
+            self.angle += abs((self.target_angle + 360 - self.angle) // 10)
+        elif (self.target_angle - self.angle) / 10 > (self.angle + 360 - self.target_angle) / 10:
+            self.angle -= abs((self.angle + 360 - self.target_angle) // 10)
+        else:
+            self.angle -= (self.angle - self.target_angle) // 10
+        
+        
         m_pressed = pygame.mouse.get_pressed()
         k_pressed = pygame.key.get_pressed()
         self.move()
