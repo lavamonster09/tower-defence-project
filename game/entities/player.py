@@ -5,11 +5,10 @@ import pygame
 import math
 
 class Player(Entity):
-    def __init__(self,entity_manager, sprite = pygame.surface.Surface((0,0)), speed = 0.75) -> None:
-        super().__init__(position = pygame.Vector2(0,0), sprite = sprite)
+    def __init__(self,entity_manager, sprite = pygame.surface.Surface((0,0)), speed = 1.4) -> None:
+        super().__init__(entity_manager, position = pygame.Vector2(0,0), sprite = sprite)
         self.speed = speed
         self.velocity = pygame.Vector2(0,0)
-        self.entity_manager = entity_manager
         self.m_last_pressed = pygame.mouse.get_pressed()
         self.k_last_pressed = pygame.key.get_pressed()
         self.holding = None
@@ -55,14 +54,18 @@ class Player(Entity):
                 tower.player_inrange = False
                 tower.hovered = False
                 if m_pressed[0] == True and self.m_last_pressed[0] == False:
+                    self.holding.held = False
                     self.holding = None
                 if m_pressed[2] == True and self.m_last_pressed[2] == False:
+                    self.holding.held = False
                     self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle)) + self.velocity * 1.5
                     self.holding = None
         self.m_last_pressed = m_pressed
         self.k_last_pressed = k_pressed
         if self.holding != None:
-            self.holding.pos = self.pos + pygame.Vector2(0,-32).rotate(-self.angle)
+            self.holding.held = True
+            self.holding.pos = self.pos + pygame.Vector2(0,-64).rotate(-self.angle)
+        
 
     def move(self):
         keys = pygame.key.get_pressed()
@@ -90,7 +93,6 @@ class Player(Entity):
         self.rect = temp_sprite.get_rect()
         temp_sprite.set_colorkey((0,0,0))
         self.rect.center = self.pos
-        temp_sprite
         target_surface.blit(temp_sprite, self.rect)
     
     def get_rotation(self):

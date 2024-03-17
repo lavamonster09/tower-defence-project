@@ -15,7 +15,8 @@ class Game(Screen):
 
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
         self.add_item("btn_generate", Button(BUTTON_DARK_NO_FILL , rect = (75,25,50,50), text = get_icon_hex("replay"), on_click= self.btn_generate_on_click))
-        self.add_item("btn_spawn_enemy", Button(BUTTON_DARK_NO_FILL , rect = (125,25,50,50), text = "+", on_click= self.btn_spawn_enemy_on_click))
+        self.add_item("btn_spawn_enemy", Button(BUTTON_DARK_NO_FILL , rect = (125,25,50,50), text = "E", on_click= self.btn_spawn_enemy_on_click))
+        self.add_item("btn_spawn_tower", Button(BUTTON_DARK_NO_FILL , rect = (175,25,50,50), text = "T", on_click= self.btn_spawn_tower_on_click))
 
         self.add_item("sld_noturns", Slider(SLIDER_DARK, pos = (25, 75), length = 100, min_val = 1, max_val = 15))
         self.add_item("lbl_noturns", Label(LABEL_DARK, rect = (75, 100, 125, 50), text = "No. turns: 1", font_size=20))
@@ -62,10 +63,12 @@ class Game(Screen):
     
     def btn_spawn_enemy_on_click(self):
         self.game_manager.spawn_enemy()
+        
+    def btn_spawn_tower_on_click(self):
         img = pygame.image.load(r"assets\images\tower.png").convert()
         img.set_colorkey((0,0,0))
-        self.game_manager.entity_manager.add_entity(Tower(pygame.Vector2(100,100), img), "tower")
-
+        self.game_manager.entity_manager.add_entity(Tower(self.game_manager.entity_manager, pygame.Vector2(100,100), img), "tower")
+        
 class GameStateManager:
     def __init__(self):
         self.level_manager = level.LevelManager(SCREEN_SCALE)
@@ -86,5 +89,5 @@ class GameStateManager:
     def spawn_enemy(self):
         img = pygame.image.load(r"assets\images\enemy.png").convert()
         img.set_colorkey((0,0,0))
-        self.entity_manager.add_entity(Enemy(self.level_manager.current_level.points, img, speed= 1), "enemy")
+        self.entity_manager.add_entity(Enemy(self.entity_manager, self.level_manager.current_level.points, img, speed= 1), "enemy")
     

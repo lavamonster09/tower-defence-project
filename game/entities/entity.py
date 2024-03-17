@@ -1,11 +1,12 @@
 import pygame
 
 class Entity:
-    def __init__(self, position = pygame.Vector2(0,0), sprite = pygame.Surface((0,0))) -> None:
-        self.rect = pygame.Rect(0, 0, sprite.get_width(), sprite.get_height())
+    def __init__(self,entity_manager , position = pygame.Vector2(0,0), sprite = pygame.Surface((0,0)), ) -> None:
+        self.entity_manager = entity_manager
+        self.sprite = pygame.transform.scale2x(sprite)
+        self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
         self.rect.center = position
         self.pos = position
-        self.sprite = sprite
         self.alive = True
     
     def draw(self, target_surface):
