@@ -5,8 +5,8 @@ import pygame
 import math
 
 class Player(Entity):
-    def __init__(self,entity_manager, sprite = pygame.surface.Surface((0,0)), speed = 1.4) -> None:
-        super().__init__(entity_manager, position = pygame.Vector2(0,0), sprite = sprite)
+    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), speed = 1.4) -> None:
+        super().__init__(game_manager, position = pygame.Vector2(0,0), sprite = sprite)
         self.speed = speed
         self.velocity = pygame.Vector2(0,0)
         self.m_last_pressed = pygame.mouse.get_pressed()
@@ -42,6 +42,7 @@ class Player(Entity):
                     if x_inrange and y_inrange:
                         tower.hovered = True
                         if m_pressed[0] == True and self.m_last_pressed[0] == False:
+                            self.sound_manager.play_sound("pickup")
                             self.m_last_pressed = m_pressed
                             self.holding = tower
                 else:
@@ -53,16 +54,20 @@ class Player(Entity):
             else:
                 tower.player_inrange = False
                 tower.hovered = False
-                if m_pressed[0] == True and self.m_last_pressed[0] == False:
+                if m_pressed[0] == True and self.m_last_pressed[0] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
+                    self.sound_manager.play_sound("place")
                     self.holding.held = False
                     self.holding = None
-                if m_pressed[2] == True and self.m_last_pressed[2] == False:
+                if m_pressed[2] == True and self.m_last_pressed[2] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
+                    self.sound_manager.play_sound("throw")
                     self.holding.held = False
-                    self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle)) + self.velocity * 1.5
+                    self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle))
                     self.holding = None
         self.m_last_pressed = m_pressed
         self.k_last_pressed = k_pressed
         if self.holding != None:
+            if k_pressed[pygame.K_r]:
+                self.holding.rotation += 5
             self.holding.held = True
             self.holding.pos = self.pos + pygame.Vector2(0,-64).rotate(-self.angle)
         
@@ -86,7 +91,10 @@ class Player(Entity):
          
         
         self.velocity += self.speed * direction
-        self.pos += self.velocity
+        if self.pos.x + self.velocity.x > 0 and self.pos.x + self.velocity.x < SCREEN_WIDTH and self.check_collisions(self.pos + pygame.Vector2(self.velocity.x, 0)) == False:
+            self.pos.x += self.velocity.x
+        if self.pos.y + self.velocity.y > 0 and self.pos.y + self.velocity.y < SCREEN_HEIGHT and self.check_collisions(self.pos + pygame.Vector2(0, self.velocity.y)) == False:
+            self.pos.y += self.velocity.y
         
     def draw(self, target_surface):
         temp_sprite = pygame.transform.rotate(self.sprite, self.target_angle)
@@ -99,9 +107,17 @@ class Player(Entity):
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos()) / SCREEN_SCALE
         o = mouse_pos.y - self.pos.y 
         a = mouse_pos.x - self.pos.x
+        if a == 0:
+            a = 0.0001
         deg = math.degrees(math.atan((o)/(a))) - 90
         if mouse_pos.x < self.pos.x:
             angle = -deg
         else:
             angle = 180 - deg
         return angle
+    
+    def check_collisions(self, postion):
+        for obsticle in self.level_manager.current_level.obsticles:
+            if obsticle.collidepoint(postion):
+                return True
+        return False

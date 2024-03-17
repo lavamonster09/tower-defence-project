@@ -128,13 +128,30 @@ class Level():
     def __init__(self, points, obsticles) -> None:
         self.points = points
         self.obsticles = obsticles
-        self.back_color = (40,40,40)
+        self.back_color = (30, 74, 157)
+        self.background = pygame.surface.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.background.fill(self.back_color)
+        for i in range(200):
+            pygame.draw.circle(self.background, (self.back_color[0] + random.randrange(0,4), self.back_color[1] + random.randrange(0,4), self.back_color[2] + random.randrange(0,4)), (random.randrange(0,SCREEN_WIDTH), random.randrange(0,SCREEN_HEIGHT)), 50)
     
     def draw(self, surface):
-        surface.fill(self.back_color)
-        for point in self.points:
-            pygame.draw.circle(surface, (255,255,255), point, PATH_SIZE // 2)
+        surface.blit(self.background, (0,0))
+        
+        
         for i in range(len(self.points) - 1):
-            pygame.draw.line(surface, (255,255,255), self.points[i], self.points[i+1], PATH_SIZE + 1)
+            pygame.draw.line(surface, (0, 0, 1), self.points[i], self.points[i+1], PATH_SIZE + 9)
+            
+        for point in self.points:
+            pygame.draw.circle(surface, (0, 0, 1), point, PATH_SIZE // 2 + 4)
+            pygame.draw.circle(surface, (190, 214, 253), point, PATH_SIZE // 2)
+        for i in range(len(self.points) - 1):
+            pygame.draw.line(surface, (190, 214, 253), self.points[i], self.points[i+1], PATH_SIZE + 1)
+        
+            
         for obsticle in self.obsticles:
-            pygame.draw.rect(surface, (200,200,200), obsticle, border_radius= PATH_SIZE // 2)
+            temp = obsticle.copy()
+            temp.width = obsticle.width + 8
+            temp.height = obsticle.height + 8
+            temp.center = obsticle.center
+            pygame.draw.rect(surface, (0, 0, 1), temp, border_radius= PATH_SIZE // 2)
+            pygame.draw.rect(surface, (190, 214, 253), obsticle, border_radius= PATH_SIZE // 2)

@@ -1,8 +1,10 @@
 import pygame
 
 class Entity:
-    def __init__(self,entity_manager , position = pygame.Vector2(0,0), sprite = pygame.Surface((0,0)), ) -> None:
-        self.entity_manager = entity_manager
+    def __init__(self,game_manager , position = pygame.Vector2(0,0), sprite = pygame.Surface((0,0)), ) -> None:
+        self.entity_manager = game_manager.entity_manager
+        self.sound_manager = game_manager.sound_manager
+        self.level_manager = game_manager.level_manager
         self.sprite = pygame.transform.scale2x(sprite)
         self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
         self.rect.center = position
@@ -19,7 +21,7 @@ class EntityManager:
     def __init__(self) -> None:
         self.entities = {
             "tower": []
-            }
+        }
 
     def add_entity(self, entity, group):
         if group in self.entities:

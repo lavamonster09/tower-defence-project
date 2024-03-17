@@ -5,6 +5,7 @@ from screens.screen import Screen
 from game.entities.enemy import Enemy
 from game.entities.player import Player
 from game.entities.tower import Tower
+import game.sound as sound
 import game.entities.entity as entity
 import game.level as level
 import pygame
@@ -32,7 +33,7 @@ class Game(Screen):
         
         self.game_manager = GameStateManager()
         
-        self.game_manager.entity_manager.add_entity(Player(self.game_manager.entity_manager, pygame.image.load(r"assets\images\player.png").convert()), "player")
+        self.game_manager.entity_manager.add_entity(Player(self.game_manager, pygame.image.load(r"assets\images\player.png").convert()), "player")
     
     def draw(self):
         self.game_manager.draw(self.screen)
@@ -55,24 +56,29 @@ class Game(Screen):
             self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
     
     def btn_back_on_click(self):
+        self.game_manager.sound_manager.play_sound("click")
         self.screen_manager.change_screen(self.screen_manager.before_last_screen, 20)
         
     def btn_generate_on_click(self):
+        self.game_manager.sound_manager.play_sound("click")
         self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
         self.game_manager.entity_manager.remove_group("enemy")
     
     def btn_spawn_enemy_on_click(self):
+        self.game_manager.sound_manager.play_sound("click")
         self.game_manager.spawn_enemy()
         
     def btn_spawn_tower_on_click(self):
+        self.game_manager.sound_manager.play_sound("click")
         img = pygame.image.load(r"assets\images\tower.png").convert()
         img.set_colorkey((0,0,0))
-        self.game_manager.entity_manager.add_entity(Tower(self.game_manager.entity_manager, pygame.Vector2(100,100), img), "tower")
-        
+        self.game_manager.entity_manager.add_entity(Tower(self.game_manager, pygame.Vector2(100,100), img), "tower")
+
 class GameStateManager:
     def __init__(self):
         self.level_manager = level.LevelManager(SCREEN_SCALE)
         self.entity_manager = entity.EntityManager()
+        self.sound_manager = sound.SoundManager()
     
     def update(self):
         self.level_manager.update()
@@ -89,5 +95,5 @@ class GameStateManager:
     def spawn_enemy(self):
         img = pygame.image.load(r"assets\images\enemy.png").convert()
         img.set_colorkey((0,0,0))
-        self.entity_manager.add_entity(Enemy(self.entity_manager, self.level_manager.current_level.points, img, speed= 1), "enemy")
+        self.entity_manager.add_entity(Enemy(self, self.level_manager.current_level.points, img, speed= 1), "enemy")
     
