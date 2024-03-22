@@ -1,3 +1,9 @@
+# To do 
+# add tower upgrades / upgrade menu 
+# polish towers 
+# screen shake 
+# waves 
+
 from misc.constants import * 
 from screens.screen_manager import Screen_manager
 import pygame 

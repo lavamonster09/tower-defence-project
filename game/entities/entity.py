@@ -10,6 +10,7 @@ class Entity:
         self.rect.center = position
         self.pos = position
         self.alive = True
+        self.holdable = False
     
     def draw(self, target_surface):
         target_surface.blit(self.sprite, self.rect)

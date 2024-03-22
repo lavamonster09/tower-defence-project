@@ -21,11 +21,16 @@ class Screen():
             if self.animations[animation][2] == "rect":
                 updated = self.animations[animation][0].update()
                 if updated: self.animations[animation][1].rect = pygame.Rect(updated)
-        for item in self.items:
-            self.items[item].update()
+        for item in self.items.copy():
+            if item in self.items:
+                self.items[item].update()
             
     def add_item(self,name, item):
         self.items.update({name:item})
+
+    def remove_item(self, name):
+        if name in self.items:
+            self.items.pop(name)
 
     def add_animation(self, name, start, end, length, target, target_type):
         animation = Amimation(start, end, length)

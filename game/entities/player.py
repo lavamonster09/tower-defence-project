@@ -33,36 +33,11 @@ class Player(Entity):
         m_pressed = pygame.mouse.get_pressed()
         k_pressed = pygame.key.get_pressed()
         self.move()
-        for tower in self.entity_manager.entities["tower"]:
-            x_inrange = in_range(pygame.mouse.get_pos()[0] / SCREEN_SCALE, [tower.rect.x, tower.rect.x + tower.rect.width])
-            y_inrange = in_range(pygame.mouse.get_pos()[1] / SCREEN_SCALE, [tower.rect.y, tower.rect.y + tower.rect.height])
-            if tower != self.holding:
-                if (tower.pos - self.pos).magnitude() <= 75:
-                    tower.player_inrange = True
-                    if x_inrange and y_inrange:
-                        tower.hovered = True
-                        if m_pressed[0] == True and self.m_last_pressed[0] == False:
-                            self.sound_manager.play_sound("pickup")
-                            self.m_last_pressed = m_pressed
-                            self.holding = tower
-                else:
-                    tower.player_inrange = False
-                if x_inrange and y_inrange:
-                    tower.hovered = True
-                else:
-                    tower.hovered = False
-            else:
-                tower.player_inrange = False
-                tower.hovered = False
-                if m_pressed[0] == True and self.m_last_pressed[0] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
-                    self.sound_manager.play_sound("place")
-                    self.holding.held = False
-                    self.holding = None
-                if m_pressed[2] == True and self.m_last_pressed[2] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
-                    self.sound_manager.play_sound("throw")
-                    self.holding.held = False
-                    self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle))
-                    self.holding = None
+        for group in self.entity_manager.entities:
+            for entity in self.entity_manager.entities[group]:
+                if entity.holdable:
+                    self.pickup(entity, m_pressed)
+
         self.m_last_pressed = m_pressed
         self.k_last_pressed = k_pressed
         if self.holding != None:
@@ -70,7 +45,37 @@ class Player(Entity):
                 self.holding.rotation += 5
             self.holding.held = True
             self.holding.pos = self.pos + pygame.Vector2(0,-64).rotate(-self.angle)
-        
+       
+    def pickup(self, entity, m_pressed):
+        x_inrange = in_range(pygame.mouse.get_pos()[0] / SCREEN_SCALE, [entity.rect.x, entity.rect.x + entity.rect.width])
+        y_inrange = in_range(pygame.mouse.get_pos()[1] / SCREEN_SCALE, [entity.rect.y, entity.rect.y + entity.rect.height])
+        if entity != self.holding:
+            if (entity.pos - self.pos).magnitude() <= 75:
+                entity.player_inrange = True
+                if x_inrange and y_inrange:
+                    entity.hovered = True
+                    if m_pressed[0] == True and self.m_last_pressed[0] == False:
+                        self.sound_manager.play_sound("pickup")
+                        self.m_last_pressed = m_pressed
+                        self.holding = entity
+            else:
+                entity.player_inrange = False
+            if x_inrange and y_inrange:
+                entity.hovered = True
+            else:
+                entity.hovered = False
+        else:
+            entity.player_inrange = False
+            entity.hovered = False
+            if m_pressed[0] == True and self.m_last_pressed[0] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
+                self.sound_manager.play_sound("place")
+                self.holding.held = False
+                self.holding = None
+            if m_pressed[2] == True and self.m_last_pressed[2] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
+                self.sound_manager.play_sound("throw")
+                self.holding.held = False
+                self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle))
+                self.holding = None
 
     def move(self):
         keys = pygame.key.get_pressed()

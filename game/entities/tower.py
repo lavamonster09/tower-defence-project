@@ -22,6 +22,7 @@ class Tower(Entity):
         self.hovered = False
         self.held = False
         self.player_inrange = False
+        self.holdable = True
 
         # misc
         self.bullet = None
@@ -51,8 +52,8 @@ class Tower(Entity):
         
     def draw(self, target_surface):
         temp_sprite = pygame.transform.rotate(self.sprite, self.rotation)
-        self.rect = temp_sprite.get_rect()
         temp_sprite.set_colorkey((0,0,0))
+        self.rect = temp_sprite.get_rect()
         self.rect.center = self.pos
         target_surface.blit(temp_sprite, self.rect)
         if self.hovered:
