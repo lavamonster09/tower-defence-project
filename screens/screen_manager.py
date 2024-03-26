@@ -1,7 +1,7 @@
 import screens
 from game.game import Game
 
-class Screen_manager():
+class ScreenManager():
     def __init__(self, app) -> None:
         self.app = app
         self.current_screen = "menu"

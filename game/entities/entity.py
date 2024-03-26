@@ -2,6 +2,7 @@ import pygame
 
 class Entity:
     def __init__(self,game_manager , position = pygame.Vector2(0,0), sprite = pygame.Surface((0,0)), ) -> None:
+        self.game_manager = game_manager
         self.entity_manager = game_manager.entity_manager
         self.sound_manager = game_manager.sound_manager
         self.level_manager = game_manager.level_manager

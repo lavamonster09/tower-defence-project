@@ -5,7 +5,7 @@
 # waves 
 
 from misc.constants import * 
-from screens.screen_manager import Screen_manager
+from screens.screen_manager import ScreenManager
 import pygame 
 import sys
 
@@ -16,7 +16,7 @@ class App:
     def __init__(self) -> None:
         self.display_width , self.display_height = SCREEN_WIDTH, SCREEN_HEIGHT
         self.display = pygame.display.set_mode((self.display_width, self.display_height))
-        self.screen_manager = Screen_manager(self)
+        self.screen_manager = ScreenManager(self)
         self.main()
         
     def main(self):

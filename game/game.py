@@ -1,4 +1,5 @@
 
+import random
 from misc.ui import *
 from misc.theme import *
 from misc.constants import *
@@ -96,8 +97,9 @@ class GameStateManager:
             self.entity_manager.update()
     
     def draw(self, screen):
-        self.level_manager.draw()
-        self.entity_manager.draw(self.level_manager.game_surf)
+        if not self.time_paused:
+            self.level_manager.draw()
+            self.entity_manager.draw(self.level_manager.game_surf)
         screen.blit(pygame.transform.scale(self.level_manager.game_surf,( SCREEN_WIDTH, SCREEN_HEIGHT)), (0,0))
     
     def change_level(self, no_turns, no_boxes, max_line_len):
@@ -109,29 +111,30 @@ class GameStateManager:
         self.entity_manager.add_entity(Enemy(self, self.level_manager.current_level.points, img, speed= 1), "enemy")
     
     def give_upgrade(self):
-        self.game.add_item("btn_upgrade_1", Button(BUTTON_DARK, (20,50,200,200), "1", positioning="relative", on_click=self.btn_upgrade1_on_click))
-        self.game.add_item("btn_upgrade_2", Button(BUTTON_DARK, (50,50,200,200), "2", positioning="relative", on_click=self.btn_upgrade2_on_click))
-        self.game.add_item("btn_upgrade_3", Button(BUTTON_DARK, (80,50,200,200), "3", positioning="relative", on_click=self.btn_upgrade3_on_click))
-        self.time_paused = True        
-    
-    def btn_upgrade1_on_click(self):
+        self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
+        self.game.add_item("btn_upgrade_1", Button(BUTTON_DARK, (20,50,200,200), "1", positioning="relative", on_click=self.spawn_upgrade, click_args=["upgrade_1"]))
+        self.game.add_item("btn_upgrade_2", Button(BUTTON_DARK, (50,50,200,200), "2", positioning="relative", on_click=self.spawn_upgrade, click_args=["upgrade_2"]))
+        self.game.add_item("btn_upgrade_3", Button(BUTTON_DARK, (80,50,200,200), "3", positioning="relative", on_click=self.spawn_upgrade, click_args=["upgrade_3"]))
+        self.time_paused = True    
+        
+    def show_upgrade_popup(self):
+        self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
+        self.game.add_item("btn_cancel", Button(BUTTON_DARK, (20,50,200,200), "CANCEL", positioning="relative", on_click=self.cancel_on_click))
+        self.game.add_item("btn_upgrade", Button(BUTTON_DARK, (80,50,200,200), "UPGRADE", positioning="relative", on_click=self.spawn_upgrade, click_args=["upgrade_2"]))
+        self.time_paused = True 
+
+    def spawn_upgrade(self, upgrade):
         self.game.remove_item("btn_upgrade_1")
         self.game.remove_item("btn_upgrade_2")
         self.game.remove_item("btn_upgrade_3")
-        print("upgrade_1_pressed")
-        self.entity_manager.add_entity(Upgrade(self, pygame.Vector2(100,100), pygame.image.load(r"assets\images\enemy.png").convert()), "tower")
+        print(upgrade)
+        upgrade = Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), pygame.image.load(r"assets\images\enemy.png").convert())
+        upgrade.velocity = pygame.Vector2(0,random.randrange(8,15))
+        upgrade.velocity.rotate_ip(random.randrange(-45,45))
+        self.entity_manager.add_entity(upgrade, "upgrade")
         self.time_paused = False
 
-    def btn_upgrade2_on_click(self):
-        self.game.remove_item("btn_upgrade_1")
-        self.game.remove_item("btn_upgrade_2")
-        self.game.remove_item("btn_upgrade_3")
-        print("upgrade_2_pressed")
-        self.time_paused = False
-
-    def btn_upgrade3_on_click(self):
-        self.game.remove_item("btn_upgrade_1")
-        self.game.remove_item("btn_upgrade_2")
-        self.game.remove_item("btn_upgrade_3")
-        print("upgrade_3_pressed")
+    def cancel_on_click(self):
+        self.game.remove_item("btn_cancel")
+        self.game.remove_item("btn_upgrade")
         self.time_paused = False

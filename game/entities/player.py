@@ -54,13 +54,13 @@ class Player(Entity):
                 entity.player_inrange = True
                 if x_inrange and y_inrange:
                     entity.hovered = True
-                    if m_pressed[0] == True and self.m_last_pressed[0] == False:
+                    if m_pressed[0] == True and self.m_last_pressed[0] == False and self.holding == None:
                         self.sound_manager.play_sound("pickup")
                         self.m_last_pressed = m_pressed
                         self.holding = entity
             else:
                 entity.player_inrange = False
-            if x_inrange and y_inrange:
+            if x_inrange and y_inrange and self.holding == None:
                 entity.hovered = True
             else:
                 entity.hovered = False

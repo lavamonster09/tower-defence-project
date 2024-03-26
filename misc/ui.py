@@ -16,7 +16,7 @@ def get_icon_hex(icon):
     return chr(int(f"0x{d[icon]}",0))
 
 class Button():
-    def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", on_click = None, positioning = "absolute"):
+    def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", on_click = None, click_args = [], positioning = "absolute"):
         # passed in button variable
         self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
         if positioning == "absolute":
@@ -27,6 +27,7 @@ class Button():
         self.on_click = on_click
 
         # button specific needed variables
+        self.click_args = click_args
         self.font = pygame.font.Font(MAIN_FONT, int(self.rect.height/2))
         self.icon_font = pygame.font.Font(ICON_FONT, int(self.rect.height/2))
         self.icon_font.set_bold(True)
@@ -78,7 +79,7 @@ class Button():
             if pygame.mouse.get_pressed()[0]:
                 if self.on_click and not self.lastpressed: 
                     self.lastpressed = True
-                    self.on_click()
+                    self.on_click(*self.click_args)
             else:
                 self.lastpressed = False
         else:
@@ -178,7 +179,6 @@ class Slider():
             elif pygame.mouse.get_pos()[0] > self.pos.x + self.length:
                 self.value = self.max_val
     
-
 class Dropdown():
     def __init__(self,theme:Theme, rect = (0,0,0,0), options = [], positioning = "absolute"):
         # passed in dropdown variables  
