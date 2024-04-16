@@ -27,9 +27,7 @@ class Upgrade(Entity):
             if tower.rect.colliderect(self.pickup_rect):
                 self.can_upgrade = True
             if tower.rect.colliderect(self.pickup_rect) and self.held == False and self.last_held == True:
-                print("ahhhhhhh")
                 self.game_manager.show_upgrade_popup()
-                self.alive = False
         self.pos += self.velocity
         self.velocity /= 1.05
         self.last_held = self.held
@@ -43,7 +41,7 @@ class Upgrade(Entity):
                 pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
             else:
                 pygame.draw.rect(target_surface, (255,50,50), self.pickup_rect, 3, 2)
-        if self.can_upgrade:
+        if self.can_upgrade and self.held:
             pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
 
     def check_collisions(self):

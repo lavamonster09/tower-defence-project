@@ -44,6 +44,7 @@ class Tower(Entity):
                 if (enemy.pos - self.pos).magnitude() < self.range:
                     if self.can_shoot:
                         self.rotation = self.get_rotation(enemy.pos)
+                        self.game_manager.shake_screen(2,4)
                         self.sound_manager.play_sound("shoot")
                         enemy.hp -= self.damage
                         self.shoot_cooldown = self.shoot_delay

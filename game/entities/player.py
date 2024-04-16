@@ -68,10 +68,12 @@ class Player(Entity):
             entity.player_inrange = False
             entity.hovered = False
             if m_pressed[0] == True and self.m_last_pressed[0] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
+                self.game_manager.shake_screen(2,7)
                 self.sound_manager.play_sound("place")
                 self.holding.held = False
                 self.holding = None
             if m_pressed[2] == True and self.m_last_pressed[2] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
+                self.game_manager.shake_screen(6,13)
                 self.sound_manager.play_sound("throw")
                 self.holding.held = False
                 self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle))
