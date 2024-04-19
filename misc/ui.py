@@ -32,6 +32,7 @@ class Button():
         self.icon_font = pygame.font.Font(ICON_FONT, int(self.rect.height/2))
         self.icon_font.set_bold(True)
         self.hovering = False
+        self.hidden = False
         if pygame.mouse.get_pressed()[0]:
             self.lastpressed = True
         else:
@@ -50,6 +51,8 @@ class Button():
         self.screen = pygame.display.get_surface()
     
     def draw(self):
+        if self.hidden:
+            return
         # check if button is filled and if it is hovering
         if self.filled and self.hovering:
             pygame.draw.rect(self.screen, self.hover_color, self.rect, border_radius= self.border_radius)
@@ -110,8 +113,12 @@ class Label():
 
         # globaly needed variables
         self.screen = pygame.display.get_surface()
+
+        self.hidden = False
     
     def draw(self):
+        if self.hidden:
+            return
         # check if label is filled
         if self.filled: pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
             
@@ -146,8 +153,12 @@ class Slider():
 
         # globaly needed variables
         self.screen = pygame.display.get_surface()
+
+        self.hidden = False
         
     def draw(self):
+        if self.hidden:
+            return
         gfxdraw.filled_circle(self.screen,int(self.pos.x),int(self.pos.y), self.thickness // 2, self.line_color)
         gfxdraw.filled_circle(self.screen,int(self.pos.x + self.length),int(self.pos.y), self.thickness // 2, self.line_color)
         pygame.draw.line(self.screen, self.line_color, self.pos, self.pos + pygame.Vector2(self.length,0), self.thickness)
@@ -211,7 +222,11 @@ class Dropdown():
         # globaly needed variables
         self.screen = pygame.display.get_surface()
 
+        self.hidden = False
+
     def draw(self):
+        if self.hidden:
+            return
         if self.toggle:
             self.dropdown()
         if self.hovered != None:
@@ -295,8 +310,11 @@ class Image():
         else:
             self.image = ""
         self.screen = pygame.display.get_surface()
+        self.hidden = False
 
     def draw(self):
+        if self.hidden:
+            return
         if self.image != "":
             self.screen.blit(self.image, self.rect)
 
@@ -326,9 +344,12 @@ class Rect():
 
         #needed variables
         self.screen = pygame.display.get_surface()
+        self.hidden = False
         
     
     def draw(self):
+        if self.hidden:
+            return
         if self.filled:
             pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
         if self.border_width > 0:

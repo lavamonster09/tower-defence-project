@@ -28,6 +28,7 @@ class Tower(Entity):
         self.bullet = None
         self.shoot_cooldown = 0
         self.target = None
+        self.upgrades = []
 
     def update(self):
         if self.shoot_cooldown > 0:
@@ -58,6 +59,8 @@ class Tower(Entity):
         self.rect.center = self.pos
         target_surface.blit(temp_sprite, self.rect)
         if self.hovered:
+            for upgrade in self.upgrades:
+                upgrade.draw(target_surface)
             self.pickup_rect.center = self.pos
             if self.player_inrange:
                 pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
@@ -85,3 +88,12 @@ class Tower(Entity):
             if obsticle.collidepoint(self.pos):
                 return True
         return False
+
+    def upgrade(self, upgrade):
+        self.upgrades.append(upgrade)
+        if upgrade.type == "range":
+            self.range += 10 
+        elif upgrade.type == "damage":
+            self.damage += 1
+        elif upgrade.type == "speed":
+            self.shoot_delay -= 1

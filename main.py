@@ -1,7 +1,6 @@
 # To do 
 # add tower upgrades / upgrade menu 
 # polish towers 
-# screen shake 
 # waves 
 
 from misc.constants import * 
@@ -10,13 +9,14 @@ import pygame
 import sys
 
 pygame.init()
-clock = pygame.time.Clock()
+
 
 class App:
     def __init__(self) -> None:
         self.display_width , self.display_height = SCREEN_WIDTH, SCREEN_HEIGHT
         self.display = pygame.display.set_mode((self.display_width, self.display_height))
         self.screen_manager = ScreenManager(self)
+        self.clock = pygame.time.Clock()
         self.main()
         
     def main(self):
@@ -26,7 +26,7 @@ class App:
             self.update()
             self.draw()
             pygame.display.flip()
-            clock.tick(60)
+            self.clock.tick(60)
 
     def check_events(self):
         for event in pygame.event.get():
