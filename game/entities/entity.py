@@ -6,7 +6,7 @@ class Entity:
         self.entity_manager = game_manager.entity_manager
         self.sound_manager = game_manager.sound_manager
         self.level_manager = game_manager.level_manager
-        self.sprite = pygame.transform.scale2x(sprite)
+        self.sprite = pygame.transform.scale_by(sprite,2)
         self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
         self.rect.center = position
         self.pos = position

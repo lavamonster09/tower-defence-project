@@ -1,5 +1,6 @@
 
 import random
+from turtle import position
 from misc.ui import *
 from misc.theme import *
 from misc.constants import *
@@ -15,10 +16,19 @@ import pygame
 import os 
 
 assets = {}
-for file in os.listdir("assets/images"):
-    if file.split(".")[-1] == "png":
-        assets[file.split(".")[0]] = pygame.image.load(f"assets/images/{file}")
-        assets[file.split(".")[0]].set_colorkey((0,0,0))
+for file in os.scandir("assets/images"):
+    if file.is_file():
+        print(file.name)
+    if file.is_dir():
+        print("folder: "+ file.name)
+        for file in os.scandir(file.path):
+            print("...... "+file.name)
+            if file.name.split(".")[-1] == "png":
+                assets[file.name.split(".")[0]] = pygame.image.load(file.path)
+                assets[file.name.split(".")[0]].set_colorkey((0,0,0))
+    if file.name.split(".")[-1] == "png":
+        assets[file.name.split(".")[0]] = pygame.image.load(file.path)
+        assets[file.name.split(".")[0]].set_colorkey((0,0,0))
 
 class Game(Screen):
     def __init__(self, screen_manager):
@@ -43,7 +53,7 @@ class Game(Screen):
         self.add_item("dev_lbl_maxlinelen", Label(LABEL_DARK, rect = (75, 200, 125, 50), text = "Max line len: 100", font_size=20))
         self.max_line_len = 300
 
-        self.add_item("dev_lbl_fps", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = "100", font_size=20, positioning="relative"))
+        self.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = "100", font_size=20, positioning="relative"))
         
         self.game_manager = GameStateManager(self)
         
@@ -59,7 +69,7 @@ class Game(Screen):
         super().update()
         if pygame.key.get_just_pressed()[pygame.K_F5]:
             self.toggle_dev()
-        self.items["dev_lbl_fps"].text = str(int(self.screen_manager.app.clock.get_fps()))
+        self.items["lbl_fps"].text = str(int(self.screen_manager.app.clock.get_fps()))
         if int(self.items["dev_sld_noturns"].value) != self.no_turns:
             self.items["dev_lbl_noturns"].text = f"No. turns: {int(self.items['dev_sld_noturns'].value)}"
             self.no_turns = int(self.items["dev_sld_noturns"].value)
@@ -141,23 +151,31 @@ class GameStateManager:
         self.level_manager.change_level(no_turns, no_boxes, max_line_len)
 
     def spawn_enemy(self):
-        self.entity_manager.add_entity(Enemy(self, self.level_manager.current_level.points, assets["enemy"], speed= 1), "enemy")
+        enemy_sprites = []
+        for i in range(1,15):
+            enemy_sprites.append(assets[f"enemy{i}"])
+        self.entity_manager.add_entity(Enemy(self, self.level_manager.current_level.points, random.choice(enemy_sprites), speed= 1), "enemy")
     
     def give_upgrade(self):
         self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
-        self.game.add_item("btn_upgrade_1", Button(BUTTON_DARK, (20,50,200,200), "speed", positioning="relative", on_click=self.spawn_upgrade, click_args=["speed"]))
-        self.game.add_item("btn_upgrade_2", Button(BUTTON_DARK, (50,50,200,200), "damage", positioning="relative", on_click=self.spawn_upgrade, click_args=["damage"]))
-        self.game.add_item("btn_upgrade_3", Button(BUTTON_DARK, (80,50,200,200), "range", positioning="relative", on_click=self.spawn_upgrade, click_args=["range"]))
+        self.game.add_item("btn_upgrade_1", Button(BUTTON_DARK, (20,65,300,200), "speed", positioning="relative", on_click=self.spawn_upgrade, click_args=["speed"]))
+        self.game.items["btn_upgrade_1"].fore_color = (34,177,76)
+        self.game.add_item("btn_upgrade_2", Button(BUTTON_DARK, (50,65,350,200), "damage", positioning="relative", on_click=self.spawn_upgrade, click_args=["damage"]))
+        self.game.items["btn_upgrade_2"].fore_color = (235,51,36)
+        self.game.add_item("btn_upgrade_3", Button(BUTTON_DARK, (80,65,300,200), "range", positioning="relative", on_click=self.spawn_upgrade, click_args=["range"]))
+        self.game.items["btn_upgrade_3"].fore_color = (230,230,230)
+        self.game.add_item("lbl_upgrade", Label(LABEL_DARK_FILLED, (50,25,650,150), f"chose an upgrade", positioning="relative", font_size=80))
         self.time_paused = True    
         
     def show_upgrade_popup(self, tower):
         self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
-        self.game.add_item("btn_cancel", Button(BUTTON_DARK, (20,50,200,200), "CANCEL", positioning="relative", on_click=self.cancel_on_click))
+        self.game.add_item("btn_cancel", Button(BUTTON_DARK, (25,65,450,200), "CANCEL", positioning="relative", on_click=self.cancel_on_click))
         currently_upgrading = None 
         for upgrade in self.entity_manager.entities["upgrade"]:
             if upgrade.can_upgrade:
                 currently_upgrading = upgrade
-        self.game.add_item("btn_upgrade", Button(BUTTON_DARK, (80,50,200,200), "UPGRADE", positioning="relative", on_click=self.upgrade_on_click, click_args=[currently_upgrading, tower]))
+        self.game.add_item("btn_upgrade", Button(BUTTON_DARK, (75,65,450,200), "UPGRADE", positioning="relative", on_click=self.upgrade_on_click, click_args=[currently_upgrading, tower]))
+        self.game.add_item("lbl_upgrade", Label(LABEL_DARK_FILLED, (50,25,650,150), f"upgrade, {currently_upgrading.type}", positioning="relative", font_size=80))
         self.time_paused = True 
 
     def spawn_upgrade(self, upgrade_type):
@@ -165,7 +183,8 @@ class GameStateManager:
         self.game.remove_item("btn_upgrade_1")
         self.game.remove_item("btn_upgrade_2")
         self.game.remove_item("btn_upgrade_3")
-        upgrade = Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), pygame.image.load(assets[f"{upgrade_type}_upgrade"]).convert(), upgrade_type)
+        self.game.remove_item("lbl_upgrade")
+        upgrade = Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), assets[f"{upgrade_type}_upgrade"], upgrade_type)
         upgrade.velocity = pygame.Vector2(0,random.randrange(8,15))
         upgrade.velocity.rotate_ip(random.randrange(-45,45))
         self.entity_manager.add_entity(upgrade, "upgrade")
@@ -174,11 +193,13 @@ class GameStateManager:
     def cancel_on_click(self):
         self.game.remove_item("btn_cancel")
         self.game.remove_item("btn_upgrade")
+        self.game.remove_item("lbl_upgrade")
         self.time_paused = False
 
     def upgrade_on_click(self, upgrade, tower):
         self.game.remove_item("btn_cancel")
         self.game.remove_item("btn_upgrade")
+        self.game.remove_item("lbl_upgrade")
         upgrade.alive = False
         tower.upgrade(upgrade)
         self.time_paused = False

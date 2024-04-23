@@ -26,7 +26,7 @@ class Upgrade(Entity):
         if self.check_collisions() or self.pos.x > SCREEN_WIDTH or self.pos.x < 0 or self.pos.y > SCREEN_HEIGHT or self.pos.y < 0:
             self.velocity *= -1
         for tower in self.entity_manager.entities["tower"]:
-            if tower.rect.colliderect(self.pickup_rect):
+            if tower.rect.colliderect(self.pickup_rect) and self.last_held:
                 self.can_upgrade = True
             if tower.rect.colliderect(self.pickup_rect) and self.held == False and self.last_held == True:
                 self.game_manager.show_upgrade_popup(tower)

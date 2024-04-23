@@ -1,5 +1,6 @@
 from game.entities.entity import *
 from misc.constants import *
+from misc.theme import MAIN_FONT
 from misc.util import *
 import pygame
 import math
@@ -52,15 +53,17 @@ class Tower(Entity):
                         self.can_shoot = False
         super().update()
         
-    def draw(self, target_surface):
+    def draw(self, target_surface: pygame.Surface):
+        font = pygame.font.Font(MAIN_FONT,20)
         temp_sprite = pygame.transform.rotate(self.sprite, self.rotation)
         temp_sprite.set_colorkey((0,0,0))
         self.rect = temp_sprite.get_rect()
         self.rect.center = self.pos
         target_surface.blit(temp_sprite, self.rect)
         if self.hovered:
-            for upgrade in self.upgrades:
-                upgrade.draw(target_surface)
+            target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(34,177,76)), self.rect.bottomleft)
+            target_surface.blit(font.render(str(self.upgrades.count("damage")),True,(235,51,36)), pygame.Vector2(self.rect.midbottom) - pygame.Vector2(5, 0))
+            target_surface.blit(font.render(str(self.upgrades.count("range")),True,(230,230,230)), pygame.Vector2(self.rect.bottomright) - pygame.Vector2(10, 0))
             self.pickup_rect.center = self.pos
             if self.player_inrange:
                 pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
@@ -90,10 +93,10 @@ class Tower(Entity):
         return False
 
     def upgrade(self, upgrade):
-        self.upgrades.append(upgrade)
+        self.upgrades.append(upgrade.type)
         if upgrade.type == "range":
             self.range += 10 
         elif upgrade.type == "damage":
             self.damage += 1
         elif upgrade.type == "speed":
-            self.shoot_delay -= 1
+                self.shoot_delay -= 1

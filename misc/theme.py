@@ -57,7 +57,7 @@ LABEL_DARK = Theme({
 LABEL_DARK_FILLED = Theme({
     "color": DARK_SURFACE_LOW_COLOR,
     "fore_color": DARK_FOREGROUND_COLOR,
-    "border_radius": 0,
+    "border_radius": 10,
     "border_width": 0,
     "border_color": DARK_OUTLINE_COLOR,
     "filled": True,

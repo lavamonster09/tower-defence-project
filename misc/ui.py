@@ -73,6 +73,8 @@ class Button():
             self.screen.blit(text_surf, position)
     
     def update(self):
+        if self.hidden:
+            return
         # check if mouse is hovering over button
         if self.rect.collidepoint(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
             self.hovering = True
@@ -131,6 +133,8 @@ class Label():
         self.screen.blit(text_surf, position)
     
     def update(self):
+        if self.hidden:
+            return
         pass
 
 class Slider():
@@ -167,6 +171,8 @@ class Slider():
         
 
     def update(self):
+        if self.hidden:
+            return
         #check if mouse is hovering over slider
         if self.pos.y - self.dot_size <= pygame.mouse.get_pos()[1] <= self.pos.y + self.dot_size and self.pos.x <= pygame.mouse.get_pos()[0] <= self.pos.x + self.length:
             pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -248,6 +254,8 @@ class Dropdown():
         self.screen.blit(text_surf, position)
     
     def update(self):
+        if self.hidden:
+            return
         if self.toggle:
             temp_rect = pygame.Rect(self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height * (len(self.options)))
             if temp_rect.collidepoint(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
@@ -319,6 +327,8 @@ class Image():
             self.screen.blit(self.image, self.rect)
 
     def update(self):
+        if self.hidden:
+            return
         pass
 
     def set_image(self, image):
