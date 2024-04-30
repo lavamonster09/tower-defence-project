@@ -10,6 +10,7 @@ class Entity:
         self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
         self.rect.center = position
         self.pos = position
+        self.velocity = None
         self.alive = True
         self.holdable = False
     

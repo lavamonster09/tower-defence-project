@@ -106,9 +106,6 @@ class Generator:
             return False
         return True
 
-
-    
-
 class LevelManager:
     def __init__(self, scale):
         self.generator = Generator([SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale])
@@ -138,6 +135,7 @@ class Level():
         surface.blit(self.background, (0,0))
         
         
+
         for i in range(len(self.points) - 1):
             pygame.draw.line(surface, (0, 0, 1), self.points[i], self.points[i+1], PATH_SIZE + 9)
             
@@ -147,6 +145,7 @@ class Level():
         for i in range(len(self.points) - 1):
             pygame.draw.line(surface, (190, 214, 253), self.points[i], self.points[i+1], PATH_SIZE + 1)
         
+        pygame.draw.circle(surface, (0,255,0), self.points[0], PATH_SIZE/2)
             
         for obsticle in self.obsticles:
             temp = obsticle.copy()

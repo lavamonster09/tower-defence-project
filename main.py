@@ -1,6 +1,4 @@
 # To do 
-# add tower upgrades / upgrade menu 
-# polish towers 
 # waves 
 
 from misc.constants import * 

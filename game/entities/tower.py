@@ -1,8 +1,10 @@
+from turtle import position
 from game.entities.entity import *
 from misc.constants import *
 from misc.theme import MAIN_FONT
 from misc.util import *
 import pygame
+import random
 import math
 
 class Tower(Entity):
@@ -30,6 +32,7 @@ class Tower(Entity):
         self.shoot_cooldown = 0
         self.target = None
         self.upgrades = []
+        self.colided = False
 
     def update(self):
         if self.shoot_cooldown > 0:
@@ -39,6 +42,7 @@ class Tower(Entity):
             self.can_shoot = True
         if self.check_collisions() or self.pos.x > SCREEN_WIDTH or self.pos.x < 0 or self.pos.y > SCREEN_HEIGHT or self.pos.y < 0:
             self.velocity *= -1
+
         self.pos += self.velocity
         self.velocity /= 1.05
         if "enemy" in self.entity_manager.entities and not self.held:
@@ -61,10 +65,10 @@ class Tower(Entity):
         self.rect.center = self.pos
         target_surface.blit(temp_sprite, self.rect)
         if self.hovered:
-            target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(34,177,76)), self.rect.bottomleft)
-            target_surface.blit(font.render(str(self.upgrades.count("damage")),True,(235,51,36)), pygame.Vector2(self.rect.midbottom) - pygame.Vector2(5, 0))
-            target_surface.blit(font.render(str(self.upgrades.count("range")),True,(230,230,230)), pygame.Vector2(self.rect.bottomright) - pygame.Vector2(10, 0))
             self.pickup_rect.center = self.pos
+            target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(34,177,76)), self.pickup_rect.bottomleft)
+            target_surface.blit(font.render(str(self.upgrades.count("damage")),True,(235,51,36)), pygame.Vector2(self.pickup_rect.midbottom) - pygame.Vector2(5, 0))
+            target_surface.blit(font.render(str(self.upgrades.count("range")),True,(230,230,230)), pygame.Vector2(self.pickup_rect.bottomright) - pygame.Vector2(10, 0))
             if self.player_inrange:
                 pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
             else:

@@ -13,6 +13,7 @@ import game.sound as sound
 import game.entities.entity as entity
 import game.level as level
 import pygame
+import time 
 import os 
 
 assets = {}
@@ -43,19 +44,24 @@ class Game(Screen):
 
         self.add_item("dev_sld_noturns", Slider(SLIDER_DARK, pos = (25, 75), length = 100, min_val = 1, max_val = 15))
         self.add_item("dev_lbl_noturns", Label(LABEL_DARK, rect = (75, 100, 125, 50), text = "No. turns: 1", font_size=20))
-        self.no_turns = 1
+        self.no_turns = 6
 
         self.add_item("dev_sld_noboxes", Slider(SLIDER_DARK, pos = (25, 125), length = 100, min_val = 0, max_val = 5))
         self.add_item("dev_lbl_noboxes", Label(LABEL_DARK, rect = (75, 150, 125, 50), text = "No. boxes: 1", font_size=20))
-        self.no_boxes = 1
+        self.no_boxes = 6
 
         self.add_item("dev_sld_maxlinelen", Slider(SLIDER_DARK, pos = (25, 175), length = 100, min_val = 300, max_val = 1200))
         self.add_item("dev_lbl_maxlinelen", Label(LABEL_DARK, rect = (75, 200, 125, 50), text = "Max line len: 100", font_size=20))
-        self.max_line_len = 300
+        self.max_line_len = 1000
 
-        self.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = "100", font_size=20, positioning="relative"))
+        self.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 98, 125, 50), text = "100", font_size=20, positioning="relative"))
+        self.add_item("lbl_round", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = "0", font_size=30, positioning="relative"))
+        self.add_item("btn_roundstart", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("play_arrow"), on_click= self.btn_spawn_enemy_on_click, positioning="relative"))
+        self.items["lbl_round"].fore_color = (34,177,76)
+
         
         self.game_manager = GameStateManager(self)
+        self.game_manager.change_level(self.no_turns,self.no_boxes,self.max_line_len)
         
         self.game_manager.entity_manager.add_entity(Player(self.game_manager, assets["player"]), "player")
         self.toggle_dev()
@@ -70,18 +76,19 @@ class Game(Screen):
         if pygame.key.get_just_pressed()[pygame.K_F5]:
             self.toggle_dev()
         self.items["lbl_fps"].text = str(int(self.screen_manager.app.clock.get_fps()))
-        if int(self.items["dev_sld_noturns"].value) != self.no_turns:
-            self.items["dev_lbl_noturns"].text = f"No. turns: {int(self.items['dev_sld_noturns'].value)}"
-            self.no_turns = int(self.items["dev_sld_noturns"].value)
-            self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
-        if int(self.items["dev_sld_noboxes"].value) != self.no_boxes:
-            self.items["dev_lbl_noboxes"].text = f"No. boxes: {int(self.items['dev_sld_noboxes'].value)}"
-            self.no_boxes = int(self.items["dev_sld_noboxes"].value)
-            self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
-        if int(self.items["dev_sld_maxlinelen"].value) != self.max_line_len:
-            self.items["dev_lbl_maxlinelen"].text = f"Max line len: {int(self.items['dev_sld_maxlinelen'].value)}"
-            self.max_line_len = int(self.items["dev_sld_maxlinelen"].value)
-            self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+        #if self.dev:
+        #    if int(self.items["dev_sld_noturns"].value) != self.no_turns:
+        #        self.items["dev_lbl_noturns"].text = f"No. turns: {int(self.items['dev_sld_noturns'].value)}"
+        #        self.no_turns = int(self.items["dev_sld_noturns"].value)
+        #        self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+        #    if int(self.items["dev_sld_noboxes"].value) != self.no_boxes:
+        #        self.items["dev_lbl_noboxes"].text = f"No. boxes: {int(self.items['dev_sld_noboxes'].value)}"
+        #        self.no_boxes = int(self.items["dev_sld_noboxes"].value)
+        #        self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
+        #    if int(self.items["dev_sld_maxlinelen"].value) != self.max_line_len:
+        #        self.items["dev_lbl_maxlinelen"].text = f"Max line len: {int(self.items['dev_sld_maxlinelen'].value)}"
+        #        self.max_line_len = int(self.items["dev_sld_maxlinelen"].value)
+        #        self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
     
     def btn_back_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
@@ -148,6 +155,12 @@ class GameStateManager:
         screen.blit(pygame.transform.scale(self.level_manager.game_surf,( SCREEN_WIDTH, SCREEN_HEIGHT)), self.screen_offset)
     
     def change_level(self, no_turns, no_boxes, max_line_len):
+        for group in self.entity_manager.entities:
+            for entity in self.entity_manager.entities[group]:
+                entity.pos = pygame.Vector2(SCREEN_WIDTH/2,0)
+                entity.velocity = pygame.Vector2(0,random.randrange(8,15))
+                entity.velocity.rotate_ip(random.randrange(-45,45))
+        self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
         self.level_manager.change_level(no_turns, no_boxes, max_line_len)
 
     def spawn_enemy(self):

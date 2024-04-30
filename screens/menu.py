@@ -9,6 +9,7 @@ class Menu(Screen):
         self.back_color = (DARK_BACKGROUND_COLOR)
 
         # buttons    
+        self.add_item("img_bkg", Image("assets\images\Menu.png", rect = (50,50,SCREEN_WIDTH,SCREEN_HEIGHT), positioning="relative"))
         self.add_item("btn_start",Button(BUTTON_DARK , rect=(50,40,200,100), text="START", on_click= self.btn_start_on_click, positioning="relative"))
         self.add_item("btn_settings", Button(BUTTON_DARK, rect = (50,60,300,100), text = "SETTINGS", on_click= self.btn_settings_on_click, positioning="relative"))
 

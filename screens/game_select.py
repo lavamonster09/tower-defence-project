@@ -6,6 +6,7 @@ class Game_select(Screen):
     def __init__(self, screen_manager) -> None:
         super().__init__(screen_manager)
         self.back_color = (DARK_BACKGROUND_COLOR)
+        self.add_item("img_bkg", Image("assets\images\gameselect.png", rect = (50,50,SCREEN_WIDTH,SCREEN_HEIGHT), positioning="relative"))
 
         # btn_start
         self.add_item("btn_play",Button(BUTTON_DARK , rect=(50,85,180,100), text="PLAY", positioning="relative", on_click= self.btn_play_on_click))
@@ -13,8 +14,9 @@ class Game_select(Screen):
         self.add_item("btn_upgrades",Button(BUTTON_DARK , rect=(70,87,270,100), text="UPGRADE", positioning="relative", on_click= self.btn_upgrades_on_click))
         
         for item in self.items:
-            self.add_animation(f"{item}_open", [self.items[item].rect.x, self.items[item].rect.y + 250, self.items[item].rect.width, self.items[item].rect.height], self.items[item].rect, 20, self.items[item], "rect")
-            self.add_animation(f"{item}_close",self.items[item].rect, [self.items[item].rect.x, self.items[item].rect.y + 250, self.items[item].rect.width, self.items[item].rect.height], 20, self.items[item], "rect")
+            if item != "img_bkg":
+                self.add_animation(f"{item}_open", [self.items[item].rect.x, self.items[item].rect.y + 250, self.items[item].rect.width, self.items[item].rect.height], self.items[item].rect, 20, self.items[item], "rect")
+                self.add_animation(f"{item}_close",self.items[item].rect, [self.items[item].rect.x, self.items[item].rect.y + 250, self.items[item].rect.width, self.items[item].rect.height], 20, self.items[item], "rect")
         #btn_back
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
 
