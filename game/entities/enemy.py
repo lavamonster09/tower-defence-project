@@ -1,13 +1,15 @@
 from game.entities.entity import *
+import random
 
 class Enemy(Entity):
-    def __init__(self,game_manager, path, sprite = pygame.surface.Surface((0,0)), speed = 2) -> None:
-        super().__init__(game_manager, position = path[0], sprite = sprite)
+    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), speed = 2, children = None) -> None:
+        self.path = game_manager.level_manager.current_level.points
+        super().__init__(game_manager, position = self.path[0], sprite = sprite)
         self.speed = speed
-        self.path = path
         self.current_point = 0
         self.hp = 100
         self.last_hp = self.hp
+        self.children = children
 
     def update(self):
         if self.current_point < len(self.path):
@@ -26,3 +28,14 @@ class Enemy(Entity):
         super().draw(target_surface)
         if self.last_hp != self.hp:
             self.last_hp = self.hp
+
+class Standard(Enemy):
+    def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0))) -> None:
+        speed = 2
+        super().__init__(game_manager, sprite, speed)
+        
+class Fast(Enemy):
+    def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0))) -> None:
+        speed = 3
+        super().__init__(game_manager, sprite, speed)
+        

@@ -5,7 +5,7 @@ from misc.ui import *
 from misc.theme import *
 from misc.constants import *
 from screens.screen import Screen
-from game.entities.enemy import Enemy
+from game.entities.enemy import *
 from game.entities.player import Player
 from game.entities.tower import Tower
 from game.entities.upgrade import Upgrade
@@ -36,6 +36,8 @@ class Game(Screen):
         super().__init__(screen_manager)
         self.dev = True
 
+        self.game_manager = GameStateManager(self)
+
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
         self.add_item("dev_btn_generate", Button(BUTTON_DARK_NO_FILL , rect = (75,25,50,50), text = get_icon_hex("replay"), on_click= self.btn_generate_on_click))
         self.add_item("dev_btn_spawn_enemy", Button(BUTTON_DARK_NO_FILL , rect = (125,25,50,50), text = "E", on_click= self.btn_spawn_enemy_on_click))
@@ -56,11 +58,9 @@ class Game(Screen):
 
         self.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 98, 125, 50), text = "100", font_size=20, positioning="relative"))
         self.add_item("lbl_round", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = "0", font_size=30, positioning="relative"))
-        self.add_item("btn_roundstart", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("play_arrow"), on_click= self.btn_spawn_enemy_on_click, positioning="relative"))
+        self.add_item("btn_roundstart", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("play_arrow"), on_click= self.game_manager.start_round, positioning="relative"))
         self.items["lbl_round"].fore_color = (34,177,76)
 
-        
-        self.game_manager = GameStateManager(self)
         self.game_manager.change_level(self.no_turns,self.no_boxes,self.max_line_len)
         
         self.game_manager.entity_manager.add_entity(Player(self.game_manager, assets["player"]), "player")
@@ -133,6 +133,23 @@ class GameStateManager:
         self.time_paused = False
         self.current_upgrade_choices = []
 
+        self.round_started = False
+        self.enemies = []
+        self.spawn_counter = 0
+        self.round = 0
+
+        self.enemy_types = {
+            "standard": {
+                "type": Standard,
+                "offset": 0
+                },
+            "fast": {
+                "type": Fast,
+                "offset": 2
+                }
+            }
+        
+
     def update(self):
 
         self.level_manager.update()
@@ -145,6 +162,16 @@ class GameStateManager:
             if self.shake_duration <= 0:
                 self.shake_strength = 0 
                 self.screen_offset = pygame.Vector2(0,0)
+            if self.round_started:
+                if self.spawn_counter % 75 == 0:
+                    self.spawn_counter = 0 
+                    if len(self.enemies) == 0:
+                        self.round_started = False
+                    else:
+                        self.spawn_enemy(self.enemies[0])
+                        self.enemies.pop(0)
+                self.spawn_counter += 1
+
             self.entity_manager.update()
     
     def draw(self, screen):
@@ -163,11 +190,8 @@ class GameStateManager:
         self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
         self.level_manager.change_level(no_turns, no_boxes, max_line_len)
 
-    def spawn_enemy(self):
-        enemy_sprites = []
-        for i in range(1,15):
-            enemy_sprites.append(assets[f"enemy{i}"])
-        self.entity_manager.add_entity(Enemy(self, self.level_manager.current_level.points, random.choice(enemy_sprites), speed= 1), "enemy")
+    def spawn_enemy(self, enemy):
+        self.entity_manager.add_entity(enemy, "enemy")
     
     def give_upgrade(self):
         self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
@@ -223,3 +247,15 @@ class GameStateManager:
         if strength > self.shake_strength:
             self.shake_strength = strength
         self.shake_duration += duration
+
+    def start_round(self):
+        self.round += 1
+        self.game.items["lbl_round"].text = str(self.round)
+        if self.round_started: return
+        self.round_started = True
+        for type in self.enemy_types:
+            number = -(2.5 - (self.round - self.enemy_types[type]["offset"]))**2 + 10
+            number //= 2 
+            if number > 0:
+                for i in range(int(number)):
+                    self.enemies.append(self.enemy_types[type]["type"](self, sprite = assets["enemy1"]))
