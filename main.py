@@ -1,5 +1,6 @@
 # To do 
 # waves 
+# towers that reach sertain level 5-5-0 change type / lock out other upgrades 
 
 from misc.constants import * 
 from screens.screen_manager import ScreenManager

@@ -101,7 +101,7 @@ class Game(Screen):
     
     def btn_spawn_enemy_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
-        self.game_manager.spawn_enemy()
+        self.game_manager.entity_manager.entities["enemy"] = []
         
     def btn_spawn_tower_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
@@ -137,6 +137,7 @@ class GameStateManager:
         self.enemies = []
         self.spawn_counter = 0
         self.round = 0
+        self.enemy_count = 0
 
         self.enemy_types = {
             "standard": {
@@ -154,6 +155,7 @@ class GameStateManager:
 
         self.level_manager.update()
         if not self.time_paused:
+            self.entity_manager.update()
             if self.shake_duration > 0:
                 dir = pygame.Vector2(0,self.shake_strength)
                 dir = dir.rotate(random.randrange(360))
@@ -163,16 +165,19 @@ class GameStateManager:
                 self.shake_strength = 0 
                 self.screen_offset = pygame.Vector2(0,0)
             if self.round_started:
+                player = self.entity_manager.entities["player"][0]
                 if self.spawn_counter % 75 == 0:
                     self.spawn_counter = 0 
-                    if len(self.enemies) == 0:
-                        self.round_started = False
-                    else:
+                    if not len(self.enemies) == 0:
                         self.spawn_enemy(self.enemies[0])
                         self.enemies.pop(0)
                 self.spawn_counter += 1
-
-            self.entity_manager.update()
+                if self.entity_manager.entities.get("enemy", []) == [] and self.enemy_count > 0:
+                    self.round_started = False
+                    self.give_upgrade()
+            
+            
+            self.enemy_count = len(self.entity_manager.entities.get("enemy", []))
     
     def draw(self, screen):
         if not self.time_paused:
@@ -249,13 +254,18 @@ class GameStateManager:
         self.shake_duration += duration
 
     def start_round(self):
+        if self.round_started or self.entity_manager.entities.get("enemy", []) != []: return
         self.round += 1
         self.game.items["lbl_round"].text = str(self.round)
-        if self.round_started: return
         self.round_started = True
         for type in self.enemy_types:
             number = -(2.5 - (self.round - self.enemy_types[type]["offset"]))**2 + 10
             number //= 2 
+            number = math.tanh((self.round - self.enemy_types[type]["offset"])/ 3)
+            number = (number * 4)
+            if self.round >= self.enemy_types[type]["offset"]:
+                number = math.sqrt((self.round - self.enemy_types[type]["offset"]) * 6)
+            print(number)
             if number > 0:
                 for i in range(int(number)):
                     self.enemies.append(self.enemy_types[type]["type"](self, sprite = assets["enemy1"]))
