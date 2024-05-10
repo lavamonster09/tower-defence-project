@@ -27,9 +27,11 @@ class Upgrade(Entity):
             self.velocity *= -1
         for tower in self.entity_manager.entities["tower"]:
             if tower.rect.colliderect(self.pickup_rect) and self.last_held:
-                self.can_upgrade = True
+                if tower.can_upgrade[self.type]:
+                    self.can_upgrade = True
             if tower.rect.colliderect(self.pickup_rect) and self.held == False and self.last_held == True:
-                self.game_manager.show_upgrade_popup(tower)
+                if tower.can_upgrade[self.type]:
+                    self.game_manager.show_upgrade_popup(tower)
         self.pos += self.velocity
         self.velocity /= 1.05
         self.last_held = self.held

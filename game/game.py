@@ -16,26 +16,32 @@ import pygame
 import time 
 import os 
 
-assets = {}
-for file in os.scandir("assets/images"):
-    if file.is_file():
-        print(file.name)
-    if file.is_dir():
-        print("folder: "+ file.name)
-        for file in os.scandir(file.path):
-            print("...... "+file.name)
+class Assets: 
+    def __init__(self) -> None:
+        self.assets = {}
+        for file in os.scandir("assets/images"):
+            if file.is_file():
+                print(file.name)
+            if file.is_dir():
+                print("folder: "+ file.name)
+                for file in os.scandir(file.path):
+                    print("...... "+file.name)
+                    if file.name.split(".")[-1] == "png":
+                        self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
+                        self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
             if file.name.split(".")[-1] == "png":
-                assets[file.name.split(".")[0]] = pygame.image.load(file.path)
-                assets[file.name.split(".")[0]].set_colorkey((0,0,0))
-    if file.name.split(".")[-1] == "png":
-        assets[file.name.split(".")[0]] = pygame.image.load(file.path)
-        assets[file.name.split(".")[0]].set_colorkey((0,0,0))
+                self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
+                self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
+    def get(self, key):
+        return self.assets.get(key, self.assets["null"])
+
 
 class Game(Screen):
     def __init__(self, screen_manager):
         super().__init__(screen_manager)
         self.dev = True
-
+        self.assets = Assets()
+        
         self.game_manager = GameStateManager(self)
 
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
@@ -63,7 +69,7 @@ class Game(Screen):
 
         self.game_manager.change_level(self.no_turns,self.no_boxes,self.max_line_len)
         
-        self.game_manager.entity_manager.add_entity(Player(self.game_manager, assets["player"]), "player")
+        self.game_manager.entity_manager.add_entity(Player(self.game_manager, self.assets.get("player")), "player")
         self.toggle_dev()
     
     def draw(self):
@@ -105,7 +111,7 @@ class Game(Screen):
         
     def btn_spawn_tower_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
-        tower = Tower(self.game_manager, pygame.Vector2(SCREEN_WIDTH / 2, 0), assets["tower"])
+        tower = Tower(self.game_manager, pygame.Vector2(SCREEN_WIDTH / 2, 0))
         tower.velocity = pygame.Vector2(0,random.randrange(8,15))
         tower.velocity.rotate_ip(random.randrange(-45,45))
         self.game_manager.entity_manager.add_entity(tower, "tower")
@@ -123,6 +129,7 @@ class Game(Screen):
 class GameStateManager:
     def __init__(self, game):
         self.game = game
+        self.assets = self.game.assets 
         self.level_manager = level.LevelManager(SCREEN_SCALE)
         self.entity_manager = entity.EntityManager()
         self.sound_manager = sound.SoundManager()
@@ -226,7 +233,7 @@ class GameStateManager:
         self.game.remove_item("btn_upgrade_2")
         self.game.remove_item("btn_upgrade_3")
         self.game.remove_item("lbl_upgrade")
-        upgrade = Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), assets[f"{upgrade_type}_upgrade"], upgrade_type)
+        upgrade = Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), self.assets.get(f"{upgrade_type}_upgrade"), upgrade_type)
         upgrade.velocity = pygame.Vector2(0,random.randrange(8,15))
         upgrade.velocity.rotate_ip(random.randrange(-45,45))
         self.entity_manager.add_entity(upgrade, "upgrade")
@@ -268,4 +275,4 @@ class GameStateManager:
             print(number)
             if number > 0:
                 for i in range(int(number)):
-                    self.enemies.append(self.enemy_types[type]["type"](self, sprite = assets["enemy1"]))
+                    self.enemies.append(self.enemy_types[type]["type"](self, sprite = self.assets.get("enemy1")))
