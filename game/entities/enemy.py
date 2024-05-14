@@ -8,6 +8,7 @@ class Enemy(Entity):
         self.speed = speed
         self.current_point = 0
         self.hp = 100
+        self.real_hp = 100 
         self.last_hp = self.hp
         self.children = children
 

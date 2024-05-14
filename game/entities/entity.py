@@ -41,7 +41,7 @@ class EntityManager:
             del self.entities[group]
 
     def update(self):
-        for group in self.entities:
+        for group in self.entities.copy():
             for entity in self.entities[group]:
                 entity.update()
                 if not entity.alive:

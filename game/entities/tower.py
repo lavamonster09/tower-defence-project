@@ -1,6 +1,7 @@
 from msilib.schema import Upgrade
 from turtle import position, speed
 from game.entities.entity import *
+from game.entities.bullet import *
 from misc.constants import *
 from misc.theme import MAIN_FONT
 from misc.util import *
@@ -67,11 +68,12 @@ class Tower(Entity):
         if "enemy" in self.entity_manager.entities and not self.held:
             for enemy in self.entity_manager.entities["enemy"]:
                 if (enemy.pos - self.pos).magnitude() < self.range:
-                    if self.can_shoot:
-                        self.rotation = self.get_rotation(enemy.pos)
+                    if self.can_shoot and enemy.real_hp > 0 :
+                        #self.rotation = self.get_rotation(enemy.pos)
                         self.game_manager.shake_screen(2,4)
                         self.sound_manager.play_sound("shoot")
-                        enemy.hp -= self.damage
+                        enemy.real_hp -= self.damage
+                        self.entity_manager.add_entity(Bullet(self.game_manager, self.game_manager.assets.get("minim"), enemy, self.pos.copy(), self.damage), "bullet")
                         self.shoot_cooldown = self.shoot_delay
                         self.can_shoot = False
         super().update()
@@ -81,7 +83,11 @@ class Tower(Entity):
         speed = self.upgrades.count("speed")
         range = self.upgrades.count("range")
         upgrade = f"tower_{damage}{speed}{range}"
-        self.sprite = pygame.transform.scale_by(self.game_manager.assets.get(upgrade), 2)
+        sprite = self.game_manager.assets.get(upgrade)
+        if sprite != self.game_manager.assets.get("null"):
+            self.sprite = pygame.transform.scale_by(self.game_manager.assets.get(upgrade), 2)
+            self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
+            self.pickup_rect = self.rect
         font = pygame.font.Font(MAIN_FONT,20)
         temp_sprite = pygame.transform.rotate(self.sprite, self.rotation)
         temp_sprite.set_colorkey((0,0,0))
