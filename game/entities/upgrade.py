@@ -40,13 +40,18 @@ class Upgrade(Entity):
     def draw(self, target_surface):
         target_surface.blit(self.sprite, self.rect)
         if self.hovered:
+            
             self.pickup_rect.center = self.pos
             if self.player_inrange:
-                pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
+                for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
+                    pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
             else:
-                pygame.draw.rect(target_surface, (255,50,50), self.pickup_rect, 3, 2)
+                for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
+                    pygame.draw.rect(target_surface, (255,50,50), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
         if self.can_upgrade and self.held:
-            pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
+            for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
+                pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
+        
 
     def check_collisions(self):
         for obsticle in self.level_manager.current_level.obsticles:

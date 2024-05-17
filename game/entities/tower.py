@@ -95,6 +95,7 @@ class Tower(Entity):
         self.rect.center = self.pos
         target_surface.blit(temp_sprite, self.rect)
         if self.hovered:
+            
             self.pickup_rect.center = self.pos
             if self.can_upgrade["speed"]: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(34,177,76)), self.pickup_rect.bottomleft)
             else: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(100, 100, 100)), self.pickup_rect.bottomleft)
@@ -103,11 +104,15 @@ class Tower(Entity):
             if self.can_upgrade["range"]: target_surface.blit(font.render(str(self.upgrades.count("range")),True,(230,230,230)), pygame.Vector2(self.pickup_rect.bottomright) - pygame.Vector2(10, 0))
             else: target_surface.blit(font.render(str(self.upgrades.count("range")),True,(100, 100, 100)), pygame.Vector2(self.pickup_rect.bottomright) - pygame.Vector2(10, 0))
             if self.player_inrange:
-                pygame.draw.rect(target_surface, (255,255,255), self.pickup_rect, 3, 2)
+                for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
+                    pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
             else:
-                pygame.draw.rect(target_surface, (255,50,50), self.pickup_rect, 3, 2)
+                for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
+                    pygame.draw.rect(target_surface, (255,50, 50), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
             pygame.draw.circle(target_surface, (255,255,255), self.rect.center, self.range, 4)
         if self.held:
+            for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
+                pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
             pygame.draw.circle(target_surface, (255,255,255), self.rect.center, self.range, 4)
 
     def get_rotation(self, target):
