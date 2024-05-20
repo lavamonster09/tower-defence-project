@@ -5,6 +5,7 @@ from misc.util import *
 
 class Generator:
     def __init__(self, screen_size):
+        self.level_number = 1
         self.range_x = (0 + PATH_SIZE, screen_size[0] - PATH_SIZE)
         self.range_y = (0 + PATH_SIZE, screen_size[1] - PATH_SIZE)
         
@@ -15,7 +16,7 @@ class Generator:
     def generate_level(self, no_turns, no_obsticles, line_max_length):
         self.points = self.generate_path(no_turns, line_max_length)
         self.obsticles = self.generate_obsticles(no_obsticles)
-        return Level(self.points, self.obsticles)
+        return Level(self.points, self.obsticles, 1)
 
     def generate_path(self, no_turns, line_max_length):
         direction = random.choice([pygame.Vector2(0,1), pygame.Vector2(1,0)])
@@ -108,9 +109,10 @@ class Generator:
 
 class LevelManager:
     def __init__(self, scale):
+        
         self.generator = Generator([SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale])
         self.game_surf = pygame.surface.Surface((SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale))
-        self.current_level = Level([], [])
+        self.current_level = Level([], [], 1)
 
     def change_level(self, no_turns, no_obsticles, line_max_length):
         self.current_level = self.generator.generate_level(no_turns, no_obsticles, line_max_length)
@@ -122,28 +124,25 @@ class LevelManager:
         pass
 
 class Level():
-    def __init__(self, points, obsticles) -> None:
+    def __init__(self, points, obsticles, level_number) -> None:
+        
+        self.background = pygame.image.load(f"assets\images/area_{level_number}/floor.png").convert()
+        self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.points = points
         self.obsticles = obsticles
         self.back_color = (30, 74, 157)
-        self.background = pygame.surface.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.background.fill(self.back_color)
-        for i in range(200):
-            pygame.draw.circle(self.background, (self.back_color[0] + random.randrange(0,4), self.back_color[1] + random.randrange(0,4), self.back_color[2] + random.randrange(0,4)), (random.randrange(0,SCREEN_WIDTH), random.randrange(0,SCREEN_HEIGHT)), 50)
     
     def draw(self, surface):
         surface.blit(self.background, (0,0))
-        
-        
 
         for i in range(len(self.points) - 1):
-            pygame.draw.line(surface, (0, 0, 1), self.points[i], self.points[i+1], PATH_SIZE + 9)
+            pygame.draw.line(surface, (122, 48, 69), self.points[i], self.points[i+1], PATH_SIZE + 9)
             
         for point in self.points:
-            pygame.draw.circle(surface, (0, 0, 1), point, PATH_SIZE // 2 + 4)
-            pygame.draw.circle(surface, (190, 214, 253), point, PATH_SIZE // 2)
+            pygame.draw.circle(surface, (122, 48, 69), point, PATH_SIZE // 2 + 4)
+            pygame.draw.circle(surface, (158, 69, 57), point, PATH_SIZE // 2)
         for i in range(len(self.points) - 1):
-            pygame.draw.line(surface, (190, 214, 253), self.points[i], self.points[i+1], PATH_SIZE + 1)
+            pygame.draw.line(surface, (158, 69, 57), self.points[i], self.points[i+1], PATH_SIZE + 1)
         
         pygame.draw.circle(surface, (0,255,0), self.points[0], PATH_SIZE/2)
             
@@ -152,5 +151,5 @@ class Level():
             temp.width = obsticle.width + 8
             temp.height = obsticle.height + 8
             temp.center = obsticle.center
-            pygame.draw.rect(surface, (0, 0, 1), temp, border_radius= PATH_SIZE // 2)
-            pygame.draw.rect(surface, (190, 214, 253), obsticle, border_radius= PATH_SIZE // 2)
+            pygame.draw.rect(surface, (46, 34, 47), temp, border_radius= PATH_SIZE // 2)
+            pygame.draw.rect(surface, (62, 53, 70), obsticle, border_radius= PATH_SIZE // 2)

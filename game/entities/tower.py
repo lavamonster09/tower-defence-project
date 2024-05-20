@@ -73,7 +73,7 @@ class Tower(Entity):
                         self.game_manager.shake_screen(2,4)
                         self.sound_manager.play_sound("shoot")
                         enemy.real_hp -= self.damage
-                        self.entity_manager.add_entity(Bullet(self.game_manager, self.game_manager.assets.get("minim"), enemy, self.pos.copy(), self.damage), "bullet")
+                        self.entity_manager.add_entity(Bullet(self.game_manager, self.game_manager.assets.get("crotchet"), enemy, self.pos.copy(), self.damage), "bullet")
                         self.shoot_cooldown = self.shoot_delay
                         self.can_shoot = False
         super().update()
@@ -81,7 +81,7 @@ class Tower(Entity):
     def draw(self, target_surface: pygame.Surface):
         damage = self.upgrades.count("damage")
         speed = self.upgrades.count("speed")
-        range = self.upgrades.count("range")
+        range = self.upgrades.count("range") 
         upgrade = f"tower_{damage}{speed}{range}"
         sprite = self.game_manager.assets.get(upgrade)
         if sprite != self.game_manager.assets.get("null"):
