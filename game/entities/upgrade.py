@@ -44,13 +44,13 @@ class Upgrade(Entity):
             self.pickup_rect.center = self.pos
             if self.player_inrange:
                 for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
-                    pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
+                    pygame.draw.circle(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2), 1)
             else:
                 for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
-                    pygame.draw.rect(target_surface, (255,50,50), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
+                    pygame.draw.circle(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2), 1)
         if self.can_upgrade and self.held:
             for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
-                pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
+                pygame.draw.circle(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2), 1)
         
 
     def check_collisions(self):

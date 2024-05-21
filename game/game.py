@@ -82,19 +82,6 @@ class Game(Screen):
         if pygame.key.get_just_pressed()[pygame.K_F5]:
             self.toggle_dev()
         self.items["lbl_fps"].text = str(int(self.screen_manager.app.clock.get_fps()))
-        #if self.dev:
-        #    if int(self.items["dev_sld_noturns"].value) != self.no_turns:
-        #        self.items["dev_lbl_noturns"].text = f"No. turns: {int(self.items['dev_sld_noturns'].value)}"
-        #        self.no_turns = int(self.items["dev_sld_noturns"].value)
-        #        self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
-        #    if int(self.items["dev_sld_noboxes"].value) != self.no_boxes:
-        #        self.items["dev_lbl_noboxes"].text = f"No. boxes: {int(self.items['dev_sld_noboxes'].value)}"
-        #        self.no_boxes = int(self.items["dev_sld_noboxes"].value)
-        #        self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
-        #    if int(self.items["dev_sld_maxlinelen"].value) != self.max_line_len:
-        #        self.items["dev_lbl_maxlinelen"].text = f"Max line len: {int(self.items['dev_sld_maxlinelen'].value)}"
-        #        self.max_line_len = int(self.items["dev_sld_maxlinelen"].value)
-        #        self.game_manager.change_level(self.no_turns, self.no_boxes, self.max_line_len)
     
     def btn_back_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
@@ -107,7 +94,8 @@ class Game(Screen):
     
     def btn_spawn_enemy_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
-        self.game_manager.entity_manager.entities["enemy"] = []
+        self.game_manager.level_manager.change_to_boss()
+        self.game_manager.entity_manager.add_entity(Boss(self.game_manager, self.assets.get("enemy1")), "boss")
         
     def btn_spawn_tower_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
@@ -180,19 +168,16 @@ class GameStateManager:
                         self.enemies.pop(0)
                 self.spawn_counter += 1
                 if self.entity_manager.entities.get("enemy", []) == [] and self.enemy_count > 0:
-                    self.round_started = False
-                    self.give_upgrade()
-            
-            
+                     self.round_started = False
+                     self.give_upgrade()
             self.enemy_count = len(self.entity_manager.entities.get("enemy", []))
     
     def draw(self, screen):
         if not self.time_paused:
             self.level_manager.draw()
             self.entity_manager.draw(self.level_manager.game_surf)
-        screen.fill(self.level_manager.current_level.back_color)
         screen.blit(pygame.transform.scale(self.level_manager.game_surf,( SCREEN_WIDTH, SCREEN_HEIGHT)), self.screen_offset)
-    
+        
     def change_level(self, no_turns, no_boxes, max_line_len):
         for group in self.entity_manager.entities:
             for entity in self.entity_manager.entities[group]:

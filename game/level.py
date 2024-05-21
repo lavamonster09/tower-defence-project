@@ -116,8 +116,11 @@ class LevelManager:
 
     def change_level(self, no_turns, no_obsticles, line_max_length):
         self.current_level = self.generator.generate_level(no_turns, no_obsticles, line_max_length)
+
+    def change_to_boss(self):
+        self.current_level = BossLevel(self.current_level.level_number)
     
-    def draw(self):
+    def draw(self): 
         self.current_level.draw(self.game_surf)
     
     def update(self):
@@ -125,7 +128,7 @@ class LevelManager:
 
 class Level():
     def __init__(self, points, obsticles, level_number) -> None:
-        
+        self.level_number = level_number
         self.background = pygame.image.load(f"assets\images/area_{level_number}/floor.png").convert()
         self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.points = points
@@ -153,3 +156,14 @@ class Level():
             temp.center = obsticle.center
             pygame.draw.rect(surface, (46, 34, 47), temp, border_radius= PATH_SIZE // 2)
             pygame.draw.rect(surface, (62, 53, 70), obsticle, border_radius= PATH_SIZE // 2)
+
+class BossLevel:
+    def __init__(self, level_no) -> None:
+        self.background = pygame.image.load(f"assets\images/area_{level_no}/floor.png").convert()
+        self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.points = []
+        self.obsticles = []
+        self.level_number = level_no
+
+    def draw(self, surface):
+        surface.blit(self.background, (0,0))

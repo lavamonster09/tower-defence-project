@@ -44,7 +44,6 @@ class Tower(Entity):
         
 
     def update(self):
-
         damage_upgraded = self.upgrades.count("damage") > 0 
         speed_upgraded = self.upgrades.count("speed") > 0
         range_upgraded = self.upgrades.count("range") > 0 
@@ -68,7 +67,7 @@ class Tower(Entity):
         if "enemy" in self.entity_manager.entities and not self.held:
             for enemy in self.entity_manager.entities["enemy"]:
                 if (enemy.pos - self.pos).magnitude() < self.range:
-                    if self.can_shoot and enemy.real_hp > 0 :
+                    if self.can_shoot and enemy.real_hp > 0:
                         #self.rotation = self.get_rotation(enemy.pos)
                         self.game_manager.shake_screen(2,4)
                         self.sound_manager.play_sound("shoot")
@@ -105,14 +104,14 @@ class Tower(Entity):
             else: target_surface.blit(font.render(str(self.upgrades.count("range")),True,(100, 100, 100)), pygame.Vector2(self.pickup_rect.bottomright) - pygame.Vector2(10, 0))
             if self.player_inrange:
                 for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
-                    pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
+                    pygame.draw.circle(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2), 1)
             else:
                 for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
-                    pygame.draw.rect(target_surface, (255,50, 50), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
+                    pygame.draw.circle(target_surface, (255,55,55), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2), 1)
             pygame.draw.circle(target_surface, (255,255,255), self.rect.center, self.range, 4)
         if self.held:
-            for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():
-                pygame.draw.rect(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2, 2, 2))
+            for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():  
+                pygame.draw.circle(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2), 1)
             pygame.draw.circle(target_surface, (255,255,255), self.rect.center, self.range, 4)
 
     def get_rotation(self, target):
