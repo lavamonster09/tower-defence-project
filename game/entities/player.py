@@ -41,8 +41,6 @@ class Player(Entity):
         self.m_last_pressed = m_pressed
         self.k_last_pressed = k_pressed
         if self.holding != None:
-            if k_pressed[pygame.K_r]:
-                self.holding.rotation += 5
             self.holding.held = True
             self.holding.pos = self.pos + pygame.Vector2(0,-64).rotate(-self.angle)
        

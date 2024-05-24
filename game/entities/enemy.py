@@ -82,12 +82,15 @@ class BossPylon(Entity):
         self.no_enemies = 10
 
     def update(self):
-        if self.protected:
-            pass
+        if self.protected: 
+            self.real_hp = 0
         if self.hp <= 0:
             self.sound_manager.play_sound("death")
             self.alive = False
             self.boss.no_pylons -= 1
         super().update()
-        self.boss.hp -= (self.last_hp - self.hp)
+        if not self.protected:
+            self.boss.hp -= (self.last_hp - self.hp)
+        elif self.last_hp != self.hp:
+             self.hp += (self.last_hp - self.hp)   
         self.last_hp = self.hp

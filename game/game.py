@@ -44,22 +44,13 @@ class Game(Screen):
         
         self.game_manager = GameStateManager(self)
 
-        self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click))
         self.add_item("dev_btn_generate", Button(BUTTON_DARK_NO_FILL , rect = (75,25,50,50), text = get_icon_hex("replay"), on_click= self.btn_generate_on_click))
         self.add_item("dev_btn_spawn_enemy", Button(BUTTON_DARK_NO_FILL , rect = (125,25,50,50), text = "E", on_click= self.btn_spawn_enemy_on_click))
         self.add_item("dev_btn_spawn_tower", Button(BUTTON_DARK_NO_FILL , rect = (175,25,50,50), text = "T", on_click= self.btn_spawn_tower_on_click))
         self.add_item("dev_btn_give_upgrade", Button(BUTTON_DARK_NO_FILL , rect = (225,25,50,50), text = "U", on_click= self.btn_give_upgrade_on_click))
 
-        self.add_item("dev_sld_noturns", Slider(SLIDER_DARK, pos = (25, 75), length = 100, min_val = 1, max_val = 15))
-        self.add_item("dev_lbl_noturns", Label(LABEL_DARK, rect = (75, 100, 125, 50), text = "No. turns: 1", font_size=20))
         self.no_turns = 6
-
-        self.add_item("dev_sld_noboxes", Slider(SLIDER_DARK, pos = (25, 125), length = 100, min_val = 0, max_val = 5))
-        self.add_item("dev_lbl_noboxes", Label(LABEL_DARK, rect = (75, 150, 125, 50), text = "No. boxes: 1", font_size=20))
         self.no_boxes = 6
-
-        self.add_item("dev_sld_maxlinelen", Slider(SLIDER_DARK, pos = (25, 175), length = 100, min_val = 300, max_val = 1200))
-        self.add_item("dev_lbl_maxlinelen", Label(LABEL_DARK, rect = (75, 200, 125, 50), text = "Max line len: 100", font_size=20))
         self.max_line_len = 1000
 
         self.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 98, 125, 50), text = "100", font_size=20, positioning="relative"))
@@ -68,8 +59,8 @@ class Game(Screen):
         self.items["lbl_round"].fore_color = (34,177,76)
 
         self.game_manager.change_level(self.no_turns,self.no_boxes,self.max_line_len)
-        
         self.game_manager.entity_manager.add_entity(Player(self.game_manager, self.assets.get("player")), "player")
+        self.btn_spawn_tower_on_click()
         self.toggle_dev()
     
     def draw(self):
@@ -81,6 +72,8 @@ class Game(Screen):
         super().update()
         if pygame.key.get_just_pressed()[pygame.K_F5]:
             self.toggle_dev()
+        if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
+            self.pause()
         self.items["lbl_fps"].text = str(int(self.screen_manager.app.clock.get_fps()))
     
     def btn_back_on_click(self):
@@ -112,6 +105,26 @@ class Game(Screen):
         for item in self.items:
             if item[0:3] == "dev":
                 self.items[item].hidden = not self.items[item].hidden
+
+    def pause(self):
+        if self.game_manager.time_paused == True:
+            self.game_manager.time_paused = False
+            self.remove_item("lbl_paused")
+            self.remove_item("rect_pause")
+            self.remove_item("btn_settings")
+            self.remove_item("btn_continue")
+            self.remove_item("btn_exit")
+            self.items["btn_roundstart"].hidden = False
+            return
+        self.game_manager.level_manager.game_surf = pygame.transform.gaussian_blur(self.game_manager.level_manager.game_surf, 2)
+        self.game_manager.time_paused = True
+        self.add_item("rect_pause", Rect(RECT_DARK, (50, 50, 500, 500), positioning="relative"))
+        self.add_item("lbl_paused", Label(LABEL_DARK, (50, 8, 1000, 100), text= "PAUSED", positioning="relative", font_size=80))
+        self.add_item("btn_settings", Button(BUTTON_DARK, (50, 51, 400, 100), text="SETTINGS", on_click=self.screen_manager.change_screen, click_args=["settings", 1], positioning="relative"))
+        self.add_item("btn_continue", Button(BUTTON_DARK, (50, 28, 400, 100), text="CONTINUE", on_click=self.pause, positioning="relative"))
+        self.add_item("btn_exit", Button(BUTTON_DARK, (50, 73, 400, 100), text="EXIT", on_click=self.screen_manager.change_screen, click_args=["game_select", 1], positioning="relative"))
+        self.items["btn_roundstart"].hidden = True
+        
       
 
 class GameStateManager:
@@ -257,7 +270,6 @@ class GameStateManager:
             number = (number * 4)
             if self.round >= self.enemy_types[type]["offset"]:
                 number = math.sqrt((self.round - self.enemy_types[type]["offset"]) * 6)
-            print(number)
             if number > 0:
                 for i in range(int(number)):
                     self.enemies.append(self.enemy_types[type]["type"](self, sprite = self.assets.get("enemy1")))

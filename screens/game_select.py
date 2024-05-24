@@ -6,7 +6,7 @@ class Game_select(Screen):
     def __init__(self, screen_manager) -> None:
         super().__init__(screen_manager)
         self.back_color = (DARK_BACKGROUND_COLOR)
-        self.add_item("img_bkg", Image("assets\images\gameselect.png", rect = (50,50,SCREEN_WIDTH,SCREEN_HEIGHT), positioning="relative"))
+        self.add_item("img_bkg", Image("assets\images/null.png", rect = (50,50,SCREEN_WIDTH,SCREEN_HEIGHT), positioning="relative"))
 
         # btn_start
         self.add_item("btn_play",Button(BUTTON_DARK , rect=(50,85,180,100), text="PLAY", positioning="relative", on_click= self.btn_play_on_click))
@@ -28,6 +28,10 @@ class Game_select(Screen):
         self.add_item("lbl_title", Label(LABEL_DARK, rect = (50,40,SCREEN_WIDTH,200), text = "TOWER DEFENCE", positioning="relative", font_size=100))
 
         
+    def update(self):
+        if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
+            self.btn_back_on_click()
+        return super().update()
 
     def on_open(self):
         self.animations["btn_play_open"][0].start_animation()

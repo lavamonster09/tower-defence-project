@@ -22,9 +22,7 @@ class Entity:
 
 class EntityManager:
     def __init__(self) -> None:
-        self.entities = {
-            "tower": []
-        }
+        self.entities = {}
 
     def add_entity(self, entity, group):
         if group in self.entities:

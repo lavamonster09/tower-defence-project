@@ -23,6 +23,8 @@ class Settings(Screen):
         self.add_item("Title", Label(LABEL_DARK, rect = (50,10,SCREEN_WIDTH,200), text = "SETTINGS", positioning="relative", font_size=100)) 
 
     def update(self):
+        if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
+            self.btn_back_on_click()
         super().update()
         display_width, display_height = self.items["dropdown"].get_selected_option().split(" x ")
         display_width, display_height = int(display_width), int(display_height)

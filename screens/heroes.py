@@ -68,6 +68,11 @@ class Heroes(Screen):
 
         self.btn_heroes_on_click()
 
+    def update(self):
+        if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
+            self.btn_back_on_click()
+        return super().update()
+        
     def btn_back_on_click(self):
         self.screen_manager.change_screen("game_select", 20)
 

@@ -81,7 +81,10 @@ class Tower(Entity):
         damage = self.upgrades.count("damage")
         speed = self.upgrades.count("speed")
         range = self.upgrades.count("range") 
-        upgrade = f"tower_{damage}{speed}{range}"
+        for asset in self.game_manager.assets.assets:
+            if asset.count("tower_") > 0:
+                if int(asset[6]) <= damage and int(asset[7]) <= speed and int(asset[8]) <= range:
+                    upgrade = asset
         sprite = self.game_manager.assets.get(upgrade)
         if sprite != self.game_manager.assets.get("null"):
             self.sprite = pygame.transform.scale_by(self.game_manager.assets.get(upgrade), 2)
