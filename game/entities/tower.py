@@ -97,7 +97,6 @@ class Tower(Entity):
         self.rect.center = self.pos
         target_surface.blit(temp_sprite, self.rect)
         if self.hovered:
-            
             self.pickup_rect.center = self.pos
             if self.can_upgrade["speed"]: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(34,177,76)), self.pickup_rect.bottomleft)
             else: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(100, 100, 100)), self.pickup_rect.bottomleft)
@@ -115,7 +114,10 @@ class Tower(Entity):
         if self.held:
             for point in pygame.mask.from_surface(self.sprite.convert_alpha()).outline():  
                 pygame.draw.circle(target_surface, (255,255,255), (point[0] + self.pos.x - self.rect.width/2, point[1] + self.pos.y - self.rect.height/2), 1)
-            pygame.draw.circle(target_surface, (255,255,255), self.rect.center, self.range, 4)
+            if self.check_collisions():
+                pygame.draw.circle(target_surface, (255,55,55), self.rect.center, self.range, 4)
+            else:
+                pygame.draw.circle(target_surface, (255,255,255), self.rect.center, self.range, 4)
 
     def get_rotation(self, target):
         target

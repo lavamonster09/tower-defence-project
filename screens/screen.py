@@ -1,4 +1,5 @@
 import pygame
+import pygame.gfxdraw
 from misc.ui import *
 
 class Screen():
@@ -8,12 +9,20 @@ class Screen():
         self.screen_manager = screen_manager
         self.screen = pygame.display.get_surface()
         self.back_color = (0,0,0)
+        self.cursor_rad = 10
     
     def draw(self):
         if self.back_color != (0,0,0):
             self.screen.fill(self.back_color)
         for item in self.items:
             self.items[item].draw()
+        if pygame.mouse.get_cursor()[0] == pygame.SYSTEM_CURSOR_ARROW:
+            if self.cursor_rad < 10:
+                self.cursor_rad += 1
+        if pygame.mouse.get_cursor()[0] == pygame.SYSTEM_CURSOR_HAND:
+            if self.cursor_rad > 5:
+                self.cursor_rad -= 1
+        pygame.draw.circle(self.screen, (255,255,255), (int(pygame.mouse.get_pos()[0]), int(pygame.mouse.get_pos()[1])), self.cursor_rad,3)
 
     def update(self):
         pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_ARROW)

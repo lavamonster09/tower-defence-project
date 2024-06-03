@@ -18,6 +18,7 @@ class Entity:
         target_surface.blit(self.sprite, self.rect)
     
     def update(self):
+        
         self.rect.center = self.pos
 
 class EntityManager:

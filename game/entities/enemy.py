@@ -72,13 +72,13 @@ class Boss(Entity):
 
 class BossPylon(Entity):
     def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), boss = None) -> None:
-        super().__init__(game_manager, sprite = pygame.transform.scale_by(sprite, 2))
-        self.pos = pygame.Vector2(random.randrange(SCREEN_WIDTH), random.randrange(SCREEN_HEIGHT))
+        super().__init__(game_manager, sprite= sprite)
+        self.pos = pygame.Vector2(random.randrange(SCREEN_WIDTH) // 2 * 2, random.randrange(SCREEN_HEIGHT) // 2 * 2)
         self.hp = 100
         self.real_hp = 100
         self.boss = boss
         self.last_hp = self.hp
-        self.protected = True 
+        self.protected = False
         self.no_enemies = 10
 
     def update(self):

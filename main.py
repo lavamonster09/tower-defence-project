@@ -16,6 +16,7 @@ class App:
         self.display = pygame.display.set_mode((self.display_width, self.display_height))
         self.screen_manager = ScreenManager(self)
         self.clock = pygame.time.Clock()
+        pygame.mouse.set_visible(False)
         self.main()
         
     def main(self):

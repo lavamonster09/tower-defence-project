@@ -22,7 +22,7 @@ class Menu(Screen):
         return super().update()
 
     def btn_start_on_click(self):
-        self.screen_manager.current_screen = "game_select"
+        self.screen_manager.change_screen("game_select", 20)
     
     def btn_settings_on_click(self):
-        self.screen_manager.current_screen = "settings"
+        self.screen_manager.change_screen("settings", 20)

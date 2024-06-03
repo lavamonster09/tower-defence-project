@@ -25,6 +25,7 @@ class ScreenManager():
             if self.counter > self.change_in:
                 self.counter = 0
                 self.change_in = 0
+                self.screens[self.change_to].cursor_rad = self.screens[self.current_screen].cursor_rad
                 self.current_screen = self.change_to
         if self.last_screen != self.current_screen:
             self.screens[self.current_screen].on_open()
