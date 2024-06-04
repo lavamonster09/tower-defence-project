@@ -45,6 +45,9 @@ class EntityManager:
                 entity.update()
                 if not entity.alive:
                     self.remove_entity(entity, group)
+                if entity.holdable:
+                    if entity.rect.collidepoint(pygame.Vector2(pygame.mouse.get_pos())):
+                        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
     def draw(self, target_surface):
         for group in self.entities:

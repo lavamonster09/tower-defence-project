@@ -4,8 +4,11 @@ import random
 from misc.constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Enemy(Entity):
-    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), speed = 2, children = None) -> None:
-        self.path = game_manager.level_manager.current_level.points
+    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), speed = 2, children = None, path = None) -> None:
+        if path is None:
+            self.path = game_manager.level_manager.current_level.points
+        else:
+            self.path = path
         super().__init__(game_manager, position = self.path[0], sprite = sprite)
         self.speed = speed
         self.current_point = 0
@@ -42,16 +45,22 @@ class Fast(Enemy):
         speed = 3
         super().__init__(game_manager, sprite, speed)
         
+class Grunt(Enemy):
+    def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0)), target = pygame.Vector2(0,0)) -> None:
+        speed = 1
+        super().__init__(game_manager, sprite, speed, path = [pygame.Vector2(random.randrange(SCREEN_WIDTH) // 2 * 2, random.randrange(SCREEN_HEIGHT) // 2 * 2), target])
+        self.hp = 30
+
 class Boss(Entity):
     def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0))) -> None:
-        super().__init__(game_manager, sprite = pygame.transform.scale_by(sprite, 2))
+        super().__init__(game_manager, sprite = pygame.transform.scale_by(sprite,2))
         self.pos = pygame.Vector2(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
-        self.hp = 500
+        self.hp = 600
         self.no_pylons = 0
 
     def spawn_pylon(self):
         if self.no_pylons <= 0:
-            self.entity_manager.add_entity(BossPylon(self.game_manager, self.game_manager.assets.get("pylon"), self), "enemy")
+            self.entity_manager.add_entity(BossPylon(self.game_manager, self.game_manager.assets.get("pylon"), self), "pylon")
             self.no_pylons += 1 
 
     def update(self):
@@ -73,24 +82,41 @@ class Boss(Entity):
 class BossPylon(Entity):
     def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), boss = None) -> None:
         super().__init__(game_manager, sprite= sprite)
-        self.pos = pygame.Vector2(random.randrange(SCREEN_WIDTH) // 2 * 2, random.randrange(SCREEN_HEIGHT) // 2 * 2)
-        self.hp = 100
-        self.real_hp = 100
         self.boss = boss
+        self.pos = self.get_pos()
+        self.hp = 100
+        self.velocity = pygame.Vector2(0,0)
         self.last_hp = self.hp
-        self.protected = False
-        self.no_enemies = 10
+        self.no_enemies = 0
+        self.game_manager.enemies = [Grunt(self.game_manager, self.game_manager.assets.get("enemy"), self.pos) for i in range(self.no_enemies)]
+
+    def get_pos(self):
+        pos = pygame.Vector2(random.randrange(SCREEN_WIDTH) // 2 + (SCREEN_WIDTH/4), random.randrange(SCREEN_HEIGHT) // 2 + (SCREEN_HEIGHT/4))
+        self.rect.center = pos
+        if self.rect.colliderect(self.boss.rect):
+            pos = self.get_pos()
+        return pos
 
     def update(self):
-        if self.protected: 
-            self.real_hp = 0
+        self.pos += self.velocity
+        if self.entity_manager.entities.get("player", [])[0].holding != self:
+            if self.pos.x > SCREEN_WIDTH or self.pos.x < 0:
+                self.hp = 0
+            if self.pos.y > SCREEN_HEIGHT or self.pos.y < 0:
+                self.hp = 0
+            if self.rect.colliderect(self.boss.rect):
+                self.hp = 0
+                self.boss.hp -= 200
+        if self.entity_manager.entities.get("enemy", []) == [] and self.game_manager.enemies == []:
+            self.holdable = True
         if self.hp <= 0:
             self.sound_manager.play_sound("death")
             self.alive = False
             self.boss.no_pylons -= 1
         super().update()
-        if not self.protected:
-            self.boss.hp -= (self.last_hp - self.hp)
-        elif self.last_hp != self.hp:
-             self.hp += (self.last_hp - self.hp)   
-        self.last_hp = self.hp
+
+    def check_collisions(self):
+        for obsticle in self.level_manager.current_level.obsticles:
+            if obsticle.collidepoint(self.pos):
+                return True
+        return False

@@ -147,7 +147,8 @@ class Level():
         for i in range(len(self.points) - 1):
             pygame.draw.line(surface, (158, 69, 57), self.points[i], self.points[i+1], PATH_SIZE + 1)
         
-        pygame.draw.circle(surface, (0,255,0), self.points[0], PATH_SIZE/2)
+        pygame.draw.circle(surface, (30, 188, 115), self.points[0], PATH_SIZE/2 + 3)
+        pygame.draw.circle(surface, (35, 144, 99), self.points[0], PATH_SIZE/2 + 3, 3)
             
         for obsticle in self.obsticles:
             temp = obsticle.copy()

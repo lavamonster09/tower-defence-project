@@ -68,8 +68,8 @@ class Game(Screen):
         super().draw()
     
     def update(self):
-        self.game_manager.update()
         super().update()
+        self.game_manager.update()
         if pygame.key.get_just_pressed()[pygame.K_F5]:
             self.toggle_dev()
         if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
@@ -88,7 +88,7 @@ class Game(Screen):
     def btn_spawn_enemy_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
         self.game_manager.level_manager.change_to_boss()
-        self.game_manager.entity_manager.add_entity(Boss(self.game_manager, self.assets.get("enemy1")), "boss")
+        self.game_manager.entity_manager.add_entity(Boss(self.game_manager, self.assets.get("boss")), "boss")
         
     def btn_spawn_tower_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
@@ -259,6 +259,9 @@ class GameStateManager:
         self.shake_duration += duration
 
     def start_round(self):
+        if not self.round_started and self.entity_manager.entities.get("boss", []) != []:
+            self.round_started = True
+            self.enemy_count = len(self.entity_manager.entities.get("enemy", []))
         if self.round_started or self.entity_manager.entities.get("enemy", []) != []: return
         self.round += 1
         self.game.items["lbl_round"].text = str(self.round)
