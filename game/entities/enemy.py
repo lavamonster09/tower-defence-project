@@ -53,7 +53,7 @@ class Grunt(Enemy):
 
 class Boss(Entity):
     def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0))) -> None:
-        super().__init__(game_manager, sprite = pygame.transform.scale_by(sprite,2))
+        super().__init__(game_manager, sprite = sprite,)
         self.pos = pygame.Vector2(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
         self.hp = 600
         self.no_pylons = 0
@@ -93,6 +93,7 @@ class BossPylon(Entity):
     def get_pos(self):
         pos = pygame.Vector2(random.randrange(SCREEN_WIDTH) // 2 + (SCREEN_WIDTH/4), random.randrange(SCREEN_HEIGHT) // 2 + (SCREEN_HEIGHT/4))
         self.rect.center = pos
+        self.boss.rect.center = self.boss.pos
         if self.rect.colliderect(self.boss.rect):
             pos = self.get_pos()
         return pos

@@ -5,8 +5,8 @@ import pygame
 import math
 
 class Player(Entity):
-    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), speed = 1.4) -> None:
-        super().__init__(game_manager, position = pygame.Vector2(0,0), sprite = sprite)
+    def __init__(self,game_manager, image, speed = 1.4) -> None:
+        super().__init__(game_manager, position = pygame.Vector2(0,0), sprite = game_manager.assets.get(image))
         self.speed = speed
         self.velocity = pygame.Vector2(0,0)
         self.m_last_pressed = pygame.mouse.get_pressed()

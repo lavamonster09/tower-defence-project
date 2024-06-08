@@ -19,6 +19,9 @@ import os
 class Assets: 
     def __init__(self) -> None:
         self.assets = {}
+        self.load()
+    
+    def load(self):
         for file in os.scandir("assets/images"):
             if file.is_file():
                 print(file.name)
@@ -43,8 +46,8 @@ class Game(Screen):
         self.assets = Assets()
         
         self.game_manager = GameStateManager(self)
-
-        self.add_item("dev_btn_generate", Button(BUTTON_DARK_NO_FILL , rect = (75,25,50,50), text = get_icon_hex("replay"), on_click= self.btn_generate_on_click))
+        self.add_item("dev_btn_reload", Button(BUTTON_DARK_NO_FILL , rect = (75,25,50,50), text = get_icon_hex("replay"), on_click= self.btn_reload_on_click))
+        self.add_item("dev_btn_generate", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("replay"), on_click= self.btn_generate_on_click))
         self.add_item("dev_btn_spawn_enemy", Button(BUTTON_DARK_NO_FILL , rect = (125,25,50,50), text = "E", on_click= self.btn_spawn_enemy_on_click))
         self.add_item("dev_btn_spawn_tower", Button(BUTTON_DARK_NO_FILL , rect = (175,25,50,50), text = "T", on_click= self.btn_spawn_tower_on_click))
         self.add_item("dev_btn_give_upgrade", Button(BUTTON_DARK_NO_FILL , rect = (225,25,50,50), text = "U", on_click= self.btn_give_upgrade_on_click))
@@ -59,7 +62,7 @@ class Game(Screen):
         self.items["lbl_round"].fore_color = (34,177,76)
 
         self.game_manager.change_level(self.no_turns,self.no_boxes,self.max_line_len)
-        self.game_manager.entity_manager.add_entity(Player(self.game_manager, self.assets.get("player")), "player")
+        self.game_manager.entity_manager.add_entity(Player(self.game_manager,"player"), "player")
         self.btn_spawn_tower_on_click()
         self.toggle_dev()
     
@@ -79,6 +82,12 @@ class Game(Screen):
     def btn_back_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
         self.screen_manager.change_screen(self.screen_manager.before_last_screen, 20)
+    
+    def btn_reload_on_click(self):
+        self.assets.load()
+        for group in self.game_manager.entity_manager.entities:
+            for entity in self.game_manager.entity_manager.entities[group]:
+                entity.sprite = pygame.transform.scale_by(self.assets.get(entity.__class__.__name__.lower()),2)
         
     def btn_generate_on_click(self):
         self.game_manager.sound_manager.play_sound("click")
@@ -107,7 +116,7 @@ class Game(Screen):
                 self.items[item].hidden = not self.items[item].hidden
 
     def pause(self):
-        if self.game_manager.time_paused == True:
+        if self.game_manager.time_paused == True and self.items.get("lbl_paused", None) != None:
             self.game_manager.time_paused = False
             self.remove_item("lbl_paused")
             self.remove_item("rect_pause")
@@ -115,6 +124,8 @@ class Game(Screen):
             self.remove_item("btn_continue")
             self.remove_item("btn_exit")
             self.items["btn_roundstart"].hidden = False
+            return
+        if self.game_manager.time_paused == True:
             return
         self.game_manager.level_manager.game_surf = pygame.transform.gaussian_blur(self.game_manager.level_manager.game_surf, 2)
         self.game_manager.time_paused = True
@@ -205,13 +216,13 @@ class GameStateManager:
     
     def give_upgrade(self):
         self.level_manager.game_surf = pygame.transform.gaussian_blur(self.level_manager.game_surf, 2)
-        self.game.add_item("btn_upgrade_1", Button(BUTTON_DARK, (20,65,300,200), "speed", positioning="relative", on_click=self.spawn_upgrade, click_args=["speed"]))
+        self.game.add_item("btn_upgrade_1", Button(BUTTON_DARK, (20,65,310,200), "speed", positioning="relative", on_click=self.spawn_upgrade, click_args=["speed"]))
         self.game.items["btn_upgrade_1"].fore_color = (34,177,76)
-        self.game.add_item("btn_upgrade_2", Button(BUTTON_DARK, (50,65,350,200), "damage", positioning="relative", on_click=self.spawn_upgrade, click_args=["damage"]))
+        self.game.add_item("btn_upgrade_2", Button(BUTTON_DARK, (50,65,430,200), "damage", positioning="relative", on_click=self.spawn_upgrade, click_args=["damage"]))
         self.game.items["btn_upgrade_2"].fore_color = (235,51,36)
-        self.game.add_item("btn_upgrade_3", Button(BUTTON_DARK, (80,65,300,200), "range", positioning="relative", on_click=self.spawn_upgrade, click_args=["range"]))
+        self.game.add_item("btn_upgrade_3", Button(BUTTON_DARK, (80,65,310,200), "range", positioning="relative", on_click=self.spawn_upgrade, click_args=["range"]))
         self.game.items["btn_upgrade_3"].fore_color = (230,230,230)
-        self.game.add_item("lbl_upgrade", Label(LABEL_DARK_FILLED, (50,25,650,150), f"chose an upgrade", positioning="relative", font_size=80))
+        self.game.add_item("lbl_upgrade", Label(LABEL_DARK_FILLED, (50,25,770,150), f"chose an upgrade", positioning="relative", font_size=80))
         self.time_paused = True    
         
     def show_upgrade_popup(self, tower):
@@ -222,7 +233,7 @@ class GameStateManager:
             if upgrade.can_upgrade:
                 currently_upgrading = upgrade
         self.game.add_item("btn_upgrade", Button(BUTTON_DARK, (75,65,450,200), "UPGRADE", positioning="relative", on_click=self.upgrade_on_click, click_args=[currently_upgrading, tower]))
-        self.game.add_item("lbl_upgrade", Label(LABEL_DARK_FILLED, (50,25,650,150), f"upgrade, {currently_upgrading.type}", positioning="relative", font_size=80))
+        self.game.add_item("lbl_upgrade", Label(LABEL_DARK_FILLED, (50,25,770,150), f"upgrade, {currently_upgrading.type}", positioning="relative", font_size=80))
         self.time_paused = True 
 
     def spawn_upgrade(self, upgrade_type):

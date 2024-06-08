@@ -1,4 +1,4 @@
-MAIN_FONT = "assets/fonts/ConcertOne-Regular.ttf"
+MAIN_FONT = "assets/fonts/rimouski sb.otf"
 ICON_FONT = "assets/fonts/MaterialIcons-Regular.ttf"
 
 
@@ -15,9 +15,9 @@ class Theme:
 
 # colors
 DARK_BACKGROUND_COLOR = (20, 19, 23)
-DARK_SURFACE_LOW_COLOR = (29, 27, 32)
+DARK_SURFACE_LOW_COLOR = (46, 34, 47)
 DARK_SURFACE_HOVER_COLOR = (51, 45, 65)
-DARK_FOREGROUND_COLOR = (160, 157, 165)
+DARK_FOREGROUND_COLOR = (255,255,255)
 DARK_OUTLINE_COLOR = (110, 109, 117)
 DARK_ACCENT_COLOR = (171, 149, 217)
 

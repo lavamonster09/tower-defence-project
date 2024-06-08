@@ -6,7 +6,7 @@ class Game_select(Screen):
     def __init__(self, screen_manager) -> None:
         super().__init__(screen_manager)
         self.back_color = (DARK_BACKGROUND_COLOR)
-        self.add_item("img_bkg", Image("assets\images/null.png", rect = (50,50,SCREEN_WIDTH,SCREEN_HEIGHT), positioning="relative"))
+        self.add_item("img_bkg", Image("assets\images/menu/menu_select.png", rect = (50,50,SCREEN_WIDTH,SCREEN_HEIGHT), positioning="relative"))
 
         # btn_start
         self.add_item("btn_play",Button(BUTTON_DARK , rect=(50,85,180,100), text="PLAY", positioning="relative", on_click= self.btn_play_on_click))
