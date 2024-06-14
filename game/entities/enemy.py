@@ -87,7 +87,7 @@ class BossPylon(Entity):
         self.hp = 100
         self.velocity = pygame.Vector2(0,0)
         self.last_hp = self.hp
-        self.no_enemies = 0
+        self.no_enemies = 5
         self.game_manager.enemies = [Grunt(self.game_manager, self.game_manager.assets.get("enemy"), self.pos) for i in range(self.no_enemies)]
 
     def get_pos(self):
@@ -99,6 +99,10 @@ class BossPylon(Entity):
         return pos
 
     def update(self):
+        if not self.holdable:
+            self.sprite = pygame.transform.scale_by(self.game_manager.assets.get("pylon_inactive"), 2)
+        else:
+            self.sprite = pygame.transform.scale_by(self.game_manager.assets.get("pylon"), 2)
         self.pos += self.velocity
         if self.entity_manager.entities.get("player", [])[0].holding != self:
             if self.pos.x > SCREEN_WIDTH or self.pos.x < 0:

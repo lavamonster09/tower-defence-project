@@ -270,9 +270,12 @@ class GameStateManager:
         self.shake_duration += duration
 
     def start_round(self):
-        if not self.round_started and self.entity_manager.entities.get("boss", []) != []:
-            self.round_started = True
+        if not self.round_started and self.entity_manager.entities.get("boss", []) != []:  
+            no_enemies = len(self.enemies)
             self.enemy_count = len(self.entity_manager.entities.get("enemy", []))
+            if no_enemies > 0 and self.enemy_count == 0:
+                self.round_started = True
+            return
         if self.round_started or self.entity_manager.entities.get("enemy", []) != []: return
         self.round += 1
         self.game.items["lbl_round"].text = str(self.round)
