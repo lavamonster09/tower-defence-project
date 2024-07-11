@@ -171,7 +171,6 @@ class GameStateManager:
         
 
     def update(self):
-
         self.level_manager.update()
         if not self.time_paused:
             self.entity_manager.update()
