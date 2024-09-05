@@ -5,6 +5,9 @@ from screens.screen import Screen
 
 class Menu(Screen):
     def __init__(self, screen_manager) -> None:
+        pygame.mixer.music.load(f"assets\sounds\{"Mixdown"}.wav")
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.1)
         super().__init__(screen_manager)
         self.back_color = (DARK_BACKGROUND_COLOR)
 

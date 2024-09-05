@@ -14,3 +14,8 @@ class SoundManager():
 
     def play_sound(self, name):
         self.sounds[name].play()
+
+    def play_music(self, name):
+        pygame.mixer.music.load(f"assets\sounds\{name}.wav")
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.2)

@@ -54,6 +54,7 @@ class Grunt(Enemy):
 class Boss(Entity):
     def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0))) -> None:
         super().__init__(game_manager, sprite = sprite,)
+        self.game_manager.sound_manager.play_music("CARAVAN")
         self.pos = pygame.Vector2(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
         self.hp = 600
         self.no_pylons = 0
