@@ -4,6 +4,7 @@
 
 from util.constants import * 
 from engine import *
+from engine.game import Engine 
 from game.game import Game
 import screens
 import sys
@@ -52,4 +53,4 @@ class App:
         self.screen_manager.draw()
 
 if __name__ == "__main__":
-    app = App()
+    engine = Engine()
