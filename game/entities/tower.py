@@ -1,13 +1,7 @@
-from msilib.schema import Upgrade
-from turtle import position, speed
-from game.entities.entity import *
 from game.entities.bullet import *
-from misc.constants import *
-from misc.theme import MAIN_FONT
-from misc.util import *
-import pygame
+from util import *
+from engine import *
 import random
-import math
 
 class Tower(Entity):
     def __init__(self,game_manager, position, sprite = pygame.Surface((0,0))):

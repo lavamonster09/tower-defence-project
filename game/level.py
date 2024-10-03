@@ -1,7 +1,7 @@
 import pygame
 import random
-from misc.constants import *
-from misc.util import *
+from util import *
+
 
 class Generator:
     def __init__(self, screen_size):

@@ -1,5 +1,4 @@
-from game.entities.entity import *
-import random
+from engine import *
 
 class Bullet(Entity):
     def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), target = None, start_pos = pygame.Vector2(0,0), damage = 0) -> None:

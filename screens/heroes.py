@@ -1,43 +1,41 @@
-from misc.ui import *
-from misc.theme import *
-from misc.constants import *
-from screens.screen import Screen
+from engine import *
+from util.constants import *
 
 hero_data = {
     "lime": {
         "name": "Lime",
-        "small_image": "assets/images/lime_small.png",
-        "large_image": "assets/images/lime_large.png",
+        "small_image": "assets/images/heroes/lime_small.png",
+        "large_image": "assets/images/heroes/lime_large.png",
         "description": "lime is a glorious color. limes are also delicious. lime is a hue of green."
     },
     "red": {
         "name": "red",
-        "small_image": "assets/images/test1_small.png",
-        "large_image": "assets/images/test1_large.png",
+        "small_image": "assets/images/heroes/test1_small.png",
+        "large_image": "assets/images/heroes/test1_large.png",
         "description": "red is angry the color suggest anger and rage. red is the hue of blood."
     },
     "purple": {
         "name": "purple",
-        "small_image": "assets/images/test2_small.png",
-        "large_image": "assets/images/test2_large.png",
+        "small_image": "assets/images/heroes/test2_small.png",
+        "large_image": "assets/images/heroes/test2_large.png",
         "description": "purple is a hue of blue and red. purple is a royal color. purple is a hue of violet."
     },
     "yellow": {
         "name": "yellow",
-        "small_image": "assets/images/test3_small.png",
-        "large_image": "assets/images/test3_large.png",
+        "small_image": "assets/images/heroes/test3_small.png",
+        "large_image": "assets/images/heroes/test3_large.png",
         "description": "yellow is the color of the sun. yellow is a hue of orange. yellow is a hue of green."
     },
     "pink": {
         "name": "pink",
-        "small_image": "assets/images/test4_small.png",
-        "large_image": "assets/images/test4_large.png",
+        "small_image": "assets/images/heroes/test4_small.png",
+        "large_image": "assets/images/heroes/test4_large.png",
         "description": "pink is a hue of red. pink is a hue of purple. pink is a hue of white."
     },
     "cyan": {
         "name": "cyan",
-        "small_image": "assets/images/test5_small.png",
-        "large_image": "assets/images/test5_large.png",
+        "small_image": "assets/images/heroes/test5_small.png",
+        "large_image": "assets/images/heroes/test5_large.png",
         "description": "cyan is the color of the sky. cyan is a hue of blue. cyan is a hue of green."
     }
 }

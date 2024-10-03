@@ -2,9 +2,10 @@
 # waves 
 # towers that reach sertain level 5-5-0 change type / lock out other upgrades 
 
-from misc.constants import * 
-from screens.screen_manager import ScreenManager
-import pygame 
+from util.constants import * 
+from engine import *
+from game.game import Game
+import screens
 import sys
 
 pygame.init()
@@ -14,7 +15,14 @@ class App:
     def __init__(self) -> None:
         self.display_width , self.display_height = SCREEN_WIDTH, SCREEN_HEIGHT
         self.display = pygame.display.set_mode((self.display_width, self.display_height))
-        self.screen_manager = ScreenManager(self)
+        self.screen_manager = ScreenManager("menu", {
+            "menu": screens.Menu,
+            "game_select": screens.Game_select, 
+            "game": Game,
+            "settings": screens.Settings,
+            "heroes": screens.Heroes,
+            "upgrades": screens.Upgrades
+        })
         self.clock = pygame.time.Clock()
         pygame.mouse.set_visible(False)
         self.main()

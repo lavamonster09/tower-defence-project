@@ -1,19 +1,12 @@
 
 import random
-from turtle import position
-from misc.ui import *
-from misc.theme import *
-from misc.constants import *
-from screens.screen import Screen
+from engine import *
+from util.constants import *
 from game.entities.enemy import *
 from game.entities.player import Player
 from game.entities.tower import Tower
 from game.entities.upgrade import Upgrade
-import game.sound as sound
-import game.entities.entity as entity
 import game.level as level
-import pygame
-import time 
 import os 
 
 class Assets: 
@@ -288,4 +281,4 @@ class GameStateManager:
                 number = math.sqrt((self.round - self.enemy_types[type]["offset"]) * 6)
             if number > 0:
                 for i in range(int(number)):
-                    self.enemies.append(self.enemy_types[type]["type"](self, sprite = self.assets.get("enemy1")))
+                    self.enemies.append(self.enemy_types[type]["type"](self, sprite = self.assets.get("enemy")))

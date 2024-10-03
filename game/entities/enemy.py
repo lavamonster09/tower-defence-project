@@ -1,7 +1,6 @@
-from game.entities.entity import *
-import random
+from engine import *
 
-from misc.constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from util import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Enemy(Entity):
     def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), speed = 2, children = None, path = None) -> None:

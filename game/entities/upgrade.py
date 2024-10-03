@@ -1,8 +1,5 @@
-from game.entities.entity import *
-from misc.constants import *
-from misc.util import *
-import pygame
-import math
+from engine import *
+from util import *
 
 class Upgrade(Entity):
     def __init__(self,game_manager, position, sprite, type):
