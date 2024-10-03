@@ -3,9 +3,8 @@
 # towers that reach sertain level 5-5-0 change type / lock out other upgrades 
 
 from util.constants import * 
-from engine import *
-from engine.game import Engine 
-from game.game import Game
+from engine import Game
+
 import screens
 import sys
 
@@ -53,4 +52,5 @@ class App:
         self.screen_manager.draw()
 
 if __name__ == "__main__":
-    engine = Engine()
+    engine = Game()
+    engine.run()

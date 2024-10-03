@@ -99,12 +99,13 @@ class Player(Entity):
         if self.pos.y + self.velocity.y > 0 and self.pos.y + self.velocity.y < SCREEN_HEIGHT and self.check_collisions(self.pos + pygame.Vector2(0, self.velocity.y)) == False:
             self.pos.y += self.velocity.y
         
-    def draw(self, target_surface):
+    def draw(self):
+        surface = pygame.display.get_surface()
         temp_sprite = pygame.transform.rotate(self.sprite, self.target_angle)
         self.rect = temp_sprite.get_rect()
         temp_sprite.set_colorkey((0,0,0))
         self.rect.center = self.pos
-        target_surface.blit(temp_sprite, self.rect)
+        surface.blit(temp_sprite, self.rect)
     
     def get_rotation(self):
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos()) / SCREEN_SCALE
@@ -120,7 +121,7 @@ class Player(Entity):
         return angle
     
     def check_collisions(self, postion):
-        for obsticle in self.level_manager.current_level.obsticles:
+        for obsticle in self.level.obsticles:
             if obsticle.collidepoint(postion):
                 return True
         return False

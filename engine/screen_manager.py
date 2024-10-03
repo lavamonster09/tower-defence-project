@@ -1,5 +1,5 @@
 
-from game.game import Game
+
 
 class ScreenManager():
     def __init__(self, startup_screen : str, screens: dict) -> None:
@@ -26,6 +26,9 @@ class ScreenManager():
             self.before_last_screen = self.last_screen
         self.last_screen = self.current_screen
         self.screens[self.current_screen].update()
+
+    def add_screen(self, screen_name, screen):
+        self.screens[screen_name] = screen
     
     def draw(self):
         if self.last_screen == self.current_screen:

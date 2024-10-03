@@ -32,7 +32,7 @@ class Assets:
         return self.assets.get(key, self.assets["null"])
 
 
-class Game(Screen):
+class Game3(Screen):
     def __init__(self, screen_manager):
         super().__init__(screen_manager)
         self.dev = True

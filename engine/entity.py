@@ -5,7 +5,7 @@ class Entity:
         self.game_manager = game_manager
         self.entity_manager = game_manager.entity_manager
         self.sound_manager = game_manager.sound_manager
-        self.level_manager = game_manager.level_manager
+        self.level = game_manager.level
         self.sprite = pygame.transform.scale_by(sprite,2)
         self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
         self.rect.center = position
@@ -14,8 +14,9 @@ class Entity:
         self.alive = True
         self.holdable = False
     
-    def draw(self, target_surface):
-        target_surface.blit(self.sprite, self.rect)
+    def draw(self):
+        surface = pygame.display.get_surface()
+        surface.blit(self.sprite, self.rect)
     
     def update(self):
         
@@ -49,8 +50,8 @@ class EntityManager:
                     if entity.rect.collidepoint(pygame.Vector2(pygame.mouse.get_pos())):
                         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
-    def draw(self, target_surface):
+    def draw(self):
         for group in self.entities:
             for entity in self.entities[group]:
-                entity.draw(target_surface)
+                entity.draw()
     

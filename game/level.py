@@ -13,9 +13,9 @@ class Generator:
         self.points = []
         self.obsticles = []
 
-    def generate_level(self, no_turns, no_obsticles, line_max_length):
-        self.points = self.generate_path(no_turns, line_max_length)
-        self.obsticles = self.generate_obsticles(no_obsticles)
+    def generate_level(self, level_data):
+        self.points = self.generate_path(level_data["no_turns"], level_data["max_line_len"])
+        self.obsticles = self.generate_obsticles(level_data["no_boxes"])
         return Level(self.points, self.obsticles, 1)
 
     def generate_path(self, no_turns, line_max_length):
@@ -135,7 +135,8 @@ class Level():
         self.obsticles = obsticles
         self.back_color = (30, 74, 157)
     
-    def draw(self, surface):
+    def draw(self):
+        surface = pygame.display.get_surface()
         surface.blit(self.background, (0,0))
 
         for i in range(len(self.points) - 1):
@@ -157,6 +158,9 @@ class Level():
             temp.center = obsticle.center
             pygame.draw.rect(surface, (46, 34, 47), temp, border_radius= PATH_SIZE // 2)
             pygame.draw.rect(surface, (62, 53, 70), obsticle, border_radius= PATH_SIZE // 2)
+    
+    def update(self):
+        pass
 
 class BossLevel:
     def __init__(self, level_no) -> None:
