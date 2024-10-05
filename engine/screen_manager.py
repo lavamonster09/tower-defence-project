@@ -2,7 +2,8 @@
 
 
 class ScreenManager():
-    def __init__(self, startup_screen : str, screens: dict) -> None:
+    def __init__(self, game, startup_screen : str, screens: dict) -> None:
+        self.game = game
         self.current_screen = startup_screen
         self.last_screen = startup_screen
         self.before_last_screen = startup_screen

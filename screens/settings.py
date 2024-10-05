@@ -7,13 +7,20 @@ class Settings(Screen):
         self.back_color = (DARK_BACKGROUND_COLOR)
         
         # Dropdown
-        self.add_item("dropdown", Dropdown(DROPDOWN_DARK, rect = (54, 35, 400, 50), options = ["1280 x 720", "2560 x 1440","1920 x 1080", "1600 x 900"], positioning="relative"))
-        self.add_item("dropdown_label", Label(LABEL_DARK, rect = (SCREEN_WIDTH/2 - 275, 250, 400, 50),text = "Resolution:", font_size=30))
+        self.add_item("dropdown", Dropdown(DROPDOWN_DARK, rect = (54, 40, 400, 50), options = ["1280 x 720", "2560 x 1440","1920 x 1080", "1600 x 900"], positioning="relative"))
+        self.add_item("dropdown_label", Label(LABEL_DARK, rect = (SCREEN_WIDTH/2 - 275, 275, 400, 50),text = "Resolution:", font_size=30))
         
-        # Slider_1
-        self.add_item("Slider_1", Slider(SLIDER_DARK, pos = (SCREEN_WIDTH/2 - 150, 170), length = 400, min_val = 0, max_val = 100))
-        self.add_item("slider_1_label", Label(LABEL_DARK, rect = (54, 27, 400, 50),text = "Slider 1", positioning="relative", font_size=20))
-        self.add_item("slider_1_label_2", Label(LABEL_DARK, rect = (SCREEN_WIDTH/2 - 275, 200 - 25, 400, 50), text = "Volume:", font_size=30))
+        # sldr_sfx
+        self.add_item("sldr_sfx", Slider(SLIDER_DARK, pos = (SCREEN_WIDTH/2 - 150, 170), length = 400, min_val = 0, max_val = 100))
+        self.add_item("sldr_sfx_label", Label(LABEL_DARK, rect = (54, 26, 400, 50),text = "Slider 1", positioning="relative", font_size=20))
+        self.add_item("sldr_sfx_label_2", Label(LABEL_DARK, rect = (SCREEN_WIDTH/2 - 275, 200 - 25, 400, 50), text = "Volume:", font_size=30))
+        self.items["sldr_sfx"].value = float(self.screen_manager.game.config["SOUND_VOLUME"]) * 100
+
+        # sldr_music
+        self.add_item("sldr_music", Slider(SLIDER_DARK, pos = (SCREEN_WIDTH/2 - 150, 225), length = 400, min_val = 0, max_val = 100))
+        self.add_item("sldr_music_label", Label(LABEL_DARK, rect = (54, 34, 400, 50),text = "Slider 2", positioning="relative", font_size=20))
+        self.add_item("sldr_music_label_2", Label(LABEL_DARK, rect = (SCREEN_WIDTH/2 - 275, 225, 400, 50), text = "Music Volume:", font_size=30))
+        self.items["sldr_music"].value = float(self.screen_manager.game.config["MUSIC_VOLUME"]) * 100
 
         # btn_back
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click)) 
@@ -29,7 +36,13 @@ class Settings(Screen):
         display_width, display_height = int(display_width), int(display_height)
         if [display_width, display_height] != [pygame.display.Info().current_w, pygame.display.Info().current_h]:
             pygame.event.post(pygame.event.Event(RESOLUTION_UPDATE, {"resolution": [display_width, display_height]}))
-        self.items["slider_1_label"].text = str(f'{int(self.items["Slider_1"].value)} %')
+
+        self.items["sldr_sfx_label"].text = str(f'{int(self.items["sldr_sfx"].value)} %')
+        self.screen_manager.game.config["SOUND_VOLUME"] = self.items["sldr_sfx"].value / 100
+
+        self.screen_manager.game.config["MUSIC_VOLUME"] = self.items["sldr_music"].value / 100
+        self.items["sldr_music_label"].text = str(f'{int(self.items["sldr_music"].value)} %')
+        pygame.mixer.music.set_volume(self.screen_manager.game.config.get("MUSIC_VOLUME"))
         
     def btn_back_on_click(self):
         self.screen_manager.change_screen(self.screen_manager.before_last_screen, 20)

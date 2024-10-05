@@ -1,11 +1,11 @@
 import pygame
 
 class Entity:
-    def __init__(self,game_manager , position = pygame.Vector2(0,0), sprite = pygame.Surface((0,0)), ) -> None:
-        self.game_manager = game_manager
-        self.entity_manager = game_manager.entity_manager
-        self.sound_manager = game_manager.sound_manager
-        self.level = game_manager.level
+    def __init__(self, game, position = pygame.Vector2(0,0), sprite = pygame.Surface((0,0)), ) -> None:
+        self.game = game
+        self.entity_manager = game.entity_manager
+        self.sound_manager = game.sound_manager
+        self.level = game.level
         self.sprite = pygame.transform.scale_by(sprite,2)
         self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
         self.rect.center = position
@@ -13,6 +13,7 @@ class Entity:
         self.velocity = None
         self.alive = True
         self.holdable = False
+        self.zindex = 0
     
     def draw(self):
         surface = pygame.display.get_surface()
@@ -51,7 +52,10 @@ class EntityManager:
                         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
     def draw(self):
+        draw_order = []
         for group in self.entities:
             for entity in self.entities[group]:
-                entity.draw()
-    
+                draw_order.append((entity.zindex ,entity))
+        draw_order.sort()
+        for entity in draw_order:
+            entity[1].draw()

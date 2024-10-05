@@ -1,12 +1,12 @@
-from game.entities.bullet import *
+from .bullet import *
 from util import *
 from engine import *
 import random
 
 class Tower(Entity):
-    def __init__(self,game_manager, position, sprite = pygame.Surface((0,0))):
-        sprite = game_manager.assets.get("tower_000")
-        super().__init__(game_manager, position=position, sprite=sprite)
+    def __init__(self,game, position, sprite = pygame.Surface((0,0))):
+        sprite = game.assets.get("tower_000")
+        super().__init__(game, position=position, sprite=sprite)
         # tower stats
         self.range = 100
         self.damage = 10
@@ -63,25 +63,25 @@ class Tower(Entity):
                 if (enemy.pos - self.pos).magnitude() < self.range:
                     if self.can_shoot and enemy.real_hp > 0:
                         #self.rotation = self.get_rotation(enemy.pos)
-                        self.game_manager.shake_screen(2,4)
                         self.sound_manager.play_sound("shoot")
                         enemy.real_hp -= self.damage
-                        self.entity_manager.add_entity(Bullet(self.game_manager, self.game_manager.assets.get("crotchet"), enemy, self.pos.copy(), self.damage), "bullet")
+                        self.entity_manager.add_entity(Bullet(self.game, self.game.assets.get("crotchet"), enemy, self.pos.copy(), self.damage), "bullet")
                         self.shoot_cooldown = self.shoot_delay
                         self.can_shoot = False
         super().update()
         
-    def draw(self, target_surface: pygame.Surface):
+    def draw(self):
+        target_surface = pygame.display.get_surface()
         damage = self.upgrades.count("damage")
         speed = self.upgrades.count("speed")
         range = self.upgrades.count("range") 
-        for asset in self.game_manager.assets.assets:
+        for asset in self.game.assets.assets:
             if asset.count("tower_") > 0:
                 if int(asset[6]) <= damage and int(asset[7]) <= speed and int(asset[8]) <= range:
                     upgrade = asset
-        sprite = self.game_manager.assets.get(upgrade)
-        if sprite != self.game_manager.assets.get("null"):
-            self.sprite = pygame.transform.scale_by(self.game_manager.assets.get(upgrade), 2)
+        sprite = self.game.assets.get(upgrade)
+        if sprite != self.game.assets.get("null"):
+            self.sprite = pygame.transform.scale_by(self.game.assets.get(upgrade), 2)
             self.rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
             self.pickup_rect = self.rect
         font = pygame.font.Font(MAIN_FONT,20)
@@ -127,7 +127,7 @@ class Tower(Entity):
         return angle
 
     def check_collisions(self):
-        for obsticle in self.level_manager.current_level.obsticles:
+        for obsticle in self.game.level.obsticles:
             if obsticle.collidepoint(self.pos):
                 return True
         return False

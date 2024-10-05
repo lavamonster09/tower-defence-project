@@ -3,15 +3,24 @@ import util
 
 
 class Player(Entity):
-    def __init__(self,game_manager, image, speed = 1.4) -> None:
-        super().__init__(game_manager, position = pygame.Vector2(0,0), sprite = game_manager.assets.get(image))
+    def __init__(self, game, image, speed = 1.4) -> None:
+        super().__init__(game, position = pygame.Vector2(0,0), sprite = game.assets.get(image))
+        # player stats
         self.speed = speed
+
+        # player positioning and movement
         self.velocity = pygame.Vector2(0,0)
         self.m_last_pressed = pygame.mouse.get_pressed()
         self.k_last_pressed = pygame.key.get_pressed()
-        self.holding = None
         self.target_angle = 0
         self.angle = 0
+
+        # boolean values
+        self.holding = None
+
+        # misc
+        self.keybinds = game.keybinds
+        self.zindex = 2
     
     def update(self):
         super().update()
@@ -64,12 +73,10 @@ class Player(Entity):
             entity.player_inrange = False
             entity.hovered = False
             if m_pressed[0] == True and self.m_last_pressed[0] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
-                self.game_manager.shake_screen(2,7)
                 self.sound_manager.play_sound("place")
                 self.holding.held = False
                 self.holding = None
             if m_pressed[2] == True and self.m_last_pressed[2] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
-                self.game_manager.shake_screen(6,13)
                 self.sound_manager.play_sound("throw")
                 self.holding.held = False
                 self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle))
@@ -78,13 +85,13 @@ class Player(Entity):
     def move(self):
         keys = pygame.key.get_pressed()
         direction = pygame.Vector2(0,0)
-        if keys[pygame.K_w]:
+        if keys[self.keybinds.get("up", -1)]:
             direction.y -= 1
-        if keys[pygame.K_a]:
+        if keys[self.keybinds.get("left", -1)]:
             direction.x -= 1
-        if keys[pygame.K_s]:
+        if keys[self.keybinds.get("down", -1)]:
             direction.y += 1
-        if keys[pygame.K_d]:
+        if keys[self.keybinds.get("right", -1)]:
             direction.x += 1 
         
         if not direction == pygame.Vector2(0,0):

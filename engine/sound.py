@@ -1,8 +1,9 @@
 import pygame
 import os
 
-class SoundManager():
-    def __init__(self) -> None:
+class SoundManager:
+    def __init__(self, game) -> None:
+        self.game = game
         self.sounds = {}
         for sound in os.listdir(r"assets\sounds"):
             sound_name = sound.split(".")[0]
@@ -13,9 +14,11 @@ class SoundManager():
         self.sounds[name].set_volume(volume)
 
     def play_sound(self, name):
+        self.sounds[name].set_volume(float(self.game.config.get("SOUND_VOLUME")))
         self.sounds[name].play()
 
     def play_music(self, name):
+        pygame.mixer.music.set_volume(float(self.game.config.get("MUSIC_VOLUME")))
         pygame.mixer.music.load(f"assets\sounds\{name}.wav")
         pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.2)
+        

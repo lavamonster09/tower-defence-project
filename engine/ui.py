@@ -3,6 +3,7 @@ from pygame import gfxdraw
 import math
 from engine.theme import *
 from util.constants import *
+from typing import Callable
 
 pygame.font.init()
 
@@ -97,13 +98,18 @@ class Button():
 class Label():
     def __init__(self, theme:Theme, rect = (0,0,0,0), text = "", positioning = "absolute", font_size = 0):
         # passed in label variables
+        self.function = None
         self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
         if positioning == "absolute":
             self.rect.center = (rect[0], rect[1])
         if positioning == "relative":
             self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)      
         self.font = pygame.font.Font(MAIN_FONT, font_size)
-        self.text = text
+        if isinstance(text, Callable):
+            self.text = str(text())
+            self.function = text
+        else:
+            self.text = text
 
         # theme
         self.filled = theme.get()["filled"]
@@ -133,6 +139,12 @@ class Label():
         self.screen.blit(text_surf, position)
     
     def update(self):
+        if self.function:
+            self.text = self.function()
+            if type(self.text) == int:
+                self.text = str(self.text)
+            elif type(self.text) == float:
+                self.text = str(round(self.text, 2))
         if self.hidden:
             return
         pass
@@ -398,3 +410,35 @@ class Amimation():
         for i in range(len(self.start)):
             self.current[i] = self.start[i]
         self.update()
+
+
+class Popup():
+    def __init__(self, game, elements = []) -> None:
+        self.screen = pygame.display.get_surface()
+        self.hidden = False
+        self.elements = elements
+        self.game = game
+    
+    def show(self):
+        self.hidden = False
+    
+    def hide(self):
+        self.hidden = True
+
+    def add_item(self, item):
+        self.elements.append(item)
+    
+    def draw(self):
+        if self.hidden:
+            return
+        for element in self.elements:
+            element.draw()
+    
+    def update(self):
+        if self.hidden:
+            return
+        for element in self.elements:
+            element.update()
+    
+    def on_close(self):
+        pass
