@@ -87,7 +87,6 @@ class Engine:
                 if line[0] != "#" and len(split) > 1:
                     if split[0].upper() == "BIND":
                         keybinds[split[2].strip("\n")] = pygame.key.key_code(split[1])
-                        print(keybinds)
                         continue
                     config[split[0]] = split[1].strip("\n")
         return config, keybinds
@@ -95,11 +94,31 @@ class Engine:
 class Game(Engine):
     def __init__(self):
         super().__init__(screens)
+        # assets
+        self.assets = Assets()
+
         # holds whether or not the game screen is open
         self.game_active = False
 
-        # holds whether or not the game is paused
+        # holds game state information
         self.paused = False
+        self.game_speed = 1.0
+
+        # the information needed for the current round 
+        self.round_started = False
+        self.enemy_types = {
+            "standard": {
+                "type": Standard,
+                "chance": 100,
+                "sprite": self.assets.get("enemy")
+                },
+            "fast": {
+                "type": Fast,
+                "chance": 50,
+                "sprite": self.assets.get("enemy")
+                }
+            }
+        self.current_round = Round(self, 0,self.enemy_types)
 
         # popups
         self.popups = {
@@ -109,8 +128,11 @@ class Game(Engine):
         # setup GUI
         self.gui = Screen(self.screen_manager)
         self.gui.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 98, 125, 50), text = self.get_fps, font_size=20, positioning="relative"))
-        self.gui.add_item("lbl_round", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = "0", font_size=30, positioning="relative"))
+        self.gui.add_item("lbl_round", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = self.get_round_number, font_size=30, positioning="relative"))
         self.gui.add_item("btn_roundstart", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("play_arrow"), on_click= self.start_round, positioning="relative"))
+        self.gui.add_item("btn_fastforward", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("fast_forward"), on_click= self.fast_forward, positioning="relative"))
+        self.gui.items["btn_fastforward"].hidden = True
+
         self.screen_manager.add_screen("game", self.gui)
         
         # level data / generation
@@ -126,15 +148,13 @@ class Game(Engine):
         self.draw_queue = []
         self.update_queue = []
 
-        # assets
-        self.assets = Assets()
-
         # add the level and entity manager to the draw queue
         self.draw_queue.append((1, self.level))
         self.draw_queue.append((2, self.entity_manager))
         self.draw_queue.append((6, self.screen_manager))
         self.update_queue.append(self.entity_manager)
         self.update_queue.append(self.screen_manager)
+        self.update_queue.append(self.current_round)
 
         self.entity_manager.add_entity(Player(self,"player"),"player")
         tower = Tower(self, pygame.Vector2(SCREEN_WIDTH / 2, 0))
@@ -168,24 +188,51 @@ class Game(Engine):
                 return
             for item in self.update_queue:
                 item.update()
+                if self.game_speed == 2.0:
+                    item.update()
         else:
             super().update()
 
     def get_fps(self):
         return int(self.clock.get_fps())
+
+    def get_round_number(self):
+        return self.current_round.get_round_number()
     
     def start_round(self):
-        self.gui.items["btn_roundstart"].text = get_icon_hex("fast_forward")
+        self.gui.items["btn_roundstart"].hidden = True
+        self.gui.items["btn_fastforward"].hidden = False
+        self.update_queue.remove(self.current_round)
+        self.current_round = Round(self, self.current_round.get_round_number()+1, self.enemy_types)
+        self.update_queue.append(self.current_round)
+        self.round_started = True
+        self.fast_forward()
+
+    def fast_forward(self):
+        btn = self.gui.items["btn_fastforward"]
+        if self.game_speed == 2.0:
+            self.game_speed = 1.0
+            btn.border_color = DARK_ACCENT_COLOR
+            btn.border_width = 2 
+            btn.hover_color = btn.theme.get()["hover_color"]
+            btn.fore_color = DARK_ACCENT_COLOR
+        else:
+            self.game_speed = 2.0
+            btn.color = btn.theme.get()["color"]
+            btn.border_color = btn.theme.get()["fore_color"]
+            btn.border_width = 2 
+            btn.hover_color = btn.theme.get()["hover_color"]
+            btn.fore_color = btn.theme.get()["fore_color"]
+
 
     def toggle_popup(self, popup):
-        print(self.gui.items.keys())
         if popup.name in self.gui.items:
             popup.on_close()
             self.gui.remove_item(popup.name)
         else:
             self.gui.add_item(popup.name, popup)
             popup.on_open()
-        print(self)
+
 class Pause(Popup):
     def __init__(self, game) -> None:
         super().__init__(game)
@@ -201,3 +248,37 @@ class Pause(Popup):
 
     def on_open(self):
         self.game.paused = True
+
+class UpgradePopup(Popup):
+    def __init__(self, game):
+        super().__init__(game)
+
+class Round:
+    def __init__(self, game, round_number, enemy_types):
+        self.game = game
+        self.round_number = round_number
+        self.number_enemies = int(round_number ** 1.2)
+        self.enemies = []
+        self.enemy_delay = 60
+        self.counter = 1000 
+        for i in range(self.number_enemies):
+            for enemy_type in enemy_types:
+                for _ in range(self.number_enemies * enemy_types[enemy_type]["chance"] // 100):
+                    self.enemies.append(enemy_types[enemy_type]["type"](game, sprite = enemy_types[enemy_type]["sprite"]))
+
+    def get_round_number(self):
+        return self.round_number
+
+    def update(self):
+        self.counter += 1 
+        if self.game.round_started:
+            if len(self.enemies) > 0 and self.counter >= self.enemy_delay:
+                self.counter = 0
+                enemy = random.choice(self.enemies)
+                self.game.entity_manager.add_entity(enemy, "enemy")
+                self.enemies.remove(enemy)
+            if len(self.game.entity_manager.entities.get("enemy", [])) == 0:
+                self.game.round_started = False
+                self.game.gui.items["btn_roundstart"].hidden = False
+                self.game.gui.items["btn_fastforward"].hidden = True
+                self.game.game_speed = 1.0

@@ -3,18 +3,19 @@ from engine import *
 from util import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Enemy(Entity):
-    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), speed = 2, children = None, path = None) -> None:
+    def __init__(self,game, sprite = pygame.surface.Surface((0,0)), speed = 2, children = None, path = None) -> None:
         if path is None:
-            self.path = game_manager.level_manager.current_level.points
+            self.path = game.level.points
         else:
             self.path = path
-        super().__init__(game_manager, position = self.path[0], sprite = sprite)
+        super().__init__(game, position = self.path[0], sprite = sprite)
         self.speed = speed
         self.current_point = 0
         self.hp = 100
         self.real_hp = 100 
         self.last_hp = self.hp
         self.children = children
+        self.zindex = 0
 
     def update(self):
         if self.current_point < len(self.path):
@@ -29,8 +30,8 @@ class Enemy(Entity):
             self.alive = False
         super().update()
     
-    def draw(self, target_surface : pygame.Surface):
-        super().draw(target_surface)
+    def draw(self):
+        super().draw()
         if self.last_hp != self.hp:
             self.last_hp = self.hp
 

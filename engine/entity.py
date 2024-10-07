@@ -56,6 +56,6 @@ class EntityManager:
         for group in self.entities:
             for entity in self.entities[group]:
                 draw_order.append((entity.zindex ,entity))
-        draw_order.sort()
+        draw_order.sort(key=lambda x: x[0])
         for entity in draw_order:
             entity[1].draw()

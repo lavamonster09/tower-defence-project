@@ -40,6 +40,7 @@ class Button():
             self.lastpressed = False
 
         # theme
+        self.theme = theme
         self.filled = theme.get()["filled"]
         self.color = theme.get()["color"]
         self.fore_color = theme.get()["fore_color"]
