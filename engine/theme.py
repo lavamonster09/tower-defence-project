@@ -99,3 +99,13 @@ RECT_DARK_NO_FILL = Theme({
     "border_color": DARK_OUTLINE_COLOR,
     "filled": False,
 })
+
+# textbox themes
+TEXTBOX_DARK = Theme({
+    "color": DARK_SURFACE_LOW_COLOR,
+    "fore_color": DARK_FOREGROUND_COLOR,
+    "border_radius": 0,
+    "border_width": 2,
+    "border_color": DARK_OUTLINE_COLOR,
+    "filled": True,
+})

@@ -24,9 +24,6 @@ screens = {
 class Game(Engine):
     def __init__(self):
         super().__init__(screens)
-        # assets
-        self.assets = Assets()
-
         # holds whether or not the game screen is open
         self.game_active = False
 
@@ -59,7 +56,6 @@ class Game(Engine):
         }
 
         # setup GUI
-        self.gui = Screen(self.screen_manager)
         self.gui.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 98, 125, 50), text = self.get_fps, font_size=20, positioning="relative"))
         self.gui.add_item("lbl_round", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = self.get_round_number, font_size=30, positioning="relative"))
         self.gui.add_item("btn_roundstart", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("play_arrow"), on_click= self.start_round, positioning="relative"))
@@ -94,6 +90,9 @@ class Game(Engine):
         tower.velocity = pygame.Vector2(0,random.randrange(8,15))
         tower.velocity.rotate_ip(random.randrange(-45,45))
         self.entity_manager.add_entity(tower, "tower")
+
+        self.console.add_command("upgrade", self.give_upgrade, [('speed', 'damage', 'range'), 'number'])
+        self.console.add_command("fastforward", self.fast_forward, [])
 
 
     def draw(self):
@@ -132,6 +131,15 @@ class Game(Engine):
     def get_round_number(self):
         return self.current_round.get_round_number()
     
+    def give_upgrade(self, upgrade_name: str, number: int):
+        number = int(number)
+        for _ in range(number):
+            upgrade = Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), self.assets.get(f"{upgrade_name}_upgrade"), upgrade_name)
+            upgrade.velocity = pygame.Vector2(0,random.randrange(8,15))
+            upgrade.velocity.rotate_ip(random.randrange(-45,45))
+            self.entity_manager.add_entity(upgrade, "upgrade")
+
+    
     def start_round(self):
         self.gui.items["btn_roundstart"].hidden = True
         self.gui.items["btn_fastforward"].hidden = False
@@ -166,13 +174,7 @@ class Game(Engine):
         self.toggle_popup(self.popups["upgrade_decision"])
         upgrade.alive = False
 
-    def toggle_popup(self, popup):
-        if popup.name in self.gui.items:
-            popup.on_close()
-            self.gui.remove_item(popup.name)
-        else:
-            self.gui.add_item(popup.name, popup)
-            popup.on_open()
+    
 
 class Pause(Popup):
     def __init__(self, game) -> None:
@@ -183,7 +185,6 @@ class Pause(Popup):
         self.add_item(Button(BUTTON_DARK, (50, 51, 400, 100), text="SETTINGS", on_click=self.game.screen_manager.change_screen, click_args=["settings", 1], positioning="relative"))
         self.add_item(Button(BUTTON_DARK, (50, 28, 400, 100), text="CONTINUE", on_click=self.game.toggle_popup, click_args=[self], positioning="relative"))
         self.add_item(Button(BUTTON_DARK, (50, 73, 400, 100), text="EXIT", on_click=self.game.screen_manager.change_screen, click_args=["game_select", 1], positioning="relative"))
-        self.add_item(Button(BUTTON_DARK, (90, 50, 100, 100), text="U", on_click=self.game.toggle_popup, click_args=[self.game.popups["upgrade_choice"]], positioning="relative"))
 
     def on_close(self):
         self.game.paused = False
@@ -217,7 +218,12 @@ class UpgradeDecision(Popup):
         super().__init__(game)
         self.name = "upgrade_decision"
         self.target = None
-        self.curently_upgrading = None
+        self.currently_upgrading = None
+        self.btn_upgrade = Button(BUTTON_DARK, (75,65,450,200), "UPGRADE", positioning="relative", on_click=game.upgrade_tower, click_args=[])
+        self.label = Label(LABEL_DARK_FILLED, (50,25,770,150), f"upgrade,", positioning="relative", font_size=80)
+        self.add_item(self.btn_upgrade)
+        self.add_item(self.label)
+        
 
     def on_close(self):
         self.game.paused = False
@@ -231,8 +237,8 @@ class UpgradeDecision(Popup):
         for upgrade in self.game.entity_manager.entities.get("upgrade", []):
             if upgrade.can_upgrade:
                 self.currently_upgrading = upgrade
-        self.add_item(Button(BUTTON_DARK, (75,65,450,200), "UPGRADE", positioning="relative", on_click=self.game.upgrade_tower, click_args=[self.currently_upgrading, self.target]))
-        self.add_item(Label(LABEL_DARK_FILLED, (50,25,770,150), f"upgrade, {self.currently_upgrading.type}", positioning="relative", font_size=80))
+        self.btn_upgrade.click_args = [self.currently_upgrading, self.target]
+        self.label.text = f"upgrade {self.currently_upgrading.type}?"
         self.game.paused = True
 
 class Round:
@@ -259,7 +265,7 @@ class Round:
                 enemy = random.choice(self.enemies)
                 self.game.entity_manager.add_entity(enemy, "enemy")
                 self.enemies.remove(enemy)
-            if len(self.game.entity_manager.entities.get("enemy", [])) == 0:
+            if len(self.game.entity_manager.entities.get("enemy", [])) == 0 and len(self.enemies) == 0:
                 self.game.round_started = False
                 self.game.gui.items["btn_roundstart"].hidden = False
                 self.game.gui.items["btn_fastforward"].hidden = True

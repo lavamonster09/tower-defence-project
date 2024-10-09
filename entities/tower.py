@@ -133,8 +133,6 @@ class Tower(Entity):
         return False
 
     def upgrade(self, upgrade):
-
-        
         if upgrade.type == "range" and self.can_upgrade["range"]:
             self.range += 10 
             self.upgrades.append(upgrade.type)

@@ -122,7 +122,7 @@ class Label():
 
         # globaly needed variables
         self.screen = pygame.display.get_surface()
-
+        self.centered = True
         self.hidden = False
     
     def draw(self):
@@ -135,9 +135,14 @@ class Label():
         if self.border_width > 0: pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)   
             
         # draw text
-        text_surf = self.font.render(self.text, True, self.fore_color, wraplength=self.rect.width)
-        position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
-        self.screen.blit(text_surf, position)
+        if self.centered:
+            text_surf = self.font.render(self.text, True, self.fore_color, wraplength=self.rect.width)
+            position = (self.rect.x + (self.rect.width - text_surf.get_width()) / 2, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
+            self.screen.blit(text_surf, position)
+        else:
+            text_surf = self.font.render(self.text, True, self.fore_color)
+            position = (self.rect.x + 10, self.rect.y + 10)
+            self.screen.blit(text_surf, position)
     
     def update(self):
         if self.function:
@@ -380,6 +385,97 @@ class Rect():
     
     def update(self):
         pass
+
+class Textbox():
+    def __init__(self, theme, rect, positioning, on_submit = None) -> None:
+        #passed in variables
+        self.on_submit = on_submit
+        self.rect = pygame.Rect(0, 0 , rect[2], rect[3])
+        if positioning == "absolute":
+            self.rect.center = (rect[0], rect[1])
+        if positioning == "relative":
+            self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)
+
+        #from theme
+        self.color = theme.get()["color"]
+        self.fore_color = theme.get()["fore_color"]
+        self.border_radius = theme.get()["border_radius"]
+        self.border_width = theme.get()["border_width"]
+        self.border_color = theme.get()["border_color"]
+        self.filled = theme.get()["filled"]
+
+        #needed variables
+        self.screen = pygame.display.get_surface()
+        self.font = pygame.font.Font(MAIN_FONT, int(self.rect.height/2))
+        self.text = ""
+        self.hovering = False
+        self.lastpressed = False
+        self.hidden = False
+        self.cursor = 0
+        self.cursor_blink = True
+        self.cursor_blink_speed = 0.5
+        self.cursor_blink_timer = 0
+        self.backspace_timer = 0
+        self.active = True
+        self.last_submit = ""
+    
+    def draw(self):
+        if self.hidden:
+            return
+        if self.filled:
+            pygame.draw.rect(self.screen, self.color, self.rect, border_radius= self.border_radius)
+        if self.border_width > 0:
+            pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_width, self.border_radius)
+        text_surf = self.font.render(self.text, True, self.fore_color)
+        position = (self.rect.x + 10, self.rect.y + (self.rect.height - text_surf.get_height()) / 2)
+        self.screen.blit(text_surf, position)
+        if self.active and self.cursor_blink:
+            pygame.draw.line(self.screen, self.fore_color, (position[0] + text_surf.get_width(), position[1]), (position[0] + text_surf.get_width(), position[1] + text_surf.get_height()), 2)
+
+    def update(self):
+        self.cursor_blink_timer += 1
+        self.backspace_timer += 1
+        if self.cursor_blink_timer > self.cursor_blink_speed * 60:
+            self.cursor_blink_timer = 0
+            self.cursor_blink = not self.cursor_blink
+        if self.active:
+            for i in range(pygame.K_a, pygame.K_z):
+                if pygame.key.get_just_pressed()[i]:
+                    if pygame.key.get_pressed()[pygame.K_LSHIFT] or pygame.key.get_pressed()[pygame.K_RSHIFT]:
+                        self.text += chr(i).upper()
+                    else:
+                        self.text += chr(i)
+            for i in range(pygame.K_0, pygame.K_9):
+                if pygame.key.get_just_pressed()[i]:
+                    self.text += chr(i)
+            if pygame.key.get_just_pressed()[pygame.K_SPACE]:
+                self.text += " "
+            if pygame.key.get_just_pressed()[pygame.K_BACKSPACE]:
+                self.text = self.text[:-1]
+                self.backspace_timer = 0
+            elif pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                if self.backspace_timer > 10:
+                    self.backspace_timer = 0
+                    self.text = self.text[:-1]
+            if pygame.key.get_pressed()[pygame.K_RETURN]:
+                self.active = False
+                if self.on_submit:
+                    self.last_submit = self.text
+                    self.on_submit(self.text)
+            if pygame.key.get_just_pressed()[pygame.K_UP]:
+                self.text = self.last_submit
+        if self.hidden:
+            return
+        if self.rect.collidepoint(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
+            self.hovering = True
+            pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_HAND)
+        if pygame.mouse.get_pressed()[0]:
+            if not self.lastpressed and self.hovering:
+                self.active = True
+            self.lastpressed = True         
+        else:
+            self.lastpressed = False
+        
 
 class Amimation():
     def __init__(self, start, end, length):

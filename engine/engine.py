@@ -1,6 +1,7 @@
 import pygame
 import sys
 import os 
+import typing
 
 from game.level import Generator
 from .sound import SoundManager
@@ -31,10 +32,9 @@ class Assets:
     def get(self, key):
         return self.assets.get(key, self.assets["null"])
 
-
-
 class Engine:
     def __init__(self, screens):
+        self.assets = Assets()
         self.config, self.keybinds = self.load_config()
         self.running = True
         
@@ -47,6 +47,9 @@ class Engine:
         self.screen_manager = ScreenManager(self, "menu", screens)
         
         self.clock = pygame.time.Clock()
+
+        self.gui = Screen(self.screen_manager)
+        self.console = Console(self)
 
     def run(self):
         while self.running:
@@ -61,7 +64,10 @@ class Engine:
                 sys.exit()
                 pygame.quit()
                 self.running = False
-
+            if event.type == pygame.KEYDOWN:
+                if event.key == self.keybinds.get("console", -1):
+                    self.toggle_popup(self.console)
+            
     def update(self):
         self.screen_manager.update()
 
@@ -69,7 +75,6 @@ class Engine:
         self.screen.fill((0,0,0))
         self.screen_manager.draw()
         pygame.display.flip()
-        
         
     def load_config(self):
         config = {}
@@ -83,4 +88,53 @@ class Engine:
                         continue
                     config[split[0]] = split[1].strip("\n")
         return config, keybinds
+
+    def toggle_popup(self, popup):
+        if popup.name in self.gui.items:
+            popup.on_close()
+            self.gui.remove_item(popup.name)
+        else:
+            self.gui.add_item(popup.name, popup)
+            popup.on_open()
+
+class Console(Popup):
+    def __init__(self, game) -> None:
+        super().__init__(game)
+        self.name = "console"
+        self.commands = {}
+        self.add_item(Rect(RECT_DARK, pygame.Rect(700//2 + 10,200 + 10,700,400), positioning="absolute"))
+        self.textbox = Textbox(TEXTBOX_DARK, pygame.Rect(700//2 + 10,400,700,50), positioning="absolute", on_submit=self.on_submit)
+        self.console_output = Label(LABEL_DARK, rect = (700//2 + 10, 200 + 10, 700, 400), text = "WELCOME", positioning="absolute", font_size=20)
+        self.console_output.centered = False
+        self.add_item(self.console_output)
+        self.add_item(self.textbox)
+        self.add_command("help", self.help, [])
+
+    def on_submit(self, text):
+        if text.split(" ")[0] in self.commands:
+            command = self.commands[text.split(" ")[0]]
+            if len(text.split(" ")[1:]) != len(command[1]):
+                self.console_output.text += f"\nnot enough/ too many arguments"
+            else:
+                output = command[0](*text.split(" ")[1:])
+                if output != None:
+                    self.console_output.text += f"\n {output}"
+        else:
+            self.console_output.text += (f"\nCommand {text.split(' ')[0]} not found")
+        self.textbox.text = ""
     
+    def add_command(self,command_name, function, params):
+        self.commands[command_name] = (function, params)
+
+    def add_commands(self, commands):
+        for command in commands:
+            self.add_command(*command)
+
+    def help(self, *args):
+        return "\n".join([f"{command} : {str(self.commands[command][1])[1:-1]}" for command in self.commands])
+
+    def on_open(self):
+        pass
+
+    def on_close(self):
+        pass
