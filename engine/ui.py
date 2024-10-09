@@ -417,7 +417,7 @@ class Popup():
     def __init__(self, game, elements = []) -> None:
         self.screen = pygame.display.get_surface()
         self.hidden = False
-        self.elements = elements
+        self.elements = elements.copy()
         self.game = game
     
     def show(self):

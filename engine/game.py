@@ -2,6 +2,7 @@ import pygame
 import sys
 import os 
 
+from .engine import *
 from game.level import Generator
 from .sound import SoundManager
 from .entity import EntityManager
@@ -19,77 +20,6 @@ screens = {
     "heroes": Heroes,
     "upgrades": Upgrades
     }
-
-class Assets: 
-    def __init__(self) -> None:
-        self.assets = {}
-        self.load()
-    
-    def load(self):
-        for file in os.scandir("assets/images"):
-            if file.is_dir():
-                for file in os.scandir(file.path):
-                    if file.name.split(".")[-1] == "png":
-                        self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
-                        self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
-            if file.name.split(".")[-1] == "png":
-                self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
-                self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
-
-    def get(self, key):
-        return self.assets.get(key, self.assets["null"])
-
-
-class Engine:
-    def __init__(self, screens):
-        self.config, self.keybinds = self.load_config()
-        self.running = True
-        
-        # setup the display
-        self.screen = pygame.display.set_mode((int(self.config.get("SCREEN_WIDTH")), int(self.config.get("SCREEN_HEIGHT"))))
-
-        # get all the managers in one place finally thank god
-        self.sound_manager = SoundManager(self)
-        self.entity_manager = EntityManager()
-        self.screen_manager = ScreenManager(self, "menu", screens)
-        
-        self.clock = pygame.time.Clock()
-
-    def run(self):
-        while self.running:
-            self.check_events()
-            self.draw()
-            self.update()
-            self.clock.tick(60)
-
-    def check_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-                pygame.quit()
-                self.running = False
-
-    def update(self):
-        self.screen_manager.update()
-
-    def draw(self):
-        self.screen.fill((0,0,0))
-        self.screen_manager.draw()
-        pygame.display.flip()
-        
-        
-    def load_config(self):
-        config = {}
-        keybinds = {}
-        with open("config.cfg") as fconfig:
-            for line in fconfig.readlines():
-                split = line.split(" ")
-                if line[0] != "#" and len(split) > 1:
-                    if split[0].upper() == "BIND":
-                        keybinds[split[2].strip("\n")] = pygame.key.key_code(split[1])
-                        continue
-                    config[split[0]] = split[1].strip("\n")
-        return config, keybinds
 
 class Game(Engine):
     def __init__(self):
@@ -121,8 +51,11 @@ class Game(Engine):
         self.current_round = Round(self, 0,self.enemy_types)
 
         # popups
+        self.popups = {"upgrade_choice": UpgradeChoicePopup(self)}
         self.popups = {
-            "pause": Pause(self)
+            "upgrade_choice": UpgradeChoicePopup(self),
+            "pause": Pause(self),
+            "upgrade_decision": UpgradeDecision(self)
         }
 
         # setup GUI
@@ -224,6 +157,14 @@ class Game(Engine):
             btn.hover_color = btn.theme.get()["hover_color"]
             btn.fore_color = btn.theme.get()["fore_color"]
 
+    def spawn_upgrade(self, upgrade):
+        self.entity_manager.add_entity(Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), self.assets.get(f"{upgrade}_upgrade"), upgrade), "upgrade")
+        self.toggle_popup(self.popups["upgrade_choice"])
+
+    def upgrade_tower(self, upgrade, tower):
+        tower.upgrade(upgrade)
+        self.toggle_popup(self.popups["upgrade_decision"])
+        upgrade.alive = False
 
     def toggle_popup(self, popup):
         if popup.name in self.gui.items:
@@ -242,6 +183,28 @@ class Pause(Popup):
         self.add_item(Button(BUTTON_DARK, (50, 51, 400, 100), text="SETTINGS", on_click=self.game.screen_manager.change_screen, click_args=["settings", 1], positioning="relative"))
         self.add_item(Button(BUTTON_DARK, (50, 28, 400, 100), text="CONTINUE", on_click=self.game.toggle_popup, click_args=[self], positioning="relative"))
         self.add_item(Button(BUTTON_DARK, (50, 73, 400, 100), text="EXIT", on_click=self.game.screen_manager.change_screen, click_args=["game_select", 1], positioning="relative"))
+        self.add_item(Button(BUTTON_DARK, (90, 50, 100, 100), text="U", on_click=self.game.toggle_popup, click_args=[self.game.popups["upgrade_choice"]], positioning="relative"))
+
+    def on_close(self):
+        self.game.paused = False
+
+    def on_open(self):
+        self.game.paused = True
+
+class UpgradeChoicePopup(Popup):
+    def __init__(self, game):
+        super().__init__(game)
+        self.name = "upgrade"
+        btn_speed = Button(BUTTON_DARK, (20,65,310,200), "speed", positioning="relative", on_click=game.spawn_upgrade, click_args=["speed"])
+        btn_speed.fore_color = (34,177,76)
+        btn_damage = Button(BUTTON_DARK, (50,65,430,200), "damage", positioning="relative", on_click=game.spawn_upgrade, click_args=["damage"])
+        btn_damage.fore_color = (235,51,36)
+        btn_range = Button(BUTTON_DARK, (80,65,310,200), "range", positioning="relative", on_click=game.spawn_upgrade, click_args=["range"])
+        btn_range.fore_color = (230,230,230)
+        self.add_item(Label(LABEL_DARK_FILLED, (50,25,770,150), f"chose an upgrade", positioning="relative", font_size=80))
+        self.add_item(btn_speed)
+        self.add_item(btn_damage)
+        self.add_item(btn_range)
     
     def on_close(self):
         self.game.paused = False
@@ -249,9 +212,28 @@ class Pause(Popup):
     def on_open(self):
         self.game.paused = True
 
-class UpgradePopup(Popup):
-    def __init__(self, game):
+class UpgradeDecision(Popup):
+    def __init__(self, game) -> None:
         super().__init__(game)
+        self.name = "upgrade_decision"
+        self.target = None
+        self.curently_upgrading = None
+
+    def on_close(self):
+        self.game.paused = False
+
+    def set_tower(self, tower):
+        self.target = tower
+
+    def on_open(self):
+        self.add_item(Button(BUTTON_DARK, (25,65,450,200), "CANCEL", positioning="relative", on_click=self.game.toggle_popup, click_args=[self]))
+        self.currently_upgrading = None
+        for upgrade in self.game.entity_manager.entities.get("upgrade", []):
+            if upgrade.can_upgrade:
+                self.currently_upgrading = upgrade
+        self.add_item(Button(BUTTON_DARK, (75,65,450,200), "UPGRADE", positioning="relative", on_click=self.game.upgrade_tower, click_args=[self.currently_upgrading, self.target]))
+        self.add_item(Label(LABEL_DARK_FILLED, (50,25,770,150), f"upgrade, {self.currently_upgrading.type}", positioning="relative", font_size=80))
+        self.game.paused = True
 
 class Round:
     def __init__(self, game, round_number, enemy_types):

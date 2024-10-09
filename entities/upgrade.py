@@ -2,8 +2,8 @@ from engine import *
 from util import *
 
 class Upgrade(Entity):
-    def __init__(self,game_manager, position, sprite, type):
-        super().__init__(game_manager, position=position, sprite=sprite)
+    def __init__(self,game, position, sprite, type):
+        super().__init__(game, position=position, sprite=sprite)
 
         self.pickup_rect = self.rect
         self.velocity = pygame.Vector2(0,0)
@@ -28,13 +28,15 @@ class Upgrade(Entity):
                     self.can_upgrade = True
             if tower.rect.colliderect(self.pickup_rect) and self.held == False and self.last_held == True:
                 if tower.can_upgrade[self.type]:
-                    self.game_manager.show_upgrade_popup(tower)
+                    self.game.popups["upgrade_decision"].set_tower(tower)
+                    self.game.toggle_popup(self.game.popups["upgrade_decision"])
         self.pos += self.velocity
         self.velocity /= 1.05
         self.last_held = self.held
         super().update()
 
-    def draw(self, target_surface):
+    def draw(self):
+        target_surface = pygame.display.get_surface()
         target_surface.blit(self.sprite, self.rect)
         if self.hovered:
             
@@ -51,7 +53,7 @@ class Upgrade(Entity):
         
 
     def check_collisions(self):
-        for obsticle in self.level_manager.current_level.obsticles:
+        for obsticle in self.level.obsticles:
             if obsticle.collidepoint(self.pos):
                 return True
         return False
