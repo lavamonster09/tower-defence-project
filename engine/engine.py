@@ -109,6 +109,8 @@ class Console(Popup):
         self.add_item(self.console_output)
         self.add_item(self.textbox)
         self.add_command("help", self.help, [])
+        self.add_command("bind", self.bind, ["key", "command"])
+        self.add_command("getbinds", self.get_keybinds, [])
 
     def on_submit(self, text):
         if text.split(" ")[0] in self.commands:
@@ -132,6 +134,13 @@ class Console(Popup):
 
     def help(self, *args):
         return "\n".join([f"{command} : {str(self.commands[command][1])[1:-1]}" for command in self.commands])
+    
+    def bind(self, key, command):
+        self.game.keybinds[command] = pygame.key.key_code(key)
+        return f"bound key: {key} to command: {command}"
+
+    def get_keybinds(self):
+        return "\n".join([f"command: {bind} is bound to key: {self.game.keybinds[bind]}" for bind in self.game.keybinds])
 
     def on_open(self):
         pass

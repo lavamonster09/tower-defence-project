@@ -25,6 +25,9 @@ class Settings(Screen):
         # btn_back
         self.add_item("btn_back", Button(BUTTON_DARK_NO_FILL , rect = (25,25,50,50), text = get_icon_hex("arrow_back"), on_click= self.btn_back_on_click)) 
 
+        # btn_save
+        self.add_item("btn_save", Button(BUTTON_DARK , rect = (95,95,100,50), text = "save", positioning="relative", on_click= self.save_settings)) 
+
         # Title
         self.add_item("Title", Label(LABEL_DARK, rect = (50,10,SCREEN_WIDTH,200), text = "SETTINGS", positioning="relative", font_size=100)) 
 
@@ -47,3 +50,21 @@ class Settings(Screen):
     def btn_back_on_click(self):
         self.screen_manager.change_screen(self.screen_manager.before_last_screen, 20)
  
+    def save_settings(self):
+        with open("config.cfg", "r") as fconfig:
+            file = fconfig.readlines()
+        with open("config.cfg", "w") as fconfig:
+            for line in file:
+                split = line.split(" ")
+                if line[0] != "#" and len(split) > 1:
+                    for setting in self.screen_manager.game.config:
+                        if split[0].upper() == setting.upper():
+                            fconfig.write(f"{split[0]} {self.screen_manager.game.config[setting]}")
+                            fconfig.write("\n")
+                    if split[0].upper() == "BIND":
+                        for keybind in self.screen_manager.game.keybinds:
+                            if split[2].strip("\n") == keybind:
+                                key = pygame.key.name(self.screen_manager.game.keybinds[keybind])
+                                fconfig.write(f"BIND {key} {keybind} \n")
+                else:
+                    fconfig.write(line)

@@ -86,10 +86,6 @@ class Game(Engine):
         self.update_queue.append(self.current_round)
 
         self.entity_manager.add_entity(Player(self,"player"),"player")
-        tower = Tower(self, pygame.Vector2(SCREEN_WIDTH / 2, 0))
-        tower.velocity = pygame.Vector2(0,random.randrange(8,15))
-        tower.velocity.rotate_ip(random.randrange(-45,45))
-        self.entity_manager.add_entity(tower, "tower")
 
         self.console.add_command("upgrade", self.give_upgrade, [('speed', 'damage', 'range'), 'number'])
         self.console.add_command("fastforward", self.fast_forward, [])
@@ -139,7 +135,6 @@ class Game(Engine):
             upgrade.velocity.rotate_ip(random.randrange(-45,45))
             self.entity_manager.add_entity(upgrade, "upgrade")
 
-    
     def start_round(self):
         self.gui.items["btn_roundstart"].hidden = True
         self.gui.items["btn_fastforward"].hidden = False
@@ -166,15 +161,22 @@ class Game(Engine):
             btn.fore_color = btn.theme.get()["fore_color"]
 
     def spawn_upgrade(self, upgrade):
-        self.entity_manager.add_entity(Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), self.assets.get(f"{upgrade}_upgrade"), upgrade), "upgrade")
+        upgrade = Upgrade(self, pygame.Vector2(SCREEN_WIDTH / 2, 0), self.assets.get(f"{upgrade}_upgrade"), upgrade)
+        upgrade.velocity = pygame.Vector2(0,random.randrange(8,15))
+        upgrade.velocity.rotate_ip(random.randrange(-45,45))
+        self.entity_manager.add_entity(upgrade, "upgrade")
         self.toggle_popup(self.popups["upgrade_choice"])
+
+    def spawn_tower(self):
+        tower = Tower(self, pygame.Vector2(SCREEN_WIDTH / 2, 0))
+        tower.velocity = pygame.Vector2(0,random.randrange(8,15))
+        tower.velocity.rotate_ip(random.randrange(-45,45))
+        self.entity_manager.add_entity(tower, "tower")
 
     def upgrade_tower(self, upgrade, tower):
         tower.upgrade(upgrade)
         self.toggle_popup(self.popups["upgrade_decision"])
         upgrade.alive = False
-
-    
 
 class Pause(Popup):
     def __init__(self, game) -> None:
@@ -270,3 +272,4 @@ class Round:
                 self.game.gui.items["btn_roundstart"].hidden = False
                 self.game.gui.items["btn_fastforward"].hidden = True
                 self.game.game_speed = 1.0
+                self.game.toggle_popup(self.game.popups["upgrade_choice"])
