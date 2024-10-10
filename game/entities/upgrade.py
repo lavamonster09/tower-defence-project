@@ -1,5 +1,5 @@
 from engine import *
-from util import *
+from game.util.constants import *
 
 class Upgrade(Entity):
     def __init__(self,game, position, sprite, type):

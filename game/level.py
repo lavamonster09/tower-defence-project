@@ -1,6 +1,6 @@
 import pygame
 import random
-from util import *
+from .util import *
 
 
 class Generator:
@@ -106,25 +106,6 @@ class Generator:
         if obsticle.collidelistall(rects) or obsticle.collidelistall(obsticles) or obsticle.right > self.range_x[1] or obsticle.bottom > self.range_y[1]:
             return False
         return True
-
-class LevelManager:
-    def __init__(self, scale):
-        
-        self.generator = Generator([SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale])
-        self.game_surf = pygame.surface.Surface((SCREEN_WIDTH // scale, SCREEN_HEIGHT // scale))
-        self.current_level = Level([], [], 1)
-
-    def change_level(self, no_turns, no_obsticles, line_max_length):
-        self.current_level = self.generator.generate_level(no_turns, no_obsticles, line_max_length)
-
-    def change_to_boss(self):
-        self.current_level = BossLevel(self.current_level.level_number)
-    
-    def draw(self): 
-        self.current_level.draw(self.game_surf)
-    
-    def update(self):
-        pass
 
 class Level():
     def __init__(self, points, obsticles, level_number) -> None:

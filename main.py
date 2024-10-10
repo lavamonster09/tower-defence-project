@@ -1,12 +1,7 @@
-# To do 
-# waves 
-# towers that reach sertain level 5-5-0 change type / lock out other upgrades 
-# beam me up when round starts 
+from game.util.constants import * 
+from game.game import Game
 
-from util.constants import * 
-from engine import Game
-
-import screens
+import game.screens
 import sys
 
 pygame.init()

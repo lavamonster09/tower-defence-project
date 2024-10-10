@@ -1,5 +1,5 @@
 from engine import *
-import util
+from game.util.constants import *
 
 
 class Player(Entity):

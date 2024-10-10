@@ -2,10 +2,11 @@ import pygame
 from pygame import gfxdraw
 import math
 from engine.theme import *
-from util.constants import *
+from game.util.constants import *
 from typing import Callable
 
 pygame.font.init()
+
 
 d = {}
 with open("assets/fonts/MaterialIcons-Regular.codepoints", "r") as file:

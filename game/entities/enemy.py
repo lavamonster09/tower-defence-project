@@ -1,6 +1,6 @@
 from engine import *
 
-from util import SCREEN_HEIGHT, SCREEN_WIDTH
+from game.util.constants import *
 
 class Enemy(Entity):
     def __init__(self,game, sprite = pygame.surface.Surface((0,0)), speed = 2, children = None, path = None) -> None:

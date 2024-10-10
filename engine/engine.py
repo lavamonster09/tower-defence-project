@@ -8,10 +8,7 @@ from .sound import SoundManager
 from .entity import EntityManager
 from .screen_manager import *
 from .screen import Screen
-from screens import *
 from .ui import *
-
-from entities import *
 
 class Assets: 
     def __init__(self) -> None:

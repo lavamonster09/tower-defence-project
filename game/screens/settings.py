@@ -1,5 +1,5 @@
 from engine import *
-from util.constants import *
+from game.util.constants import *
 
 class Settings(Screen):
     def __init__(self, screen_manager) -> None:

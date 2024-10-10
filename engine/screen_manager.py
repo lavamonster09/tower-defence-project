@@ -1,6 +1,3 @@
-
-
-
 class ScreenManager():
     def __init__(self, game, startup_screen : str, screens: dict) -> None:
         self.game = game

@@ -1,5 +1,5 @@
 from .bullet import *
-from util import *
+from game.util.constants import *
 from engine import *
 import random
 

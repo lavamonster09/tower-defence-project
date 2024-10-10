@@ -1,5 +1,5 @@
 from engine import *
-from util.constants import *
+from game.util.constants import *
 
 class Menu(Screen):
     def __init__(self, screen_manager) -> None:
@@ -11,9 +11,6 @@ class Menu(Screen):
         self.add_item("img_bkg", Image("assets\images/menu/menu_start.png", rect = (50,50,SCREEN_WIDTH,SCREEN_HEIGHT), positioning="relative"))
         self.add_item("btn_start",Button(BUTTON_DARK , rect=(50,40,200,100), text="START", on_click= self.btn_start_on_click, positioning="relative"))
         self.add_item("btn_settings", Button(BUTTON_DARK, rect = (50,60,300,100), text = "SETTINGS", on_click= self.btn_settings_on_click, positioning="relative"))
-
-        # label
-        #self.add_item("label", Label(LABEL_DARK, rect = (50,10,SCREEN_WIDTH,200), text = "GAME", positioning="relative", font_size=100))
 
     def update(self):
         if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
