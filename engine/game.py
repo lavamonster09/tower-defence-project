@@ -90,6 +90,8 @@ class Game(Engine):
         self.console.add_command("upgrade", self.give_upgrade, [('speed', 'damage', 'range'), 'number'])
         self.console.add_command("fastforward", self.fast_forward, [])
 
+        self.spawn_tower()
+
 
     def draw(self):
         if self.game_active:

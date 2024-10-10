@@ -20,8 +20,7 @@ class Entity:
         surface.blit(self.sprite, self.rect)
     
     def update(self):
-        
-        self.rect.center = self.pos
+        self.rect.center = self.pos // 2 * 2
 
 class EntityManager:
     def __init__(self) -> None:

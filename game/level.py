@@ -130,7 +130,7 @@ class Level():
     def __init__(self, points, obsticles, level_number) -> None:
         self.level_number = level_number
         self.background = pygame.image.load(f"assets\images/area_{level_number}/floor.png").convert()
-        self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.background = pygame.transform.scale_by(self.background,2)
         self.points = points
         self.obsticles = obsticles
         self.back_color = (30, 74, 157)
@@ -140,24 +140,39 @@ class Level():
         surface.blit(self.background, (0,0))
 
         for i in range(len(self.points) - 1):
-            pygame.draw.line(surface, (122, 48, 69), self.points[i], self.points[i+1], PATH_SIZE + 9)
+            point1 = (self.points[i][0] // 2 * 2, self.points[i][1] // 2 * 2)
+            point2 = (self.points[i+1][0] // 2 * 2, self.points[i+1][1] // 2 * 2)
+            pygame.draw.line(surface, (46, 34, 47), point1, point2, PATH_SIZE + 5)
             
         for point in self.points:
-            pygame.draw.circle(surface, (122, 48, 69), point, PATH_SIZE // 2 + 4)
-            pygame.draw.circle(surface, (158, 69, 57), point, PATH_SIZE // 2)
+            point = (point[0] // 2 * 2, point[1] // 2 * 2)
+            rect = pygame.Rect(0,0,PATH_SIZE + 1, PATH_SIZE + 1)
+            rect2 = pygame.Rect(0,0, PATH_SIZE + 5, PATH_SIZE + 5)
+            rect.center = point
+            rect2.center = point
+            pygame.draw.rect(surface, (46, 34, 47), rect2)
+            pygame.draw.rect(surface, (62, 53, 70), rect)
         for i in range(len(self.points) - 1):
-            pygame.draw.line(surface, (158, 69, 57), self.points[i], self.points[i+1], PATH_SIZE + 1)
+            point = pygame.Vector2(self.points[i][0] // 2 * 2, self.points[i][1] // 2 * 2)
+            point2 = pygame.Vector2(self.points[i+1][0] // 2 * 2, self.points[i+1][1] // 2 * 2)
+            length = point.distance_to(point2)
+            slope = point2 - point
+            slope = slope.normalize()
+            for index in range(0, int(length/6), 2):
+                start = point + (slope *    index    *6)
+                end   = point + (slope * (index + 1) *6)
+                pygame.draw.line(surface, (255,255,255), start, end, 3)
         
         pygame.draw.circle(surface, (30, 188, 115), self.points[0], PATH_SIZE/2 + 3)
         pygame.draw.circle(surface, (35, 144, 99), self.points[0], PATH_SIZE/2 + 3, 3)
             
         for obsticle in self.obsticles:
             temp = obsticle.copy()
-            temp.width = obsticle.width + 8
-            temp.height = obsticle.height + 8
-            temp.center = obsticle.center
-            pygame.draw.rect(surface, (46, 34, 47), temp, border_radius= PATH_SIZE // 2)
-            pygame.draw.rect(surface, (62, 53, 70), obsticle, border_radius= PATH_SIZE // 2)
+            temp.width = (obsticle.width + 8) // 2 * 2
+            temp.height = (obsticle.height + 8) // 2 * 2
+            temp.center = (obsticle.center[0] // 2 * 2, obsticle.center[1] // 2 * 2)
+            pygame.draw.rect(surface, (46, 34, 47), temp)
+            pygame.draw.rect(surface, (62, 53, 70), temp, 4)
     
     def update(self):
         pass

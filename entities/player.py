@@ -108,7 +108,9 @@ class Player(Entity):
         
     def draw(self):
         surface = pygame.display.get_surface()
-        temp_sprite = pygame.transform.rotate(self.sprite, self.target_angle)
+        temp_sprite = pygame.transform.scale_by(self.sprite, 0.5)
+        temp_sprite = pygame.transform.rotate(temp_sprite, self.target_angle)
+        temp_sprite = pygame.transform.scale_by(temp_sprite, 2)
         self.rect = temp_sprite.get_rect()
         temp_sprite.set_colorkey((0,0,0))
         self.rect.center = self.pos
