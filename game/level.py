@@ -149,8 +149,8 @@ class Level():
             
         for obsticle in self.obsticles:
             temp = obsticle.copy()
-            temp.width = (obsticle.width + 8) // 2 * 2
-            temp.height = (obsticle.height + 8) // 2 * 2
+            temp.width = (obsticle.width) // 2 * 2
+            temp.height = (obsticle.height) // 2 * 2
             temp.center = (obsticle.center[0] // 2 * 2, obsticle.center[1] // 2 * 2)
             pygame.draw.rect(surface, (46, 34, 47), temp)
             pygame.draw.rect(surface, (62, 53, 70), temp, 4)

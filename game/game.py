@@ -23,6 +23,7 @@ class Game(Engine):
 
         # holds game state information
         self.paused = False
+        self.hp = 1000
         self.game_speed = 1.0
 
         # the information needed for the current round 
@@ -46,7 +47,8 @@ class Game(Engine):
         self.popups = {
             "upgrade_choice": UpgradeChoicePopup(self),
             "pause": Pause(self),
-            "upgrade_decision": UpgradeDecision(self)
+            "upgrade_decision": UpgradeDecision(self),
+            "death": DeathPopup(self)
         }
 
         # setup GUI
@@ -54,6 +56,9 @@ class Game(Engine):
         self.gui.add_item("lbl_round", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = self.get_round_number, font_size=30, positioning="relative"))
         self.gui.add_item("btn_roundstart", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("play_arrow"), on_click= self.start_round, positioning="relative"))
         self.gui.add_item("btn_fastforward", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("fast_forward"), on_click= self.fast_forward, positioning="relative"))
+        lbl_hp = Label(LABEL_DARK, rect= (62,25, 125,50), text=self.get_hp, font_size=30, positioning="absolute")
+        lbl_hp.fore_color = (255,50,50)
+        self.gui.add_item("lbl_hp", lbl_hp)
         self.gui.items["btn_fastforward"].hidden = True
 
         self.screen_manager.add_screen("game", self.gui)
@@ -83,6 +88,7 @@ class Game(Engine):
 
         self.console.add_command("upgrade", self.give_upgrade, [('speed', 'damage', 'range'), 'number'])
         self.console.add_command("fastforward", self.fast_forward, [])
+        self.console.add_command("hp", self.set_hp, ["hp"])
 
         self.spawn_tower()
 
@@ -122,6 +128,12 @@ class Game(Engine):
 
     def get_round_number(self):
         return self.current_round.get_round_number()
+    
+    def get_hp(self):
+        return self.hp / 10
+
+    def set_hp(self, hp):
+        self.hp = int(hp)
     
     def give_upgrade(self, upgrade_name: str, number: int):
         number = int(number)
@@ -239,6 +251,46 @@ class UpgradeDecision(Popup):
         self.label.text = f"upgrade {self.currently_upgrading.type}?"
         self.game.paused = True
 
+class DeathPopup(Popup):
+    def __init__(self, game) -> None:
+        super().__init__(game)
+        self.name = "death_popup"
+        self.btn_replay = Button(BUTTON_DARK, (50,30,450,200), text="RETRY", positioning="relative", on_click=self.retry)
+        self.btn_exit = Button(BUTTON_DARK, (50,70,450,200), text="EXIT", positioning="relative", on_click=self.exit)
+        self.add_item(self.btn_exit)
+        self.add_item(self.btn_replay)
+
+    def retry(self):
+        for enemy in self.game.entity_manager.entities["enemy"]:
+            enemy.alive = False
+        self.game.draw_queue.remove((1, self.game.level))
+        self.game.level = self.game.generator.generate_level(self.game.level_data)
+        self.game.draw_queue.append((1,self.game.level))
+        self.game.current_round.round_number = 0
+        self.game.round_started = False
+        self.game.toggle_popup(self)
+
+    def exit(self):
+        for enemy in self.game.entity_manager.entities["enemy"]:
+            enemy.alive = False
+        self.game.draw_queue.remove((1, self.game.level))
+        self.game.level = self.game.generator.generate_level(self.game.level_data)
+        self.game.draw_queue.append((1,self.game.level))
+        self.game.current_round.round_number = 0
+        self.game.round_started = False
+        self.game.screen_manager.change_screen("game_select", 10)
+        self.game.toggle_popup(self)
+
+    def on_open(self):
+        self.game.paused = True
+        self.game.round_started = False
+        self.game.gui.items["btn_roundstart"].hidden = False
+        self.game.gui.items["btn_fastforward"].hidden = True
+        self.game.game_speed = 1.0
+
+    def on_close(self):
+        self.game.paused = False
+
 class Round:
     def __init__(self, game, round_number, enemy_types):
         self.game = game
@@ -263,7 +315,7 @@ class Round:
                 enemy = random.choice(self.enemies)
                 self.game.entity_manager.add_entity(enemy, "enemy")
                 self.enemies.remove(enemy)
-            if len(self.game.entity_manager.entities.get("enemy", [])) == 0 and len(self.enemies) == 0:
+            if len(self.game.entity_manager.entities.get("enemy", [])) == 0 and len(self.enemies) == 0 and self.game.hp > 0:
                 self.game.round_started = False
                 self.game.gui.items["btn_roundstart"].hidden = False
                 self.game.gui.items["btn_fastforward"].hidden = True
