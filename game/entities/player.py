@@ -1,5 +1,6 @@
 from engine import *
 from game.util.constants import *
+import pygame
 
 
 class Player(Entity):
@@ -17,13 +18,40 @@ class Player(Entity):
 
         # boolean values
         self.holding = None
+        self.input_lock = False
+        self.prev_input_lock = True
 
         # misc
         self.keybinds = game.keybinds
         self.zindex = 2
+        self.pos = pygame.Vector2(int(self.game.config.get("SCREEN_WIDTH")) // 2, -60)
+        self.last_pos = pygame.Vector2(int(self.game.config.get("SCREEN_WIDTH")) // 2, int(self.game.config.get("SCREEN_HEIGHT")) // 2)
     
     def update(self):
         super().update()
+        if self.input_lock:
+            if self.prev_input_lock != self.input_lock:
+                print(self.prev_input_lock, self.input_lock)
+                self.last_pos = self.pos.copy()
+                self.prev_input_lock = self.input_lock
+            if self.pos.y > -60:
+                self.pos.y -= 10
+                self.angle += 10
+                if self.angle > 360 or self.angle < 0:
+                    self.angle %= 360
+            return
+
+        if not self.input_lock:
+            if self.pos.y < self.last_pos.y:
+                self.pos.y += 10
+                self.angle += 10
+                if self.angle > 360 or self.angle < 0:
+                    self.angle %= 360
+                return
+            else:
+                self.last_pos = self.pos
+
+        self.prev_input_lock = self.input_lock
         self.target_angle = self.get_rotation()
         
         if self.angle > 360 or self.angle < 0:
@@ -109,7 +137,7 @@ class Player(Entity):
     def draw(self):
         surface = pygame.display.get_surface()
         temp_sprite = pygame.transform.scale_by(self.sprite, 0.5)
-        temp_sprite = pygame.transform.rotate(temp_sprite, self.target_angle)
+        temp_sprite = pygame.transform.rotate(temp_sprite, self.angle)
         temp_sprite = pygame.transform.scale_by(temp_sprite, 2)
         self.rect = temp_sprite.get_rect()
         temp_sprite.set_colorkey((0,0,0))

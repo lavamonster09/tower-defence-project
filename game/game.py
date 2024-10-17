@@ -151,6 +151,7 @@ class Game(Engine):
         self.update_queue.append(self.current_round)
         self.round_started = True
         self.fast_forward()
+        self.entity_manager.entities["player"][0].input_lock = True
 
     def fast_forward(self):
         btn = self.gui.items["btn_fastforward"]
@@ -286,10 +287,12 @@ class DeathPopup(Popup):
         self.game.round_started = False
         self.game.gui.items["btn_roundstart"].hidden = False
         self.game.gui.items["btn_fastforward"].hidden = True
-        self.game.game_speed = 1.0
-
+        
     def on_close(self):
         self.game.paused = False
+        self.game.game_speed = 1.0
+        self.game.hp = 1000
+        self.game.entity_manager.entities["player"][0].input_lock = False
 
 class Round:
     def __init__(self, game, round_number, enemy_types):
@@ -321,3 +324,4 @@ class Round:
                 self.game.gui.items["btn_fastforward"].hidden = True
                 self.game.game_speed = 1.0
                 self.game.toggle_popup(self.game.popups["upgrade_choice"])
+                self.game.entity_manager.entities["player"][0].input_lock = False
