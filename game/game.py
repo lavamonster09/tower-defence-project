@@ -48,7 +48,8 @@ class Game(Engine):
             "upgrade_choice": UpgradeChoicePopup(self),
             "pause": Pause(self),
             "upgrade_decision": UpgradeDecision(self),
-            "death": DeathPopup(self)
+            "death": DeathPopup(self),
+            "boss_warning": BossWarning(self)
         }
 
         # setup GUI
@@ -152,6 +153,8 @@ class Game(Engine):
         self.round_started = True
         self.fast_forward()
         self.entity_manager.entities["player"][0].input_lock = True
+        if (self.current_round.round_number + 1)%10 == 0:
+            self.toggle_popup(self.popups["boss_warning"])
 
     def fast_forward(self):
         btn = self.gui.items["btn_fastforward"]
@@ -293,6 +296,30 @@ class DeathPopup(Popup):
         self.game.game_speed = 1.0
         self.game.hp = 1000
         self.game.entity_manager.entities["player"][0].input_lock = False
+
+class BossWarning(Popup):
+    def __init__(self, game) -> None:
+        super().__init__(game)
+        self.name = "boss_warning"
+        self.add_item(Image(self.game.assets.get("warning"), (50,50,200,200), positioning = "relative"))
+        self.add_item(Label(LABEL_DARK_FILLED, (50,70,400,50), f"boss coming up", positioning="relative", font_size=30))
+        self.counter = 0
+
+    def on_close(self):
+        pass
+
+    def update(self):
+        super().update()
+        self.counter += 1
+        if self.counter // 60 % 2 == 0:
+            self.hidden = False
+        else:
+            self.hidden = True
+        if self.counter > 180:
+            self.game.toggle_popup(self)
+
+    def on_open(self):
+        pass
 
 class Round:
     def __init__(self, game, round_number, enemy_types):
