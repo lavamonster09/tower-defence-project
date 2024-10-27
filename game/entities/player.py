@@ -36,17 +36,17 @@ class Player(Entity):
                 self.prev_input_lock = self.input_lock
             if self.pos.y > -60:
                 self.pos.y -= 10
-                self.angle += 10
-                if self.angle > 360 or self.angle < 0:
-                    self.angle %= 360
+                self.target_angle += 10
+                if self.target_angle > 360 or self.target_angle < 0:
+                    self.target_angle %= 360
             return
 
         if not self.input_lock:
             if self.pos.y < self.last_pos.y:
                 self.pos.y += 10
-                self.angle += 10
-                if self.angle > 360 or self.angle < 0:
-                    self.angle %= 360
+                self.target_angle += 10
+                if self.target_angle > 360 or self.target_angle < 0:
+                    self.target_angle %= 360
                 return
             else:
                 self.last_pos = self.pos

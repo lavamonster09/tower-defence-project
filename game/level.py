@@ -130,6 +130,7 @@ class Level():
     def draw(self):
         surface = pygame.display.get_surface()
         surface.blit(self.background, (0,0))
+        
 
         for i in range(len(self.points) - 1):
             point1 = (self.points[i][0] // 2 * 2, self.points[i][1] // 2 * 2)
@@ -162,7 +163,7 @@ class Level():
             sprite = obsticle[1]
             rect = sprite.get_rect()
             surface.blit(sprite, obsticle[0])
-    
+        
     def update(self):
         pass
 
