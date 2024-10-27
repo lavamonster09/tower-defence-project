@@ -330,8 +330,12 @@ class Image():
             self.rect.center = (rect[0], rect[1])
         if positioning == "relative":
             self.rect.center = ((rect[0] / 100) * SCREEN_WIDTH, (rect[1] / 100) * SCREEN_HEIGHT)      
-        if image != "":
+        if image != "" and type(image) == str:
             self.image = pygame.image.load(image).convert()
+            self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
+            self.image.set_colorkey((0,0,0))
+        elif isinstance(image, pygame.Surface):
+            self.image = image.copy()
             self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
             self.image.set_colorkey((0,0,0))
         else:

@@ -25,6 +25,9 @@ class Enemy(Entity):
                 self.pos = self.pos.move_towards(self.path[self.current_point], self.speed)
         else:
             self.alive = False
+            self.game.hp -= self.hp
+            if self.game.hp <= 0:
+                self.game.toggle_popup(self.game.popups["death"])
         if self.hp <= 0:
             self.sound_manager.play_sound("death")
             self.alive = False
