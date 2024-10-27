@@ -127,8 +127,9 @@ class Tower(Entity):
         return angle
 
     def check_collisions(self):
-        for obsticle in self.game.level.obsticles:
-            if obsticle.collidepoint(self.pos):
+        obsticles = [x[0] for x in self.game.level.obsticles]
+        for obsticle in obsticles:
+            if obsticle.colliderect(self.rect):
                 return True
         return False
 

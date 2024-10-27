@@ -109,7 +109,7 @@ class Player(Entity):
     def draw(self):
         surface = pygame.display.get_surface()
         temp_sprite = pygame.transform.scale_by(self.sprite, 0.5)
-        temp_sprite = pygame.transform.rotate(temp_sprite, self.target_angle)
+        temp_sprite = self.game.assets.get_frame("tvman", int(self.target_angle//45))
         temp_sprite = pygame.transform.scale_by(temp_sprite, 2)
         self.rect = temp_sprite.get_rect()
         temp_sprite.set_colorkey((0,0,0))
@@ -129,8 +129,11 @@ class Player(Entity):
             angle = 180 - deg
         return angle
     
-    def check_collisions(self, postion):
-        for obsticle in self.level.obsticles:
-            if obsticle.collidepoint(postion):
+    def check_collisions(self, pos):
+        rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
+        rect.center = pos
+        obsticles = [x[0] for x in self.game.level.obsticles]
+        for obsticle in obsticles:
+            if obsticle.colliderect(rect):
                 return True
         return False

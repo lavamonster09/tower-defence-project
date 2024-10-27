@@ -64,7 +64,7 @@ class Game(Engine):
             "no_boxes": 6,
             "max_line_len": 1000
             }
-        self.generator = Generator(self.screen.get_size())
+        self.generator = Generator(self.screen.get_size(), self)
         self.level = self.generator.generate_level(self.level_data)
         
         # setup draw and update queues

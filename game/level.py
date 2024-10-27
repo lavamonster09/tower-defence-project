@@ -4,19 +4,27 @@ from .util import *
 
 
 class Generator:
-    def __init__(self, screen_size):
+    def __init__(self, screen_size, game):
         self.level_number = 1
+        self.game = game
         self.range_x = (0 + PATH_SIZE, screen_size[0] - PATH_SIZE)
         self.range_y = (0 + PATH_SIZE, screen_size[1] - PATH_SIZE)
         
         self.line_max_length = 100
         self.points = []
         self.obsticles = []
+        self.obsticle_sprites = []
 
     def generate_level(self, level_data):
+        self.obsticle_sprites = []
+        for asset in self.game.assets.assets:
+            split = asset.split("_")
+            if asset.startswith("ob"):
+                if split[1] == str(self.level_number):
+                    self.obsticle_sprites.append(pygame.transform.scale_by(self.game.assets.get(asset),2))
         self.points = self.generate_path(level_data["no_turns"], level_data["max_line_len"])
         self.obsticles = self.generate_obsticles(level_data["no_boxes"])
-        return Level(self.points, self.obsticles, 1)
+        return Level(self.game, self.points, self.obsticles, 1)
 
     def generate_path(self, no_turns, line_max_length):
         direction = random.choice([pygame.Vector2(0,1), pygame.Vector2(1,0)])
@@ -83,13 +91,15 @@ class Generator:
 
     def get_obsticle(self, obsticles):
         x = int(random.uniform(self.range_x[0],self.range_x[1]))
-        y = int(random.uniform(self.range_y[0], self.range_y[1]))
-        obsticle = pygame.Rect(x,y ,random.randrange(MIN_OBSTICLE_SIZE, MAX_OBSTICLE_SIZE),random.randrange(MIN_OBSTICLE_SIZE, MAX_OBSTICLE_SIZE))
-        collided = False
+        y = int(random.uniform(self.range_y[0], self.range_y[1]))   
+        sprite = random.choice(self.obsticle_sprites)
+        obsticle = sprite.get_rect()
+        obsticle.center = (x,y)
+        _r = obsticle, sprite
         while not self.check_obstacle(obsticle, obsticles):
-            obsticle = self.get_obsticle(obsticles)
+            _r = self.get_obsticle(obsticles)
             break
-        return obsticle
+        return _r
     
     def check_obstacle(self, obsticle, obsticles):
         rects = []
@@ -103,12 +113,13 @@ class Generator:
                 height = self.points[i].y - self.points[i + 1].y 
                 rects.append(pygame.Rect(self.points[i + 1].x  - PATH_SIZE / 2, self.points[i + 1].y - PATH_SIZE / 2, width + PATH_SIZE, height + PATH_SIZE))
          
-        if obsticle.collidelistall(rects) or obsticle.collidelistall(obsticles) or obsticle.right > self.range_x[1] or obsticle.bottom > self.range_y[1]:
+        if obsticle.collidelistall(rects) or obsticle.collidelistall([x[0] for x in obsticles]) or obsticle.right > self.range_x[1] or obsticle.bottom > self.range_y[1]:
             return False
         return True
 
 class Level():
-    def __init__(self, points, obsticles, level_number) -> None:
+    def __init__(self, game, points, obsticles, level_number) -> None:
+        self.game = game
         self.level_number = level_number
         self.background = pygame.image.load(f"assets\images/area_{level_number}/floor.png").convert()
         self.background = pygame.transform.scale_by(self.background,2)
@@ -148,12 +159,9 @@ class Level():
         pygame.draw.circle(surface, (35, 144, 99), self.points[0], PATH_SIZE/2 + 3, 3)
             
         for obsticle in self.obsticles:
-            temp = obsticle.copy()
-            temp.width = (obsticle.width + 8) // 2 * 2
-            temp.height = (obsticle.height + 8) // 2 * 2
-            temp.center = (obsticle.center[0] // 2 * 2, obsticle.center[1] // 2 * 2)
-            pygame.draw.rect(surface, (46, 34, 47), temp)
-            pygame.draw.rect(surface, (62, 53, 70), temp, 4)
+            sprite = obsticle[1]
+            rect = sprite.get_rect()
+            surface.blit(sprite, obsticle[0])
     
     def update(self):
         pass

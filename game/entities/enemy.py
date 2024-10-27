@@ -122,7 +122,8 @@ class BossPylon(Entity):
         super().update()
 
     def check_collisions(self):
-        for obsticle in self.level_manager.current_level.obsticles:
+        obsticles = [x[0] for x in self.game.level.obsticle]
+        for obsticle in obsticles:
             if obsticle.collidepoint(self.pos):
                 return True
         return False

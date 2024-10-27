@@ -53,7 +53,8 @@ class Upgrade(Entity):
         
 
     def check_collisions(self):
-        for obsticle in self.level.obsticles:
+        obsticles = [x[0] for x in self.game.level.obsticles]
+        for obsticle in obsticles:
             if obsticle.collidepoint(self.pos):
                 return True
         return False
