@@ -49,6 +49,9 @@ class Player(Entity):
                     self.target_angle %= 360
                 return
             else:
+                if self.check_collisions(self.pos):
+                    self.last_pos.y += 10
+                    return
                 self.last_pos = self.pos
 
         self.prev_input_lock = self.input_lock

@@ -1,8 +1,9 @@
+from re import L
 import pygame
 import sys
 import os 
 
-from .level import Generator
+from .level import *
 from engine import *
 from .screens import *
 from .entities import *
@@ -28,6 +29,7 @@ class Game(Engine):
 
         # the information needed for the current round 
         self.round_started = False
+        self.boss_offset = 3 
         self.enemy_types = {
             "standard": {
                 "type": Standard,
@@ -38,6 +40,11 @@ class Game(Engine):
                 "type": Fast,
                 "chance": 50,
                 "sprite": self.assets.get("enemy")
+                },
+            "boss": {
+                "type": Boss,
+                "chance": 0,
+                "sprite": self.assets.get("boss")
                 }
             }
         self.current_round = Round(self, 0,self.enemy_types)
@@ -68,7 +75,8 @@ class Game(Engine):
         self.level_data = {
             "no_turns": 6,
             "no_boxes": 6,
-            "max_line_len": 1000
+            "max_line_len": 1000,
+            "level_no": 1
             }
         self.generator = Generator(self.screen.get_size(), self)
         self.level = self.generator.generate_level(self.level_data)
@@ -149,11 +157,11 @@ class Game(Engine):
         self.gui.items["btn_fastforward"].hidden = False
         self.update_queue.remove(self.current_round)
         self.current_round = Round(self, self.current_round.get_round_number()+1, self.enemy_types)
-        self.update_queue.append(self.current_round)
         self.round_started = True
         self.fast_forward()
         self.entity_manager.entities["player"][0].input_lock = True
-        if (self.current_round.round_number + 1)%10 == 0:
+        self.update_queue.append(self.current_round)
+        if (self.current_round.round_number + 1)%self.boss_offset == 0:
             self.toggle_popup(self.popups["boss_warning"])
 
     def fast_forward(self):
@@ -333,6 +341,8 @@ class Round:
             for enemy_type in enemy_types:
                 for _ in range(self.number_enemies * enemy_types[enemy_type]["chance"] // 100):
                     self.enemies.append(enemy_types[enemy_type]["type"](game, sprite = enemy_types[enemy_type]["sprite"]))
+        if self.round_number % self.game.boss_offset == 0 and self.round_number != 0 :
+            self.enemies = [enemy_types["boss"]["type"](game, sprite = enemy_types["boss"]["sprite"])]
 
     def get_round_number(self):
         return self.round_number

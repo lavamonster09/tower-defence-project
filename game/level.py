@@ -24,7 +24,7 @@ class Generator:
                     self.obsticle_sprites.append(pygame.transform.scale_by(self.game.assets.get(asset),2))
         self.points = self.generate_path(level_data["no_turns"], level_data["max_line_len"])
         self.obsticles = self.generate_obsticles(level_data["no_boxes"])
-        return Level(self.game, self.points, self.obsticles, 1)
+        return Level(self.game, self.points, self.obsticles, level_data["level_no"])
 
     def generate_path(self, no_turns, line_max_length):
         direction = random.choice([pygame.Vector2(0,1), pygame.Vector2(1,0)])
@@ -168,12 +168,13 @@ class Level():
         pass
 
 class BossLevel:
-    def __init__(self, level_no) -> None:
+    def __init__(self,game, level_no) -> None:
+        self.game = game
         self.background = pygame.image.load(f"assets\images/area_{level_no}/floor.png").convert()
         self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.points = []
         self.obsticles = []
         self.level_number = level_no
 
-    def draw(self, surface):
-        surface.blit(self.background, (0,0))
+    def draw(self):
+        self.game.screen.blit(self.background, (0,0))

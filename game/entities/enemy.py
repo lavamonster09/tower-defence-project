@@ -11,8 +11,8 @@ class Enemy(Entity):
         super().__init__(game, position = self.path[0], sprite = sprite)
         self.speed = speed
         self.current_point = 0
-        self.hp = 100
-        self.real_hp = 100 
+        self.hp = self.hp
+        self.real_hp = self.hp
         self.last_hp = self.hp
         self.children = children
         self.zindex = 0
@@ -41,92 +41,31 @@ class Enemy(Entity):
 class Standard(Enemy):
     def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0))) -> None:
         speed = 2
+        self.hp = 100
         super().__init__(game_manager, sprite, speed)
         
 class Fast(Enemy):
     def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0))) -> None:
         speed = 3
+        self.hp = 100
         super().__init__(game_manager, sprite, speed)
-        
-class Grunt(Enemy):
-    def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0)), target = pygame.Vector2(0,0)) -> None:
-        speed = 1
-        super().__init__(game_manager, sprite, speed, path = [pygame.Vector2(random.randrange(SCREEN_WIDTH) // 2 * 2, random.randrange(SCREEN_HEIGHT) // 2 * 2), target])
-        self.hp = 30
 
-class Boss(Entity):
-    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0))) -> None:
-        super().__init__(game_manager, sprite = sprite,)
-        self.game_manager.sound_manager.play_music("CARAVAN")
-        self.pos = pygame.Vector2(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
-        self.hp = 600
-        self.no_pylons = 0
-
-    def spawn_pylon(self):
-        if self.no_pylons <= 0:
-            self.entity_manager.add_entity(BossPylon(self.game_manager, self.game_manager.assets.get("pylon"), self), "pylon")
-            self.no_pylons += 1 
+class Boss(Enemy):
+    def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0))) -> None:
+        speed = 0.5
+        self.hp = 100 * game_manager.current_round.round_number
+        super().__init__(game_manager, sprite, speed)
 
     def update(self):
-        
         if self.hp <= 0:
-            self.sound_manager.play_sound("death")
-            self.alive = False
-        if self.alive:
-            self.spawn_pylon()
-
+            self.game.level_data["level_no"] += 1 
+            self.game.draw_queue.remove((1, self.game.level))
+            self.game.level = self.game.generator.generate_level(self.game.level_data)
+            self.game.draw_queue.append((1, self.game.level))
         return super().update()
-    
-    def draw(self, target_surface : pygame.Surface):
+
+    def draw(self):
         rect = pygame.Rect(0,0,self.hp, 20)
         rect.midtop = (SCREEN_WIDTH/2, 10)
-        pygame.draw.rect(target_surface, (255,55,55), rect)
-        return super().draw(target_surface)
-
-class BossPylon(Entity):
-    def __init__(self,game_manager, sprite = pygame.surface.Surface((0,0)), boss = None) -> None:
-        super().__init__(game_manager, sprite= sprite)
-        self.boss = boss
-        self.pos = self.get_pos()
-        self.hp = 100
-        self.velocity = pygame.Vector2(0,0)
-        self.last_hp = self.hp
-        self.no_enemies = 5
-        self.game_manager.enemies = [Grunt(self.game_manager, self.game_manager.assets.get("enemy"), self.pos) for i in range(self.no_enemies)]
-
-    def get_pos(self):
-        pos = pygame.Vector2(random.randrange(SCREEN_WIDTH) // 2 + (SCREEN_WIDTH/4), random.randrange(SCREEN_HEIGHT) // 2 + (SCREEN_HEIGHT/4))
-        self.rect.center = pos
-        self.boss.rect.center = self.boss.pos
-        if self.rect.colliderect(self.boss.rect):
-            pos = self.get_pos()
-        return pos
-
-    def update(self):
-        if not self.holdable:
-            self.sprite = pygame.transform.scale_by(self.game_manager.assets.get("pylon_inactive"), 2)
-        else:
-            self.sprite = pygame.transform.scale_by(self.game_manager.assets.get("pylon"), 2)
-        self.pos += self.velocity
-        if self.entity_manager.entities.get("player", [])[0].holding != self:
-            if self.pos.x > SCREEN_WIDTH or self.pos.x < 0:
-                self.hp = 0
-            if self.pos.y > SCREEN_HEIGHT or self.pos.y < 0:
-                self.hp = 0
-            if self.rect.colliderect(self.boss.rect):
-                self.hp = 0
-                self.boss.hp -= 200
-        if self.entity_manager.entities.get("enemy", []) == [] and self.game_manager.enemies == []:
-            self.holdable = True
-        if self.hp <= 0:
-            self.sound_manager.play_sound("death")
-            self.alive = False
-            self.boss.no_pylons -= 1
-        super().update()
-
-    def check_collisions(self):
-        obsticles = [x[0] for x in self.game.level.obsticle]
-        for obsticle in obsticles:
-            if obsticle.collidepoint(self.pos):
-                return True
-        return False
+        pygame.draw.rect(self.game.screen, (255,55,55), rect)
+        return super().draw()
