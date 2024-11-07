@@ -74,7 +74,7 @@ class Game(Engine):
         # level data / generation
         self.level_data = {
             "no_turns": 6,
-            "no_boxes": 6,
+            "no_boxes": 8,
             "max_line_len": 1000,
             "level_no": 1
             }
