@@ -14,5 +14,6 @@ class Bullet(Entity):
         if self.pos.distance_to(self.target.pos) <= 1:
             self.target.hp -= self.damage
             self.alive = False
+            self.game.shake_screen(2,10)
         super().update()
     

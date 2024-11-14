@@ -47,12 +47,17 @@ class Player(Entity):
                 self.target_angle += 10
                 if self.target_angle > 360 or self.target_angle < 0:
                     self.target_angle %= 360
+                if self.pos.y >= self.last_pos.y:
+                    self.game.shake_screen(5,15)
+                    self.sound_manager.play_sound("place")
                 return
             else:
                 if self.check_collisions(self.pos):
                     self.last_pos.y += 10
-                    return
+                    return       
                 self.last_pos = self.pos
+                
+                
 
         self.prev_input_lock = self.input_lock
         self.target_angle = self.get_rotation()
@@ -94,6 +99,7 @@ class Player(Entity):
                         self.sound_manager.play_sound("pickup")
                         self.m_last_pressed = m_pressed
                         self.holding = entity
+                        self.game.shake_screen(2,10)
             else:
                 entity.player_inrange = False
             if x_inrange and y_inrange and self.holding == None:
@@ -107,11 +113,13 @@ class Player(Entity):
                 self.sound_manager.play_sound("place")
                 self.holding.held = False
                 self.holding = None
+                self.game.shake_screen(2,10)
             if m_pressed[2] == True and self.m_last_pressed[2] == False and not self.holding.check_collisions() and in_range(self.holding.pos.x, [0, SCREEN_WIDTH]) and in_range(self.holding.pos.y, [0, SCREEN_HEIGHT]):
                 self.sound_manager.play_sound("throw")
                 self.holding.held = False
                 self.holding.velocity =( pygame.Vector2(0,-7).rotate(-self.angle))
                 self.holding = None
+                self.game.shake_screen(5,15)
 
     def move(self):
         keys = pygame.key.get_pressed()

@@ -100,6 +100,9 @@ class Game(Engine):
         self.console.add_command("hp", self.set_hp, ["hp"])
 
         self.spawn_tower()
+        self.screen_offset = pygame.Vector2(0,0)
+        self.shake_strength = 0
+        self.shake_duration = 0
 
 
     def draw(self):
@@ -111,6 +114,7 @@ class Game(Engine):
                     pygame.display.flip()
                     break
                 item[1].draw()
+            self.screen.blit(pygame.display.get_surface(), self.screen_offset)
             pygame.display.flip()
         else:
             super().draw()
@@ -120,7 +124,7 @@ class Game(Engine):
         if self.game_active:
             if pygame.key.get_just_pressed()[self.keybinds.get("pause", -1)]:
                 self.toggle_popup(self.popups["pause"])
-            if self.paused:
+            if self.paused:  
                 for item in self.update_queue:
                     if item == self.screen_manager:
                         item.update()
@@ -129,6 +133,14 @@ class Game(Engine):
                 item.update()
                 if self.game_speed == 2.0:
                     item.update()
+            if self.shake_duration > 0:
+                dir = pygame.Vector2(0,self.shake_strength)
+                dir = dir.rotate(random.randrange(360))
+                self.screen_offset = dir
+                self.shake_duration -= 1
+            if self.shake_duration <= 0:
+                self.shake_strength = 0 
+                self.screen_offset = pygame.Vector2(0,0)
         else:
             super().update()
 
@@ -153,6 +165,7 @@ class Game(Engine):
             self.entity_manager.add_entity(upgrade, "upgrade")
 
     def start_round(self):
+        self.shake_screen(10,10)
         self.gui.items["btn_roundstart"].hidden = True
         self.gui.items["btn_fastforward"].hidden = False
         self.update_queue.remove(self.current_round)
@@ -197,6 +210,13 @@ class Game(Engine):
         tower.upgrade(upgrade)
         self.toggle_popup(self.popups["upgrade_decision"])
         upgrade.alive = False
+
+    def shake_screen(self, strength, duration):
+        dir = pygame.Vector2(0,strength)
+        self.screen_offset += dir.rotate(random.randrange(360))
+        if strength > self.shake_strength:
+            self.shake_strength = strength
+        self.shake_duration += duration
 
 class Pause(Popup):
     def __init__(self, game) -> None:
