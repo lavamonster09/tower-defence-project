@@ -1,4 +1,4 @@
-from re import L
+
 import pygame
 import sys
 import os 
@@ -21,6 +21,7 @@ class Game(Engine):
         super().__init__(screens)
         # holds whether or not the game screen is open
         self.game_active = False
+        pygame.mouse.set_visible(False)
 
         # holds game state information
         self.paused = False
@@ -38,7 +39,7 @@ class Game(Engine):
                 },
             "fast": {
                 "type": Fast,
-                "chance": 50,
+                "chance": 15,
                 "sprite": self.assets.get("enemy")
                 },
             "boss": {
@@ -216,7 +217,7 @@ class Game(Engine):
         self.screen_offset += dir.rotate(random.randrange(360))
         if strength > self.shake_strength:
             self.shake_strength = strength
-        self.shake_duration += duration
+        self.shake_duration = duration
 
 class Pause(Popup):
     def __init__(self, game) -> None:
@@ -353,14 +354,14 @@ class Round:
     def __init__(self, game, round_number, enemy_types):
         self.game = game
         self.round_number = round_number
-        self.number_enemies = int(round_number ** 1.2)
+        print(int(1 + (round_number-1)*2))
+        self.number_enemies = int(1 + (round_number-1)*2)
         self.enemies = []
         self.enemy_delay = 60
         self.counter = 1000 
-        for i in range(self.number_enemies):
-            for enemy_type in enemy_types:
-                for _ in range(self.number_enemies * enemy_types[enemy_type]["chance"] // 100):
-                    self.enemies.append(enemy_types[enemy_type]["type"](game, sprite = enemy_types[enemy_type]["sprite"]))
+        for enemy_type in enemy_types:
+            for _ in range(self.number_enemies * enemy_types[enemy_type]["chance"] // 100):
+                self.enemies.append(enemy_types[enemy_type]["type"](game, sprite = enemy_types[enemy_type]["sprite"]))
         if self.round_number % self.game.boss_offset == 0 and self.round_number != 0 :
             self.enemies = [enemy_types["boss"]["type"](game, sprite = enemy_types["boss"]["sprite"])]
 

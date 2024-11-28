@@ -18,15 +18,13 @@ class Generator:
 
     def generate_level(self, level_data):
         self.obsticle_sprites = []
-        self.decoration_sprites = []
         for asset in self.game.assets.assets:
             split = asset.split("_")
             if asset.startswith("ob"):
                 if split[1] == str(level_data["level_no"]):
                     self.obsticle_sprites.append(pygame.transform.scale_by(self.game.assets.get(asset),2))
-            if asset.startswith("de"):
-                if split[1] == str(level_data["level_no"]):
-                    self.decoration_sprites.append(pygame.transform.scale_by(self.game.assets.get(asset),2))
+        if len(self.obsticle_sprites) == 0:
+            self.obsticle_sprites = [self.game.assets.get("null")]
         self.points = self.generate_path(level_data["no_turns"], level_data["max_line_len"])
         self.obsticles = self.generate_obsticles(level_data["no_boxes"])
         return Level(self.game, self.points, self.obsticles, level_data["level_no"])
@@ -94,12 +92,6 @@ class Generator:
             obsticles.append(self.get_obsticle(obsticles))
         return obsticles
 
-    def generate_decorations(self, number, obsticles):
-        decorations = []
-        for _ in range(number):
-            decorations.append(self.get_decoration(obsticles))
-        return decorations
-
     def get_obsticle(self, obsticles):
         x = int(random.uniform(self.range_x[0],self.range_x[1]))
         y = int(random.uniform(self.range_y[0], self.range_y[1]))   
@@ -132,8 +124,8 @@ class Level():
     def __init__(self, game, points, obsticles, level_number) -> None:
         self.game = game
         self.level_number = level_number
-        self.background = pygame.image.load(f"assets\images/area_{level_number}/floor.png").convert()
-        self.background = pygame.transform.scale_by(self.background,2)
+        self.background = self.game.assets.get(f"floor_{level_number}")
+        self.background = pygame.transform.scale(self.background,[int(self.game.config["SCREEN_WIDTH"]), int(self.game.config["SCREEN_HEIGHT"])])
         self.points = points
         self.obsticles = obsticles
         self.back_color = (30, 74, 157)
@@ -178,14 +170,3 @@ class Level():
     def update(self):
         pass
 
-class BossLevel:
-    def __init__(self,game, level_no) -> None:
-        self.game = game
-        self.background = pygame.image.load(f"assets\images/area_{level_no}/floor.png").convert()
-        self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.points = []
-        self.obsticles = []
-        self.level_number = level_no
-
-    def draw(self):
-        self.game.screen.blit(self.background, (0,0))
