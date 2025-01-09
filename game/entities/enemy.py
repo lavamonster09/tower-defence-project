@@ -62,6 +62,7 @@ class Boss(Enemy):
             self.game.draw_queue.remove((1, self.game.level))
             self.game.level = self.game.generator.generate_level(self.game.level_data)
             self.game.draw_queue.append((1, self.game.level))
+            self.game.spawn_tower()
         return super().update()
 
     def draw(self):

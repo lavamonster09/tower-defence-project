@@ -13,9 +13,9 @@ class Particle:
         self.lifespan = 0
         self.start_size = 0
         self.end_size = 0
-        self.start_opasity = 0
-        self.end_opsasity = 0 
-        self.shaper = "circle"
+        self.start_opacity = 0
+        self.end_opacity = 0 
+        self.shape = "circle"
         self.surface = None
 
     def draw(self, target):

@@ -24,8 +24,8 @@ class Assets:
                             sheet = pygame.image.load(file.path)
                             sheet.set_colorkey((0,0,0))
                             for i in range(sheet.get_width()//32):
-                                self.assets[f"{file.name.split('_')[1].split(".")[0]}_{i}"] = pygame.Surface((32,32), pygame.SRCALPHA)
-                                self.assets[f"{file.name.split('_')[1].split(".")[0]}_{i}"].blit(sheet, (0,0), (i*32,0,32,32))
+                                self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"] = pygame.Surface((32,32), pygame.SRCALPHA)
+                                self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"].blit(sheet, (0,0), (i*32,0,32,32))
                         self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
                         self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
             if file.name.split(".")[-1] == "png":
@@ -33,8 +33,8 @@ class Assets:
                     sheet = pygame.image.load(file.path)
                     sheet.set_colorkey((0,0,0))
                     for i in range(sheet.get_width()//32):
-                        self.assets[f"{file.name.split('_')[1].split(".")[0]}_{i}"] = pygame.Surface((32,32), pygame.SRCALPHA)
-                        self.assets[f"{file.name.split('_')[1].split(".")[0]}_{i}"].blit(sheet, (0,0), (i*32,0,32,32))
+                        self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"] = pygame.Surface((32,32), pygame.SRCALPHA)
+                        self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"].blit(sheet, (0,0), (i*32,0,32,32))
                 self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
                 self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
 

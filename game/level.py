@@ -148,6 +148,7 @@ class Level():
             rect2.center = point
             pygame.draw.rect(surface, (46, 34, 47), rect2)
             pygame.draw.rect(surface, (62, 53, 70), rect)
+
         for i in range(len(self.points) - 1):
             point = pygame.Vector2(self.points[i][0] // 2 * 2, self.points[i][1] // 2 * 2)
             point2 = pygame.Vector2(self.points[i+1][0] // 2 * 2, self.points[i+1][1] // 2 * 2)
