@@ -6,10 +6,6 @@ class Settings(Screen):
         super().__init__(screen_manager)
         self.back_color = (DARK_BACKGROUND_COLOR)
         
-        # Dropdown
-        self.add_item("dropdown", Dropdown(DROPDOWN_DARK, rect = (54, 40, 400, 50), options = ["1280 x 720", "2560 x 1440","1920 x 1080", "1600 x 900"], positioning="relative"))
-        self.add_item("dropdown_label", Label(LABEL_DARK, rect = (SCREEN_WIDTH/2 - 275, 275, 400, 50),text = "Resolution:", font_size=30))
-        
         # sldr_sfx
         self.add_item("sldr_sfx", Slider(SLIDER_DARK, pos = (SCREEN_WIDTH/2 - 150, 170), length = 400, min_val = 0, max_val = 100))
         self.add_item("sldr_sfx_label", Label(LABEL_DARK, rect = (54, 26, 400, 50),text = "Slider 1", positioning="relative", font_size=20))
@@ -35,10 +31,6 @@ class Settings(Screen):
         if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
             self.btn_back_on_click()
         super().update()
-        display_width, display_height = self.items["dropdown"].get_selected_option().split(" x ")
-        display_width, display_height = int(display_width), int(display_height)
-        if [display_width, display_height] != [pygame.display.Info().current_w, pygame.display.Info().current_h]:
-            pygame.event.post(pygame.event.Event(RESOLUTION_UPDATE, {"resolution": [display_width, display_height]}))
 
         self.items["sldr_sfx_label"].text = str(f'{int(self.items["sldr_sfx"].value)} %')
         self.screen_manager.game.config["SOUND_VOLUME"] = self.items["sldr_sfx"].value / 100

@@ -13,7 +13,8 @@ screens = {
     "game_select": Game_select, 
     "settings": Settings,
     "heroes": Heroes,
-    "upgrades": Upgrades
+    "upgrades": Upgrades,
+    "new_run": New_run
     }
 
 class Game(Engine):
@@ -51,7 +52,6 @@ class Game(Engine):
         self.current_round = Round(self, 0,self.enemy_types)
 
         # popups
-        self.popups = {"upgrade_choice": UpgradeChoicePopup(self)}
         self.popups = {
             "upgrade_choice": UpgradeChoicePopup(self),
             "pause": Pause(self),
@@ -62,16 +62,39 @@ class Game(Engine):
 
         # setup GUI
         self.gui.add_item("lbl_fps", Label(LABEL_DARK, rect = (98, 98, 125, 50), text = self.get_fps, font_size=20, positioning="relative"))
-        self.gui.add_item("lbl_round", Label(LABEL_DARK, rect = (98, 2, 125, 50), text = self.get_round_number, font_size=30, positioning="relative"))
+        self.gui.add_item("lbl_round", Label(LABEL_DARK, rect = (70, 75, 125, 50), text = lambda:f"round: {self.get_round_number()}", font_size=30, positioning="absolute"))
         self.gui.add_item("btn_roundstart", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("play_arrow"), on_click= self.start_round, positioning="relative"))
         self.gui.add_item("btn_fastforward", Button(BUTTON_DARK , rect = (95,90,100,100), text = get_icon_hex("fast_forward"), on_click= self.fast_forward, positioning="relative"))
-        lbl_hp = Label(LABEL_DARK, rect= (62,25, 125,50), text=self.get_hp, font_size=30, positioning="absolute")
+        lbl_hp = Label(LABEL_DARK, rect= (70, 25, 125,50), text=self.get_hp, font_size=30, positioning="absolute")
         lbl_hp.fore_color = (255,50,50)
         self.gui.add_item("lbl_hp", lbl_hp)
-        self.gui.items["btn_fastforward"].hidden = True
+        
 
         self.screen_manager.add_screen("game", self.gui)
         
+        
+
+        self.console.add_command("upgrade", self.give_upgrade, [('speed', 'damage', 'range'), 'number'])
+        self.console.add_command("fastforward", self.fast_forward, [])
+        self.console.add_command("hp", self.set_hp, ["hp"])
+
+        self.screen_offset = pygame.Vector2(0,0)
+        self.shake_strength = 0
+        self.shake_duration = 0
+
+        self.start_run()
+
+    def start_run(self):
+        if "pause" in self.gui.items:
+            self.popups["pause"].on_close()
+            self.gui.remove_item(self.popups["pause"].name)
+        self.gui.items["btn_fastforward"].hidden = True
+        self.current_round.round_number = 0
+        self.round_started = False
+        self.paused = False
+        self.hp = 1000
+        self.game_speed = 1.0
+
         # level data / generation
         self.level_data = {
             "no_turns": 6,
@@ -87,6 +110,7 @@ class Game(Engine):
         self.update_queue = []
 
         # add the level and entity manager to the draw queue
+        self.entity_manager.entities.clear()
         self.draw_queue.append((1, self.level))
         self.draw_queue.append((2, self.entity_manager))
         self.draw_queue.append((6, self.screen_manager))
@@ -95,16 +119,7 @@ class Game(Engine):
         self.update_queue.append(self.current_round)
 
         self.entity_manager.add_entity(Player(self,"player"),"player")
-
-        self.console.add_command("upgrade", self.give_upgrade, [('speed', 'damage', 'range'), 'number'])
-        self.console.add_command("fastforward", self.fast_forward, [])
-        self.console.add_command("hp", self.set_hp, ["hp"])
-
         self.spawn_tower()
-        self.screen_offset = pygame.Vector2(0,0)
-        self.shake_strength = 0
-        self.shake_duration = 0
-
 
     def draw(self):
         if self.game_active:
@@ -152,7 +167,7 @@ class Game(Engine):
         return self.current_round.get_round_number()
     
     def get_hp(self):
-        return self.hp / 10
+        return f"hp: {self.hp // 10}"
 
     def set_hp(self, hp):
         self.hp = int(hp)
@@ -294,23 +309,11 @@ class DeathPopup(Popup):
         self.add_item(self.btn_replay)
 
     def retry(self):
-        for enemy in self.game.entity_manager.entities["enemy"]:
-            enemy.alive = False
-        self.game.draw_queue.remove((1, self.game.level))
-        self.game.level = self.game.generator.generate_level(self.game.level_data)
-        self.game.draw_queue.append((1,self.game.level))
-        self.game.current_round.round_number = 0
-        self.game.round_started = False
+        self.game.start_run()
         self.game.toggle_popup(self)
 
     def exit(self):
-        for enemy in self.game.entity_manager.entities["enemy"]:
-            enemy.alive = False
-        self.game.draw_queue.remove((1, self.game.level))
-        self.game.level = self.game.generator.generate_level(self.game.level_data)
-        self.game.draw_queue.append((1,self.game.level))
-        self.game.current_round.round_number = 0
-        self.game.round_started = False
+        self.game.start_run()
         self.game.screen_manager.change_screen("game_select", 10)
         self.game.toggle_popup(self)
 

@@ -54,7 +54,7 @@ class Game_select(Screen):
         self.screen_manager.change_screen("upgrades", 20)
 
     def btn_play_on_click(self):
-        self.screen_manager.change_screen("game", 20)
+        self.screen_manager.change_screen("new_run", 20)
 
     def btn_settings_on_click(self):
         self.screen_manager.change_screen("settings", 20)

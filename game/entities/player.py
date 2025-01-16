@@ -172,6 +172,7 @@ class Player(Entity):
         rect = pygame.Rect(0, 0, self.sprite.get_width(), self.sprite.get_height())
         rect.center = pos
         obsticles = [x[0] for x in self.game.level.obsticles]
+        
         for obsticle in obsticles:
             if obsticle.colliderect(rect):
                 return True
