@@ -27,7 +27,8 @@ class Game_select(Screen):
 
         self.add_item("lbl_title", Label(LABEL_DARK, rect = (50,40,SCREEN_WIDTH,200), text = "TOWER DEFENCE", positioning="relative", font_size=100))
 
-        
+        self.add_item("btn_help", Button(BUTTON_DARK, rect = (3,95,50,50), text = get_icon_hex("help_outline"), positioning="relative", on_click= self.btn_help_on_click))
+
     def update(self):
         if pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
             self.btn_back_on_click()
@@ -58,3 +59,6 @@ class Game_select(Screen):
 
     def btn_settings_on_click(self):
         self.screen_manager.change_screen("settings", 20)
+
+    def btn_help_on_click(self):
+        self.screen_manager.change_screen("help", 20)

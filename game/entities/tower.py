@@ -92,10 +92,10 @@ class Tower(Entity):
         target_surface.blit(temp_sprite, self.rect)
         if self.hovered:
             self.pickup_rect.center = self.pos
-            if self.can_upgrade["speed"]: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(34,177,76)), self.pickup_rect.bottomleft)
-            else: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(100, 100, 100)), self.pickup_rect.bottomleft)
-            if self.can_upgrade["damage"]: target_surface.blit(font.render(str(self.upgrades.count("damage")),True,(235,51,36)), pygame.Vector2(self.pickup_rect.midbottom) - pygame.Vector2(5, 0))
-            else: target_surface.blit(font.render(str(self.upgrades.count("damage")),True,(100, 100, 100)), pygame.Vector2(self.pickup_rect.midbottom) - pygame.Vector2(5, 0))
+            if self.can_upgrade["speed"]: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(34,177,76)), self.pickup_rect.midbottom - pygame.Vector2(5, 0))
+            else: target_surface.blit(font.render(str(self.upgrades.count("speed")),True,(100, 100, 100)), self.pickup_rect.midbottom - pygame.Vector2(5, 0))
+            if self.can_upgrade["damage"]: target_surface.blit(font.render(str(self.upgrades.count("damage")),True,(235,51,36)), pygame.Vector2(self.pickup_rect.bottomleft))
+            else: target_surface.blit(font.render(str(self.upgrades.count("damage")),True,(100, 100, 100)), pygame.Vector2(self.pickup_rect.bottomleft))
             if self.can_upgrade["range"]: target_surface.blit(font.render(str(self.upgrades.count("range")),True,(230,230,230)), pygame.Vector2(self.pickup_rect.bottomright) - pygame.Vector2(10, 0))
             else: target_surface.blit(font.render(str(self.upgrades.count("range")),True,(100, 100, 100)), pygame.Vector2(self.pickup_rect.bottomright) - pygame.Vector2(10, 0))
             if self.player_inrange:
@@ -128,6 +128,10 @@ class Tower(Entity):
 
     def check_collisions(self):
         obsticles = [x[0] for x in self.game.level.obsticles]
+        paths = [x for x in self.game.level.path]
+        for path in paths:
+            if path.colliderect(self.rect):
+                return True
         for obsticle in obsticles:
             if obsticle.colliderect(self.rect):
                 return True

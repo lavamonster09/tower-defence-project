@@ -128,13 +128,22 @@ class Level():
         self.background = pygame.transform.scale(self.background,[int(self.game.config["SCREEN_WIDTH"]), int(self.game.config["SCREEN_HEIGHT"])])
         self.points = points
         self.obsticles = obsticles
+        self.path = []
+        for i in range(len(self.points) - 1):
+            point1 = pygame.Vector2(self.points[i][0] // 2 * 2, self.points[i][1] // 2 * 2)
+            point2 = pygame.Vector2(self.points[i+1][0] // 2 * 2, self.points[i+1][1] // 2 * 2)
+            slope = point2 - point1
+            slope = slope.normalize()
+            if slope.magnitude() <= 0:
+                self.path.append(pygame.Rect(point2.x - 5, point2.y - 5, point1.x - point2.x + 5, point1.y - point2.y + 5))
+            else:
+                self.path.append(pygame.Rect(point1.x - 5, point1.y - 5, point2.x - point1.x + 5, point2.y - point1.y + 5))
         self.back_color = (30, 74, 157)
     
     def draw(self):
         surface = pygame.display.get_surface()
         surface.blit(self.background, (0,0))
         
-
         for i in range(len(self.points) - 1):
             point1 = (self.points[i][0] // 2 * 2, self.points[i][1] // 2 * 2)
             point2 = (self.points[i+1][0] // 2 * 2, self.points[i+1][1] // 2 * 2)

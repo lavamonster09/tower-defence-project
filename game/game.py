@@ -14,7 +14,8 @@ screens = {
     "settings": Settings,
     "heroes": Heroes,
     "upgrades": Upgrades,
-    "new_run": New_run
+    "new_run": New_run,
+    "help": Help
     }
 
 class Game(Engine):
