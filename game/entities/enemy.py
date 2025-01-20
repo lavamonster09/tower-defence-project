@@ -54,6 +54,7 @@ class Boss(Enemy):
     def __init__(self, game_manager, sprite=pygame.surface.Surface((0, 0))) -> None:
         speed = 0.5
         self.hp = 100 * game_manager.current_round.round_number
+        self.max_hp = 100 * game_manager.current_round.round_number
         super().__init__(game_manager, sprite, speed)
 
     def update(self):
@@ -66,7 +67,7 @@ class Boss(Enemy):
         return super().update()
 
     def draw(self):
-        rect = pygame.Rect(0,0,self.hp, 20)
-        rect.midtop = (SCREEN_WIDTH/2, 10)
+        rect = pygame.Rect(0,0,500*(self.hp/self.max_hp), 20)
+        rect.topleft = (SCREEN_WIDTH/2-250, 10)
         pygame.draw.rect(self.game.screen, (255,55,55), rect)
         return super().draw()

@@ -148,7 +148,7 @@ class Player(Entity):
     def draw(self):
         surface = pygame.display.get_surface()
         temp_sprite = pygame.transform.scale_by(self.sprite, 0.5)
-        temp_sprite = self.game.assets.get_frame("tvman", int(self.target_angle//45))
+        temp_sprite = self.game.assets.get_frame(self.game.selected_hero, int(self.target_angle//45))
         temp_sprite = pygame.transform.scale_by(temp_sprite, 2)
         self.rect = temp_sprite.get_rect()
         temp_sprite.set_colorkey((0,0,0))

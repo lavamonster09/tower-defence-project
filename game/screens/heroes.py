@@ -2,41 +2,41 @@ from engine import *
 from game.util.constants import *
 
 hero_data = {
-    "lime": {
-        "name": "Lime",
-        "small_image": "assets/images/heroes/lime_small.png",
-        "large_image": "assets/images/heroes/lime_large.png",
-        "description": "lime is a glorious color. limes are also delicious. lime is a hue of green."
+    "tvman": {
+        "name": "tvman",
+        "small_image": "assets/images/heroes/tvman_small.png",
+        "large_image": "assets/images/heroes/tvman_large.png",
+        "description": "null"
     },
-    "red": {
-        "name": "red",
-        "small_image": "assets/images/heroes/test1_small.png",
-        "large_image": "assets/images/heroes/test1_large.png",
+    "redman": {
+        "name": "redman",
+        "small_image": "assets/images/heroes/redman_small.png",
+        "large_image": "assets/images/heroes/redman_large.png",
         "description": "red is angry the color suggest anger and rage. red is the hue of blood."
     },
-    "purple": {
-        "name": "purple",
-        "small_image": "assets/images/heroes/test2_small.png",
-        "large_image": "assets/images/heroes/test2_large.png",
+    "purpleman": {
+        "name": "purpleman",
+        "small_image": "assets/images/heroes/purpleman_small.png",
+        "large_image": "assets/images/heroes/purpleman_large.png",
         "description": "purple is a hue of blue and red. purple is a royal color. purple is a hue of violet."
     },
-    "yellow": {
-        "name": "yellow",
-        "small_image": "assets/images/heroes/test3_small.png",
-        "large_image": "assets/images/heroes/test3_large.png",
+    "yellowman": {
+        "name": "yellowman",
+        "small_image": "assets/images/heroes/yellowman_small.png",
+        "large_image": "assets/images/heroes/yellowman_large.png",
         "description": "yellow is the color of the sun. yellow is a hue of orange. yellow is a hue of green."
     },
-    "pink": {
-        "name": "pink",
-        "small_image": "assets/images/heroes/test4_small.png",
-        "large_image": "assets/images/heroes/test4_large.png",
+    "pinkman": {
+        "name": "pinkman",
+        "small_image": "assets/images/heroes/pinkman_small.png",
+        "large_image": "assets/images/heroes/pinkman_large.png",
         "description": "pink is a hue of red. pink is a hue of purple. pink is a hue of white."
     },
-    "cyan": {
-        "name": "cyan",
-        "small_image": "assets/images/heroes/test5_small.png",
-        "large_image": "assets/images/heroes/test5_large.png",
-        "description": "cyan is the color of the sky. cyan is a hue of blue. cyan is a hue of green."
+    "blueman": {
+        "name": "blueman",
+        "small_image": "assets/images/heroes/blueman_small.png",
+        "large_image": "assets/images/heroes/blueman_large.png",
+        "description": "blue is the color of the sky. blue is a hue of blue."
     }
 }
 
@@ -90,5 +90,6 @@ class Heroes(Screen):
     
     def btn_select_on_click(self):
         self.items["selected"].rect = self.items["hovering"].rect
+        self.screen_manager.game.selected_hero = self.items["hero_name"].text 
         self.items["btn_select"].color = DARK_SURFACE_HOVER_COLOR
         self.items["btn_select"].text = "SELECTED"

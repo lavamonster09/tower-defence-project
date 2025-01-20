@@ -11,7 +11,7 @@ class New_run(Screen):
         self.add_item("btn_startrun", Button(BUTTON_DARK , rect=(20,87,400,100), text = "start", on_click= self.btn_start_on_click, positioning="relative"))
         self.add_item("lbl_newrun", Label(LABEL_DARK, rect=(50,5,180,50), text="New Run", font_size=40, positioning="relative"))
 
-        self.add_item("large_hero", Image("assets/images/heroes/lime_large.png", rect = (80,50,SCREEN_WIDTH/4.5,SCREEN_HEIGHT/2), positioning="relative"))
+        
         self.add_item("hero_title", Label(LABEL_DARK, rect = (80,25,SCREEN_WIDTH/4,100), positioning="relative", font_size=30, text="Selected hero"))
         self.add_item("hero_name", Label(LABEL_DARK, rect = (80,75,SCREEN_WIDTH/4,100), positioning="relative", font_size=30, text="Selected hero"))
         
@@ -21,8 +21,14 @@ class New_run(Screen):
             self.btn_back_on_click()
         return super().update()
 
+    def on_open(self):
+        self.remove_item("large_hero")
+        self.add_item("large_hero", Image(f"assets/images/heroes/{self.screen_manager.game.selected_hero}_large.png", rect = (80,50,SCREEN_WIDTH/4.5,SCREEN_HEIGHT/2), positioning="relative"))
+        self.items["hero_name"].text = self.screen_manager.game.selected_hero
+
     def btn_back_on_click(self):
         self.screen_manager.change_screen(self.screen_manager.before_last_screen, 20)
+        
 
     def btn_start_on_click(self):
         self.screen_manager.game.start_run()

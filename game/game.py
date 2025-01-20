@@ -73,7 +73,7 @@ class Game(Engine):
 
         self.screen_manager.add_screen("game", self.gui)
         
-        
+        self.selected_hero = "tvman"
 
         self.console.add_command("upgrade", self.give_upgrade, [('speed', 'damage', 'range'), 'number'])
         self.console.add_command("fastforward", self.fast_forward, [])
