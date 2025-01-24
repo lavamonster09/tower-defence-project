@@ -11,7 +11,7 @@ class Game_select(Screen):
         # btn_start
         self.add_item("btn_play",Button(BUTTON_DARK , rect=(50,85,180,100), text="PLAY", positioning="relative", on_click= self.btn_play_on_click))
         self.add_item("btn_heroes",Button(BUTTON_DARK , rect=(30,87,270,100), text="HEROES", positioning="relative", on_click= self.btn_heroes_on_click))
-        self.add_item("btn_upgrades",Button(BUTTON_DARK , rect=(70,87,270,100), text="UPGRADE", positioning="relative", on_click= self.btn_upgrades_on_click))
+        self.add_item("btn_leaderboard",Button(BUTTON_DARK , rect=(70,87,270,100), text="LEADERBOARD", positioning="relative", on_click= self.btn_leaderboard_on_click))
         
         for item in self.items:
             if item != "img_bkg":
@@ -37,7 +37,7 @@ class Game_select(Screen):
     def on_open(self):
         self.animations["btn_play_open"][0].start_animation()
         self.animations["btn_heroes_open"][0].start_animation()
-        self.animations["btn_upgrades_open"][0].start_animation()
+        self.animations["btn_leaderboard_open"][0].start_animation()
         self.animations["btn_settings_open"][0].start_animation()
 
     def on_close(self):
@@ -51,8 +51,8 @@ class Game_select(Screen):
     def btn_heroes_on_click(self):
         self.screen_manager.change_screen("heroes", 20)
 
-    def btn_upgrades_on_click(self):
-        self.screen_manager.change_screen("upgrades", 20)
+    def btn_leaderboard_on_click(self):
+        self.screen_manager.change_screen("leaderboard", 20)
 
     def btn_play_on_click(self):
         self.screen_manager.change_screen("new_run", 20)

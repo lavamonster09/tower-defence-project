@@ -2,6 +2,8 @@
 import pygame
 import sys
 import os 
+import requests
+import json
 
 from .level import *
 from engine import *
@@ -13,7 +15,7 @@ screens = {
     "game_select": Game_select, 
     "settings": Settings,
     "heroes": Heroes,
-    "upgrades": Upgrades,
+    "leaderboard": Leaderboard,
     "new_run": New_run,
     "help": Help
     }
@@ -304,14 +306,25 @@ class DeathPopup(Popup):
     def __init__(self, game) -> None:
         super().__init__(game)
         self.name = "death_popup"
-        self.btn_replay = Button(BUTTON_DARK, (50,30,450,200), text="RETRY", positioning="relative", on_click=self.retry)
-        self.btn_exit = Button(BUTTON_DARK, (50,70,450,200), text="EXIT", positioning="relative", on_click=self.exit)
+        self.btn_replay = Button(BUTTON_DARK, (50,30,450,100), text="RETRY", positioning="relative", on_click=self.retry)
+        self.btn_exit = Button(BUTTON_DARK, (50,50,450,100), text="EXIT", positioning="relative", on_click=self.exit)
+        self.input_username = Textbox(TEXTBOX_DARK, (50,70,450,100),positioning="relative", on_submit=None)
+        self.btn_post_highscore =  Button(BUTTON_DARK, (50,90,450,100), text="POST", positioning="relative", on_click=self.post_highscore)
         self.add_item(self.btn_exit)
         self.add_item(self.btn_replay)
+        self.add_item(self.input_username)
+        self.add_item(self.btn_post_highscore)
+        self.highscore_posted = False
 
     def retry(self):
         self.game.start_run()
         self.game.toggle_popup(self)
+
+    def post_highscore(self):
+        if self.highscore_posted == False and self.input_username.text != "":
+            self.highscore_posted = True
+            response = requests.post("http://127.0.0.1:5000/TEST",json = json.dumps({"data": [str(self.game.get_round_number()), self.input_username.text]}))
+
 
     def exit(self):
         self.game.start_run()
@@ -319,6 +332,8 @@ class DeathPopup(Popup):
         self.game.toggle_popup(self)
 
     def on_open(self):
+        self.input_username.text = ""
+        self.highscore_posted = False
         self.game.paused = True
         self.game.round_started = False
         self.game.gui.items["btn_roundstart"].hidden = False
