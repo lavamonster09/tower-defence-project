@@ -20,12 +20,13 @@ class Leaderboard(Screen):
         self.screen_manager.change_screen(self.screen_manager.before_last_screen, 20)
 
     def on_open(self):
+        self.items["lbl_highscores"].text = ""
         response = requests.get("http://127.0.0.1:5000/TEST")
         scores = []
         
         for i in range(len(response.json()["names"])):
             scores.append([response.json()["names"][i],response.json()["scores"][i]])
-        scores.sort(key=lambda x: x[0])
+        scores.sort(key=lambda x: x[1], reverse=True)
         for i in range(15):
             if i < len(scores):
                 self.items["lbl_highscores"].text += f'{scores[i][0]} - {scores[i][1]} \n'
