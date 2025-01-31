@@ -482,7 +482,7 @@ class Textbox():
             self.lastpressed = False
         
 
-class Amimation():
+class Animation():
     def __init__(self, start, end, length):
         self.start = start
         self.end = end

@@ -1,28 +1,28 @@
 MAIN_FONT = "assets/fonts/rimouski sb.otf"
 ICON_FONT = "assets/fonts/MaterialIcons-Regular.ttf"
 
-
 class Theme:
-    def __init__(self, theme_data:dict):
+    def __init__(self, theme_data: dict):
         self.theme_data = theme_data
 
     def get(self):
         return self.theme_data
     
-    def set(self, theme_data:dict):
+    def set(self, theme_data: dict):
         for key in theme_data:
             self.theme_data[key] = theme_data[key]
 
-# colors
+# Colors for dark theme
 DARK_BACKGROUND_COLOR = (20, 19, 23)
 DARK_SURFACE_LOW_COLOR = (46, 34, 47)
 DARK_SURFACE_HOVER_COLOR = (51, 45, 65)
-DARK_FOREGROUND_COLOR = (255,255,255)
+DARK_FOREGROUND_COLOR = (255, 255, 255)
 DARK_OUTLINE_COLOR = (110, 109, 117)
 DARK_ACCENT_COLOR = (171, 149, 217)
 
 # Themes
-# button themes
+
+# Button themes
 BUTTON_DARK = Theme({
     "color": DARK_SURFACE_LOW_COLOR,
     "fore_color": DARK_FOREGROUND_COLOR,
@@ -43,8 +43,7 @@ BUTTON_DARK_NO_FILL = Theme({
     "filled": False,
 })
 
-
-# label themes
+# Label themes
 LABEL_DARK = Theme({
     "color": DARK_BACKGROUND_COLOR,
     "fore_color": DARK_FOREGROUND_COLOR,
@@ -63,8 +62,7 @@ LABEL_DARK_FILLED = Theme({
     "filled": True,
 })
 
-
-# slider themes
+# Slider themes
 SLIDER_DARK = Theme({
     "dot_size": 10,
     "thickness": 5,
@@ -72,7 +70,7 @@ SLIDER_DARK = Theme({
     "dot_color": DARK_FOREGROUND_COLOR,
 })
 
-# dropdown themes
+# Dropdown themes
 DROPDOWN_DARK = Theme({
     "color": DARK_SURFACE_LOW_COLOR,
     "fore_color": DARK_FOREGROUND_COLOR,
@@ -83,7 +81,7 @@ DROPDOWN_DARK = Theme({
     "filled": True,
 })
 
-# rect themes   
+# Rect themes
 RECT_DARK = Theme({
     "color": DARK_BACKGROUND_COLOR,
     "border_radius": 10,
@@ -100,7 +98,7 @@ RECT_DARK_NO_FILL = Theme({
     "filled": False,
 })
 
-# textbox themes
+# Textbox themes
 TEXTBOX_DARK = Theme({
     "color": DARK_SURFACE_LOW_COLOR,
     "fore_color": DARK_FOREGROUND_COLOR,

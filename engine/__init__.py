@@ -4,7 +4,6 @@ from .screen import *
 from .entity import * 
 from .sound import * 
 from .screen_manager import * 
-from .particle_system import * 
 from .sound import *
 from .engine import *
 import pygame

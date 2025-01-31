@@ -24,7 +24,11 @@ class Leaderboard(Screen):
 
     def on_open(self):
         self.items["lbl_highscores"].text = ""
-        response = requests.get("http://127.0.0.1:5000/TEST")
+        try: 
+            response = requests.get("http://127.0.0.1:5000/TEST", timeout=5)
+        except (requests.Timeout, requests.ConnectionError):
+            self.items["lbl_highscores"].text = "connection to server failed"
+            return
         scores = []
         
         for i in range(len(response.json()["names"])):
