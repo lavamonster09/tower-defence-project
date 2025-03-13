@@ -139,9 +139,11 @@ class Level():
             else:
                 self.path.append(pygame.Rect(point1.x - 5, point1.y - 5, point2.x - point1.x + 5, point2.y - point1.y + 5))
         self.back_color = (30, 74, 157)
+        self.level_surf = self.game.screen.copy()
+        self.draw_to_surface(self.level_surf)
+        
     
-    def draw(self):
-        surface = pygame.display.get_surface()
+    def draw_to_surface(self,surface):
         surface.blit(self.background, (0,0))
         
         for i in range(len(self.points) - 1):
@@ -176,6 +178,10 @@ class Level():
             sprite = obsticle[1]
             rect = sprite.get_rect()
             surface.blit(sprite, obsticle[0])
+
+    def draw(self):
+        surface = self.game.screen
+        surface.blit(self.level_surf, (0,0))
         
     def update(self):
         pass
