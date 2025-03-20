@@ -323,7 +323,10 @@ class DeathPopup(Popup):
     def post_highscore(self):
         if self.highscore_posted == False and self.input_username.text != "":
             self.highscore_posted = True
-            response = requests.post("http://127.0.0.1:5000/TEST",json = json.dumps({"data": [str(self.game.get_round_number()), self.input_username.text]}))
+            try: 
+                request = requests.post("http://127.0.0.1:5000/TEST",json = json.dumps({"data": [str(self.game.get_round_number()), self.input_username.text]}))
+            except:
+                print("ERROR POSTING HIGH SCORE")
 
 
     def exit(self):
