@@ -17,27 +17,19 @@ class Assets:
     
     def load(self):
         # Load all images from the assets/images directory
-        for file in os.scandir("assets/images"):
-            if file.is_dir():
-                for file in os.scandir(file.path):
-                    if file.name.split(".")[-1] == "png":
-                        if file.name.startswith("sheet"):
-                            sheet = pygame.image.load(file.path)
-                            sheet.set_colorkey((0,0,0))
-                            for i in range(sheet.get_width()//32):
-                                self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"] = pygame.Surface((32,32), pygame.SRCALPHA)
-                                self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"].blit(sheet, (0,0), (i*32,0,32,32))
-                        self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
-                        self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
-            if file.name.split(".")[-1] == "png":
-                if file.name.startswith("sheet"):
-                    sheet = pygame.image.load(file.path)
-                    sheet.set_colorkey((0,0,0))
-                    for i in range(sheet.get_width()//32):
-                        self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"] = pygame.Surface((32,32), pygame.SRCALPHA)
-                        self.assets[f"{file.name.split('_')[1].split('.')[0]}_{i}"].blit(sheet, (0,0), (i*32,0,32,32))
-                self.assets[file.name.split(".")[0]] = pygame.image.load(file.path)
-                self.assets[file.name.split(".")[0]].set_colorkey((0,0,0))
+        dir = os.walk("assets/images")
+        for d in dir:
+            for file in d[2]:
+                if file.split(".")[-1] == "png":
+                    if file.startswith("sheet"):
+                        sheet = pygame.image.load(d[0] + "/" + file)
+                        sheet.set_colorkey((0,0,0))
+                        for i in range(sheet.get_width()//32):
+                            self.assets[f"{file.split('_')[1].split('.')[0]}_{i}"] = pygame.Surface((32,32), pygame.SRCALPHA)
+                            self.assets[f"{file.split('_')[1].split('.')[0]}_{i}"].blit(sheet, (0,0), (i*32,0,32,32))
+                    self.assets[file.split(".")[0]] = pygame.image.load(d[0] + "/" + file)
+                    self.assets[file.split(".")[0]].set_colorkey((0,0,0))
+       
 
     def get(self, key):
         # Retrieve an asset by key, return "null" asset if key is not found

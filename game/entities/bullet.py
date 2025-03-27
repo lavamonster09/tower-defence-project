@@ -19,4 +19,4 @@ class Bullet(Entity):
             self.alive = False  
             self.game.shake_screen(2, 10) 
         
-        super().update()
+        super().update()    
